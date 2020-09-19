@@ -9,7 +9,7 @@ import { parseHandlers, clearHTML } from './htmlHelpers.js'
  *    No sense when we have such limited need for a single feature.
  * 2. It gets us as close as we can get to native syntax, hopefully avoiding
  *    the issue of lock-in.  The main inspiration behind this library is
- *    to decorate native components, after all.
+ *    to honor native syntax as much as possible, after all.
  * 
  * @param {object} global - (implicit)
  * @param {string} componentKey - (implicit)
