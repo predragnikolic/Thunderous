@@ -146,8 +146,8 @@ export const createContainerComponent = ((defaultConfig, _config, _getHTML) => {
  * 
  * @param {object} window - (implicit)
  * @param {object} config - the router configuration, using relative URLs as object keys
- * @param {string} config.title - the title of the page, corresponding with the document title
- * @param {string} config.component - the component tag to render when the page matches the given route
+ * @param {string} config[route].title - the title of the page, corresponding with the document title
+ * @param {string} config[route].component - the component tag to render when the page matches the given route
  * @returns {class} - the Router class which extends HTMLElement
  */
 export const createRouter = ((window, config) => {
