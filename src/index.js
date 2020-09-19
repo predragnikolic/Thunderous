@@ -19,8 +19,8 @@ const defaultConfig = {
  * are injected in the props of the component function, so the developer
  * won't need to import anything and the function remains pure.
  * 
- * @param {object} window (implicit)
- * @param {object} defaultConfig (implicit)
+ * @param {object} window - (implicit)
+ * @param {object} defaultConfig - (implicit)
  * @param {object|function} _config - since custom configuration is optional, this parameter may also be used for the getHTML function
  * @param {function} _getHTML - this is the main component function, which should return an html string.
  * @returns {class} - the extended class of HTMLElement (or whatever else was specified in the config)
