@@ -13,7 +13,7 @@ const defaultConfig = {
   passUtilities: true,
 }
 
-export const createWebComponent = ((window, _config, _getHTML) => {
+export const createWebComponent = ((window, defaultConfig, _config, _getHTML) => {
 
   // make first argument optional
   const config = typeof _config === 'object' ? _config : {}
@@ -60,14 +60,9 @@ export const createWebComponent = ((window, _config, _getHTML) => {
     }
 
   }
-}).bind(null, globalThis)
+}).bind(null, globalThis, defaultConfig)
 
-const presentationalConfig = {
-  useShadowDOM: true,
-  passUtilities: false,
-}
-
-export const createPresentationalComponent = (_config, _getHTML) => {
+export const createPresentationalComponent = ((defaultConfig, _config, _getHTML) => {
 
   // make first argument optional
   const config = typeof _config === 'object' ? _config : {}
@@ -75,16 +70,15 @@ export const createPresentationalComponent = (_config, _getHTML) => {
 
   // merge provided config with defaults
   // and prioritize presentational configurations.
-  const assignedConfig = Object.assign({}, defaultConfig, config, presentationalConfig)
+  const assignedConfig = Object.assign({}, defaultConfig, config, {
+    useShadowDOM: true,
+    passUtilities: false,
+  })
 
   return createWebComponent(assignedConfig, getHTML)
-}
+}).bind(null, defaultConfig)
 
-const containerConfig = {
-  useShadowDOM: false,
-}
-
-export const createContainerComponent = (_config, _getHTML) => {
+export const createContainerComponent = ((defaultConfig, _config, _getHTML) => {
 
   // make first argument optional
   const config = typeof _config === 'object' ? _config : {}
@@ -92,10 +86,12 @@ export const createContainerComponent = (_config, _getHTML) => {
 
   // merge provided config with defaults
   // and prioritize container configurations.
-  const assignedConfig = Object.assign({}, defaultConfig, config, containerConfig)
+  const assignedConfig = Object.assign({}, defaultConfig, config, {
+    useShadowDOM: false,
+  })
 
   return createWebComponent(assignedConfig, getHTML)
-}
+}).bind(null, defaultConfig)
 
 export const createRouter = ((window, config) => {
 
