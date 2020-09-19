@@ -21,8 +21,11 @@ export const createHandler = (global, componentKey, handlerKey, handler) => {
 }
 
 /**
- * Using a simple Map, this tracks dynamic values within a component function.
- * 
+ * This function was inspired by React's useState() function. Using a simple Map,
+ * this tracks dynamic values within a component function.  The initial value
+ * will not be set more than once, although this function is expected to rerun
+ * on every render cycle.  The setter returned by this function also triggers a
+ * rerender, so this will run again to get the latest value.
  * 
  * @param {object} component - (implicit)
  * @param {function} getHTML - (implicit)
@@ -48,7 +51,6 @@ export const useComponentState = (component, getHTML, renderComponent, state, ke
 }
 
 /** 
- * 
  * This function is inspired by React's useEffect(), but I tried to name it
  * to appeal to intuition, since it took me a while to grasp what useEffect
  * was supposed to be.  This function, quite literally, runs a callback which
