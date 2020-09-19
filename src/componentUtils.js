@@ -28,7 +28,7 @@ export const updateRoute = (window, route) => {
   dispatchEvent(pushStateEvent)
 }
 
-export const rawRenderComponent = (parseHandlers, clearHTML, component, getHTML) => {
+export const renderComponent = ((document, parseHandlers, clearHTML, component, getHTML) => {
   const { root, utilities, key } = component
   const templateElement = document.createElement('template')
   const rawHtml = getHTML(utilities)
@@ -37,6 +37,4 @@ export const rawRenderComponent = (parseHandlers, clearHTML, component, getHTML)
   const instance = templateElement.content.cloneNode(true)
   clearHTML(root)
   root.appendChild(instance)
-}
-
-export const renderComponent = rawRenderComponent.bind(null, parseHandlers, clearHTML)
+}).bind(null, globalThis.document, parseHandlers, clearHTML)

@@ -13,7 +13,7 @@ const defaultConfig = {
   passUtilities: true,
 }
 
-export const createWebComponent = (_config, _getHTML) => {
+export const createWebComponent = ((window, _config, _getHTML) => {
 
   // make first argument optional
   const config = typeof _config === 'object' ? _config : {}
@@ -31,11 +31,11 @@ export const createWebComponent = (_config, _getHTML) => {
       const component = this
 
       // set up handlers object on the global scope
-      globalThis.handlers = globalThis.handlers || {}
+      window.handlers = window.handlers || {}
       const generateUniqueKey = () => {
         const uniqueKey = Math.random().toString(36).slice(2)
-        if (globalThis.handlers[uniqueKey]) return generateUniqueKey()
-        globalThis.handlers[uniqueKey] = {}
+        if (window.handlers[uniqueKey]) return generateUniqueKey()
+        window.handlers[uniqueKey] = {}
         return uniqueKey
       }
 
@@ -45,12 +45,12 @@ export const createWebComponent = (_config, _getHTML) => {
         : component
 
       if (passUtilities) component.utilities = {
-        createHandler: createHandler.bind(null, globalThis, component.key),
+        createHandler: createHandler.bind(null, window, component.key),
         runWithCleanup: runWithCleanup.bind(null, new Map()),
-        updateRoute: updateRoute.bind(null, globalThis),
+        updateRoute: updateRoute.bind(null, window),
         useComponentState: useComponentState.bind(
           null, component, getHTML, renderComponent, new Map()),
-        head: globalThis.document.head,
+        head: window.document.head,
       }
     }
 
@@ -60,7 +60,7 @@ export const createWebComponent = (_config, _getHTML) => {
     }
 
   }
-}
+}).bind(null, globalThis)
 
 const presentationalConfig = {
   useShadowDOM: true,
@@ -97,10 +97,11 @@ export const createContainerComponent = (_config, _getHTML) => {
   return createWebComponent(assignedConfig, getHTML)
 }
 
-export const createRouter = config => {
+export const createRouter = ((window, config) => {
 
   return createContainerComponent(({useComponentState, runWithCleanup}) => {
 
+    const { document, location } = window
     const [route, setRoute] = useComponentState('route', location.pathname)
     const { title, component } = config[route]
 
@@ -122,4 +123,4 @@ export const createRouter = config => {
     return `<${component}></${component}>`
   })
 
-}
+}).bind(null, globalThis)
