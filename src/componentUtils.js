@@ -53,8 +53,9 @@ export const useComponentState = (component, getHTML, renderComponent, state, ke
 /** 
  * This function is inspired by React's useEffect(), but I tried to name it
  * to appeal to intuition, since it took me a while to grasp what useEffect
- * was supposed to be.  This function, quite literally, runs a callback which
- * should return a cleanup callback.
+ * was supposed to be.  As the name suggests, this function runs a callback
+ * which should return another callback for cleanup.  Good for subscribing
+ * and unsubscribing, for example.
  * 
  * @callback callback
  * @returns {function} - the cleanup function, meant for things like unsubscribing, etc
