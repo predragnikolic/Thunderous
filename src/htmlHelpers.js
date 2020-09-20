@@ -19,10 +19,6 @@ export const clearHTML = element => {
   while(i--) { element.removeChild(element.lastChild) }
 }
 
-// All `onevent` functions are stored by component key in an isolated place
-// on the global scope.  (See createHandler in componentUtils.js.)
-// This function adds the appropriate context to these handlers in a given html string.
-
 /**
  * All `onevent` functions are stored by component key in an isolated place
  * on the global scope.  (See createHandler in componentUtils.js.)
