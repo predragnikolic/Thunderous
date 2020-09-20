@@ -1,6 +1,4 @@
-import { createContainerComponent } from '../../src/index.js'
-
-export default createContainerComponent(({createHandler, runWithCleanup, useComponentState, updateRoute}) => {
+export default ({createHandler, runWithCleanup, useComponentState, updateRoute}) => {
 
   const [name, setName] = useComponentState('name', 'World')
 
@@ -31,4 +29,4 @@ export default createContainerComponent(({createHandler, runWithCleanup, useComp
       <footer slot="footer">my footer text</footer>
     </presentational-component>
   `
-})
+}
