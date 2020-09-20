@@ -35,15 +35,15 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
   const assignedConfig = Object.assign({}, defaultConfig, config)
   const { Element, useShadowDOM, shadowMode, passUtilities } = assignedConfig
 
+  // set up handlers object on the global scope
+  window.handlers = window.handlers || {}
+
   // return the component class for the developer to define it with customElements.define()
   return class Component extends Element {
 
     constructor() {
       super()
       const component = this
-
-      // set up handlers object on the global scope
-      window.handlers = window.handlers || {}
 
       // assign a unique key to this component so it can be tracked in a parallel scope.
       // This is mainly done to address the issue of context on event handlers.
