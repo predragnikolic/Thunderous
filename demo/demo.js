@@ -1,6 +1,6 @@
 import Router from './components/router.js'
-import { Container } from './components/container/containerExports.js'
-import { Presentational } from './components/presentational/presentationalExports.js'
+import { Container } from './components/container/index.js'
+import { Presentational } from './components/presentational/index.js'
 import Home from './pages/home.js'
 import DemoPage from './pages/page.js'
 
