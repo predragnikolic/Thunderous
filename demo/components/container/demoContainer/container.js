@@ -7,11 +7,6 @@ export default ({createHandler, runWithCleanup, useComponentState, updateRoute})
     else setName('Jon')
   })
 
-  createHandler('useRouter', event => {
-    event.preventDefault()
-    updateRoute(event.currentTarget.href)
-  })
-
   runWithCleanup('keydown', () => {
     const sayHi = () => alert('hello dude')
     window.addEventListener('keydown', sayHi)
@@ -24,7 +19,7 @@ export default ({createHandler, runWithCleanup, useComponentState, updateRoute})
       <div>Hello ${name}</div>
       <button onclick="handleClick()">toggle name</button>
       <div>
-        <a href="/page" onclick="useRouter(event)">Demo Page Link</a>
+        <router-link href="/page">demo page link</router-link>
       </div>
       <footer slot="footer">my footer text</footer>
     </presentational-component>

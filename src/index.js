@@ -8,6 +8,7 @@ import {
 
 const defaultConfig = {
   Element: HTMLElement,
+  useSlots: true,
   useShadowDOM: true,
   shadowMode: 'open',
   passUtilities: true,
@@ -23,6 +24,7 @@ const defaultConfig = {
  * @param {object} defaultConfig - (implicit)
  * @param {object|function} _config - since custom configuration is optional, this parameter may also be used for the getHTML function
  * @param {function} _getHTML - this is the main component function, which should return an html string.
+ * 
  * @returns {class} - the extended class of HTMLElement (or whatever else was specified in the config)
  */
 export const createWebComponent = ((window, defaultConfig, _config, _getHTML) => {
@@ -33,7 +35,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
 
   // merge provided config with defaults
   const assignedConfig = Object.assign({}, defaultConfig, config)
-  const { Element, useShadowDOM, shadowMode, passUtilities } = assignedConfig
+  const { Element, useShadowDOM, shadowMode, passUtilities, useSlots } = assignedConfig
 
   // set up handlers object on the global scope
   window.handlers = window.handlers || {}
@@ -61,6 +63,14 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
         ? component.attachShadow({mode: shadowMode})
         : component
 
+      // the useSlots configuration option determines whether we should be
+      // able to use <slot> in the light DOM.  This option is ignored when
+      // useShadowDOM is set to true, because <slot> is natively available.
+      component.useSlots = !useShadowDOM && useSlots
+
+      // store the innerHTML before rendering the template
+      component.initialHTML = component.innerHTML
+
       // track all cleanup functions on the component, so we can run on disconnected
       component.cleanupMap = new Map()
 
@@ -74,6 +84,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
         useComponentState: useComponentState.bind(
           null, component, getHTML, renderComponent, new Map()),
         head: window.document.head,
+        component,
       }
     }
 
@@ -106,6 +117,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
  * @param {object} defaultConfig - (implicit)
  * @param {object|function} _config - since custom configuration is optional, this parameter may also be used for the getHTML function
  * @param {function} _getHTML - this is the main component function, which should return an html string.
+ * 
  * @returns {class} - the extended class of HTMLElement (or whatever else was specified in the config)
  */
 export const createPresentationalComponent = ((defaultConfig, _config, _getHTML) => {
@@ -135,9 +147,44 @@ export const createPresentationalComponent = ((defaultConfig, _config, _getHTML)
  * @param {object} defaultConfig - (implicit)
  * @param {object|function} _config - since custom configuration is optional, this parameter may also be used for the getHTML function
  * @param {function} _getHTML - this is the main component function, which should return an html string.
+ * 
  * @returns {class} - the extended class of HTMLElement (or whatever else was specified in the config)
  */
 export const createContainerComponent = ((defaultConfig, _config, _getHTML) => {
+
+  // make config argument optional
+  const config = typeof _config === 'object' ? _config : {}
+  const getHTML = typeof _config === 'function' ? _config : _getHTML
+
+  // merge provided config with defaults
+  // and prioritize container configurations.
+  const assignedConfig = Object.assign({}, defaultConfig, config, {
+    useSlots: false,
+    useShadowDOM: false,
+  })
+
+  return createWebComponent(assignedConfig, getHTML)
+}).bind(null, defaultConfig)
+
+/**
+ * This function takes inspiration from the container vs presentational pattern
+ * often seen in React projects.  This one is neither container nor presentational,
+ * and may best be compared to a "higher order" component.  The idea is that it
+ * only exists to run logic and pass values down to its children.  It has no
+ * presentational value, therefore it does not support CSS.  It may, however, serve
+ * some semantic purpose, given that event handlers are typically assigned to links,
+ * buttons, or other form controls that describe the content.  It differs from a
+ * container component in that it must allow slotted templating by nature.  Slots
+ * are non-native in the light DOM, so they are completely replaced on render,
+ * and the entire component will render with SSR.
+ * 
+ * @param {object} defaultConfig - (implicit)
+ * @param {object|function} _config - since custom configuration is optional, this parameter may also be used for the getHTML function
+ * @param {function} _getHTML - this is the main component function, which should return an html string.
+ * 
+ * @returns {class} - the extended class of HTMLElement (or whatever else was specified in the config)
+ */
+export const createWrapperComponent = ((defaultConfig, _config, _getHTML) => {
 
   // make config argument optional
   const config = typeof _config === 'object' ? _config : {}
@@ -161,9 +208,10 @@ export const createContainerComponent = ((defaultConfig, _config, _getHTML) => {
  * @param {object} config - the router configuration, using relative URLs as object keys
  * @param {string} config[route].title - the title of the page, corresponding with the document title
  * @param {string} config[route].component - the component tag to render when the page matches the given route
- * @returns {class} - the Router class which extends HTMLElement
+ * 
+ * @returns {class} - the RouterPage class which extends HTMLElement
  */
-export const createRouter = ((window, config) => {
+export const createRouterPage = ((window, config) => {
 
   return createContainerComponent(({useComponentState, runWithCleanup}) => {
 
@@ -196,3 +244,25 @@ export const createRouter = ((window, config) => {
   })
 
 }).bind(null, globalThis)
+
+/**
+ * This is a common type of component essential for any client-side rendered templating engines.
+ * This component simply renders a link that uses a built-in handler to prevent its default behavior
+ * in favor of using the router instead.  This is just a component class that the developer may
+ * import and use with customElements.define()
+ */
+export const RouterLink = createWrapperComponent(({updateRoute, createHandler, component}) => {
+
+  const href = component.getAttribute('href')
+
+  createHandler('useRouter', event => {
+    event.preventDefault()
+    updateRoute(href)
+  })
+
+  return /*html*/`
+    <a href="${href}" onclick="useRouter(event)">
+      <slot></slot>
+    </a>
+  `
+})

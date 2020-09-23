@@ -26,6 +26,20 @@ export const clearHTML = element => {
  * 
  * @param {string} componentKey - a unique alphanumeric key linked to a particular component
  * @param {string} htmlStr - a string containing only raw HTML
+ * 
+ * @returns {string} - the final parsed HTML (onclick="handleClick()" becomes onclick="handlers['xxxxxx'].handleClick()")
  */
 export const parseHandlers = (componentKey, htmlStr) =>
   htmlStr.replace(/ on(.+)\="(.+)"/g, ` on$1="handlers['${componentKey}'].$2"`)
+
+/**
+ * Since slots are not supported in the light DOM, we are parsing them out of an html string,
+ * and replacing them with the initial HTML provided between the component tags.
+ * 
+ * @param {*} htmlStr - the HTML string provided within the component as a template (<p><slot></slot></p>)
+ * @param {*} initialHTML - the HTML provided between the component tags (<my-component>this content</my-component>)
+ * 
+ * @returns {string} - the final parsed HTML (<p><slot></slot></p> becomes <p><my-component>this content</my-component></p>)
+ */
+export const parseSlots = (htmlStr, initialHTML) =>
+  htmlStr.replace(/\<slot(.+)\<\/slot\>/, initialHTML)

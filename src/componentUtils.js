@@ -1,4 +1,4 @@
-import { parseHandlers, clearHTML } from './htmlHelpers.js'
+import { parseHandlers, clearHTML, parseSlots } from './htmlHelpers.js'
 
 /**
  * This function creates a handler on the global scope, which corresponds to a
@@ -100,13 +100,14 @@ export const updateRoute = (window, path) => {
  * @param {object} component - the component instance which we want to render
  * @param {function} getHTML - the component function which should return some HTML to render
  */
-export const renderComponent = ((document, parseHandlers, clearHTML, component, getHTML) => {
-  const { root, utilities, key } = component
+export const renderComponent = ((document, parseHandlers, clearHTML, parseSlots, component, getHTML) => {
+  const { root, utilities, key, useSlots, initialHTML } = component
   const templateElement = document.createElement('template')
   const rawHtml = getHTML(utilities)
-  const html = parseHandlers(key, rawHtml)
+  const htmlWithHandlers = parseHandlers(key, rawHtml)
+  const html = useSlots ? parseSlots(htmlWithHandlers, initialHTML) : htmlWithHandlers
   templateElement.innerHTML = html
   const instance = templateElement.content.cloneNode(true)
   clearHTML(root)
   root.appendChild(instance)
-}).bind(null, globalThis.document, parseHandlers, clearHTML)
+}).bind(null, globalThis.document, parseHandlers, clearHTML, parseSlots)

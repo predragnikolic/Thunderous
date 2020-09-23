@@ -1,6 +1,6 @@
-import { createRouter } from '../../src/index.js'
+import { createRouterPage } from '../../src/index.js'
 
-export default createRouter({
+export default createRouterPage({
   '/': {
     title: 'My Site',
     component: 'page-home',
