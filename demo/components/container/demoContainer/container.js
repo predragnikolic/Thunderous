@@ -1,4 +1,4 @@
-export default ({createHandler, runWithCleanup, useComponentState, updateRoute}) => {
+export default ({createHandler, runWithCleanup, useComponentState}) => {
 
   const [name, setName] = useComponentState('name', 'World')
 
