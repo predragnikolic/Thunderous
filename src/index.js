@@ -61,12 +61,15 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
         ? component.attachShadow({mode: shadowMode})
         : component
 
+      // track all cleanup functions on the component, so we can run on disconnected
+      component.cleanupMap = new Map()
+
       // define the utilities on the instance, because we want these bindings to
       // happen only once, and it's easier to destructure later rather than
       // passing around an extra argument.
       if (passUtilities) component.utilities = {
         createHandler: createHandler.bind(null, window, component.key),
-        runWithCleanup: runWithCleanup.bind(null, new Map()),
+        runWithCleanup: runWithCleanup.bind(null, component.cleanupMap),
         updateRoute: updateRoute.bind(null, window),
         useComponentState: useComponentState.bind(
           null, component, getHTML, renderComponent, new Map()),
@@ -80,15 +83,25 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
       renderComponent(component, getHTML)
     }
 
+    // run all the cleanup functions on disconnect
+    disconnectedCallback() {
+      const component = this
+      for (const cleanup of component.cleanupMap.values()) {
+        cleanup()
+      }
+    }
+
   }
 }).bind(null, globalThis, defaultConfig)
 
 /**
  * This function takes inspiration from the container vs presentational pattern
- * often seen in react projects.  The idea is that presentational components
+ * often seen in React projects.  The idea is that presentational components
  * should be concerned with style alone, not data or meaningful semantics.
  * Therefore, this component does not provide utilities to the function, but
- * it does make use of the shadow DOM and will not concern itself with SSR.
+ * it does make use of the shadow DOM, which allows <slot> and <style>. Since
+ * presentation is not intended for SEO impact, this type of component will
+ * not concern itself with SSR.
  * 
  * @param {object} defaultConfig - (implicit)
  * @param {object|function} _config - since custom configuration is optional, this parameter may also be used for the getHTML function
@@ -97,7 +110,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
  */
 export const createPresentationalComponent = ((defaultConfig, _config, _getHTML) => {
 
-  // make first argument optional
+  // make config argument optional
   const config = typeof _config === 'object' ? _config : {}
   const getHTML = typeof _config === 'function' ? _config : _getHTML
 
@@ -113,7 +126,7 @@ export const createPresentationalComponent = ((defaultConfig, _config, _getHTML)
 
 /**
  * This function takes inspiration from the container vs presentational pattern
- * often seen in react projects.  The idea is that container components
+ * often seen in React projects.  The idea is that container components
  * should be concerned with data and meaningful semantics, not style.
  * Therefore, this component provides helpful utilities to the function, and
  * does not use the shadow DOM.  This means its markup will be rendered with SSR
@@ -126,7 +139,7 @@ export const createPresentationalComponent = ((defaultConfig, _config, _getHTML)
  */
 export const createContainerComponent = ((defaultConfig, _config, _getHTML) => {
 
-  // make first argument optional
+  // make config argument optional
   const config = typeof _config === 'object' ? _config : {}
   const getHTML = typeof _config === 'function' ? _config : _getHTML
 
