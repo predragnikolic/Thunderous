@@ -44,22 +44,47 @@ export const parseHandlers = (componentKey, htmlStr) =>
  * @returns {string} - the final parsed HTML (<p><slot></slot></p> becomes <p><my-component>this content</my-component></p>)
  */
 export const parseSlots = (htmlStr, initialHTML) => {
+  // NOTE: this function may not be the most efficient, with all
+  // the iteration going on.  But it works, and it's readable.
+  // Might want to revisit it for efficiency's sake, though.
+
+  // Regex is inherently non-human-readable, so let's at least
+  // hide them all in nice readable variables
   const namedSlotsRegex = /<slot .*name="[^"]+"[^>]*>.*<\/\s*slot>/g
   const namedSlottedRegex = /<(\S+) .*slot="[^"]*"[^>]*>(\s|.)*<\/\s*\1>/g
-  const anonymousContent = htmlStr.replace(namedSlottedRegex, '')
+  const nameAttrRegex = /.*name="([^"]+)".*/g
+  const slotAttrRegex = /.*slot="([^"]+)".*/g
+  const anonSlotRegex = /<slot.*\/\s*slot>/
+  const globalAnonSlotRegex = /<slot.*\/\s*slot>/g
+
+  // get all named slots, then map each one to an object which
+  // contains both the html string and the `name` attribute value.
   const allNamedSlots = initialHTML.match(namedSlotsRegex)
     .map(slotTagStr => ({
     	slotTagStr,
-      name: slotTagStr.replace(/.*name="([^"]+)".*/g, '$1')
+      name: slotTagStr.replace(nameAttrRegex, '$1')
     }))
+
+  // get all slotted elements, then map each one to an object which
+  // contains both the html string and the `slot` attribute value.
   const allNamedSlotted = htmlStr.match(namedSlottedRegex)
     .map(slottedTagStr => ({
       slottedTagStr,
-      slot: slottedTagStr.replace(/.*slot="([^"]+)".*/g, '$1')
+      slot: slottedTagStr.replace(slotAttrRegex, '$1')
     }))
+
+  // use a reducer to replace parts of the html one slot at a time
   const htmlOutput = allNamedSlotted.reduce((output, {slottedTagStr, slot}) => {
     const {slotTagStr} = allNamedSlots.find(s => s.name === slot)
     return output = output.replace(slotTagStr, slottedTagStr)
   }, initialHTML)
-  return htmlOutput.replace(/<slot.*\/\s*slot>/g, anonymousContent)
+
+  // finally, after all other slots are replaced, we can replace the
+  // anonymous slot with the unassigned content.  Then, Since only one
+  // anonymous slot is allowed, (even in the shadow DOM,) we just
+  // strip out all others.
+  const anonContent = htmlStr.replace(namedSlottedRegex, '')
+  return htmlOutput
+    .replace(anonSlotRegex, anonContent)
+    .replace(globalAnonSlotRegex, '')
 }
