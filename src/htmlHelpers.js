@@ -34,12 +34,32 @@ export const parseHandlers = (componentKey, htmlStr) =>
 
 /**
  * Since slots are not supported in the light DOM, we are parsing them out of an html string,
- * and replacing them with the initial HTML provided between the component tags.
+ * and replacing them with the initial HTML provided between the component tags.  Also, this
+ * logic includes named slots, all of which will be completely removed and replaced with their
+ * corresponding slotted elements.
  * 
  * @param {*} htmlStr - the HTML string provided within the component as a template (<p><slot></slot></p>)
  * @param {*} initialHTML - the HTML provided between the component tags (<my-component>this content</my-component>)
  * 
  * @returns {string} - the final parsed HTML (<p><slot></slot></p> becomes <p><my-component>this content</my-component></p>)
  */
-export const parseSlots = (htmlStr, initialHTML) =>
-  htmlStr.replace(/\<slot(.+)\<\/slot\>/, initialHTML)
+export const parseSlots = (htmlStr, initialHTML) => {
+  const namedSlotsRegex = /<slot .*name="[^"]+"[^>]*>.*<\/\s*slot>/g
+  const namedSlottedRegex = /<(\S+) .*slot="[^"]*"[^>]*>(\s|.)*<\/\s*\1>/g
+  const anonymousContent = htmlStr.replace(namedSlottedRegex, '')
+  const allNamedSlots = initialHTML.match(namedSlotsRegex)
+    .map(slotTagStr => ({
+    	slotTagStr,
+      name: slotTagStr.replace(/.*name="([^"]+)".*/g, '$1')
+    }))
+  const allNamedSlotted = htmlStr.match(namedSlottedRegex)
+    .map(slottedTagStr => ({
+      slottedTagStr,
+      slot: slottedTagStr.replace(/.*slot="([^"]+)".*/g, '$1')
+    }))
+  const htmlOutput = allNamedSlotted.reduce((output, {slottedTagStr, slot}) => {
+    const {slotTagStr} = allNamedSlots.find(s => s.name === slot)
+    return output = output.replace(slotTagStr, slottedTagStr)
+  }, initialHTML)
+  return htmlOutput.replace(/<slot.*\/\s*slot>/g, anonymousContent)
+}
