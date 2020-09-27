@@ -142,7 +142,9 @@ export const createPresentationalComponent = ((defaultConfig, _config, _getHTML)
  * should be concerned with data and meaningful semantics, not style.
  * Therefore, this component provides helpful utilities to the function, and
  * does not use the shadow DOM.  This means its markup will be rendered with SSR
- * and it does not support style or slots.
+ * and it does not support style.  The only non-native option available to this
+ * type of component is slotted templates for the light DOM, for the sake of
+ * template composition.
  * 
  * @param {object} defaultConfig - (implicit)
  * @param {object|function} _config - since custom configuration is optional, this parameter may also be used for the getHTML function
@@ -159,40 +161,7 @@ export const createContainerComponent = ((defaultConfig, _config, _getHTML) => {
   // merge provided config with defaults
   // and prioritize container configurations.
   const assignedConfig = Object.assign({}, defaultConfig, config, {
-    useSlots: false,
-    useShadowDOM: false,
-  })
-
-  return createWebComponent(assignedConfig, getHTML)
-}).bind(null, defaultConfig)
-
-/**
- * This function takes inspiration from the container vs presentational pattern
- * often seen in React projects.  This one is neither container nor presentational,
- * and may best be compared to a "higher order" component.  The idea is that it
- * only exists to run logic and pass values down to its children.  It has no
- * presentational value, therefore it does not support CSS.  It may, however, serve
- * some semantic purpose, given that event handlers are typically assigned to links,
- * buttons, or other form controls that describe the content.  It differs from a
- * container component in that it must allow slotted templating by nature.  Slots
- * are non-native in the light DOM, so they are completely replaced on render,
- * and the entire component will render with SSR.
- * 
- * @param {object} defaultConfig - (implicit)
- * @param {object|function} _config - since custom configuration is optional, this parameter may also be used for the getHTML function
- * @param {function} _getHTML - this is the main component function, which should return an html string.
- * 
- * @returns {class} - the extended class of HTMLElement (or whatever else was specified in the config)
- */
-export const createWrapperComponent = ((defaultConfig, _config, _getHTML) => {
-
-  // make config argument optional
-  const config = typeof _config === 'object' ? _config : {}
-  const getHTML = typeof _config === 'function' ? _config : _getHTML
-
-  // merge provided config with defaults
-  // and prioritize container configurations.
-  const assignedConfig = Object.assign({}, defaultConfig, config, {
+    useSlots: true,
     useShadowDOM: false,
   })
 
@@ -251,7 +220,7 @@ export const createRouterPage = ((window, config) => {
  * in favor of using the router instead.  This is just a component class that the developer may
  * import and use with customElements.define()
  */
-export const RouterLink = createWrapperComponent(({updateRoute, createHandler, component}) => {
+export const RouterLink = createContainerComponent(({updateRoute, createHandler, component}) => {
 
   const href = component.getAttribute('href')
 
