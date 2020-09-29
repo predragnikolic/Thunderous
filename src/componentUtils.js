@@ -1,4 +1,4 @@
-import { parseHandlers, clearHTML, parseSlots } from './htmlHelpers.js'
+import { parseHandlers, clearHTML, getFragment } from './htmlHelpers.js'
 
 /**
  * This function creates a handler on the global scope, which corresponds to a
@@ -88,26 +88,23 @@ export const updateRoute = (window, path) => {
 }
 
 /**
- * This is just a simple render function.  Using innerHTML, because appending a
- * document fragment doesn't work on an element that hasn't been added to the
- * DOM yet, (which is how I would handle it via parseHTML in htmlHelpers.js)
- * Also, if I recall correctly, what makes innerHTML so slow is the way it repaints,
- * which doesn't happen if it's not part of the DOM anyway.
+ * This is just a simple render function.
  * 
  * @param {object} document - (implicit)
  * @param {function} parseHandlers - (implicit)
  * @param {function} clearHTML - (implicit)
+ * @param {function} getFragment - (implicit)
  * @param {object} component - the component instance which we want to render
  * @param {function} getHTML - the component function which should return some HTML to render
  */
-export const renderComponent = ((document, parseHandlers, clearHTML, parseSlots, component, getHTML) => {
+export const renderComponent = ((document, parseHandlers, clearHTML, getFragment, component, getHTML) => {
   const { root, utilities, key, useSlots, initialHTML } = component
   const templateElement = document.createElement('template')
   const rawHtml = getHTML(utilities)
   const htmlWithHandlers = parseHandlers(key, rawHtml)
-  const html = useSlots ? parseSlots(htmlWithHandlers, initialHTML) : htmlWithHandlers
-  templateElement.innerHTML = html
+  const fragment = getFragment(useSlots, htmlWithHandlers, initialHTML)
+  templateElement.content.appendChild(fragment)
   const instance = templateElement.content.cloneNode(true)
   clearHTML(root)
   root.appendChild(instance)
-}).bind(null, globalThis.document, parseHandlers, clearHTML, parseSlots)
+}).bind(null, globalThis.document, parseHandlers, clearHTML, getFragment)

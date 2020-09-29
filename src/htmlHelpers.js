@@ -34,57 +34,61 @@ export const parseHandlers = (componentKey, htmlStr) =>
 
 /**
  * Since slots are not supported in the light DOM, we are parsing them out of an html string,
- * and replacing them with the initial HTML provided between the component tags.  Also, this
- * logic includes named slots, all of which will be completely removed and replaced with their
- * corresponding slotted elements.
+ * and replacing them with the initial HTML provided between the component tags.
  * 
- * @param {*} htmlStr - the HTML string provided within the component as a template (<p><slot></slot></p>)
- * @param {*} initialHTML - the HTML provided between the component tags (<my-component>this content</my-component>)
+ * @param {function} parseHTML - (implicit)
+ * @param {boolean} useSlots - if false, the given htmlStr will be converted to a fragment and instantly returned without further processing
+ * @param {string} htmlStr - the HTML string provided within the component as a template (<p><slot></slot></p>)
+ * @param {string} initialHTML - the HTML provided between the component tags (<my-component>this content</my-component>)
  * 
- * @returns {string} - the final parsed HTML (<p><slot></slot></p> becomes <p><my-component>this content</my-component></p>)
+ * @returns {DocumentFragment} - the final parsed HTML (<p><slot></slot></p> becomes <p><my-component>this content</my-component></p>)
  */
-export const parseSlots = (htmlStr, initialHTML) => {
-  // NOTE: this function may not be the most efficient, with all
-  // the iteration going on.  But it works, and it's readable.
-  // Might want to revisit it for efficiency's sake, though.
+export const getFragment = ((parseHTML, useSlots, htmlStr, initialHTML) => {
 
-  // Regex is inherently non-human-readable, so let's at least
-  // hide them all in nice readable variables
-  const namedSlotsRegex = /<slot .*name="[^"]+"[^>]*>.*<\/\s*slot>/g
-  const namedSlottedRegex = /<(\S+) .*slot="[^"]*"[^>]*>(\s|.)*<\/\s*\1>/g
-  const nameAttrRegex = /.*name="([^"]+)".*/g
-  const slotAttrRegex = /.*slot="([^"]+)".*/g
-  const anonSlotRegex = /<slot.*\/\s*slot>/
-  const globalAnonSlotRegex = /<slot.*\/\s*slot>/g
+  // the fragment created by the inner template
+  const htmlFragment = parseHTML(htmlStr)
 
-  // get all named slots, then map each one to an object which
-  // contains both the html string and the `name` attribute value.
-  const allNamedSlots = initialHTML.match(namedSlotsRegex)
-    .map(slotTagStr => ({
-    	slotTagStr,
-      name: slotTagStr.replace(nameAttrRegex, '$1')
-    }))
+  // If we're not using slots, we can just return the bare fragment immediately
+  if (!useSlots) return htmlFragment
+  
+  // if no slots were found then still no sense processing excessively
+  const slotEls = htmlFragment.querySelectorAll('slot')
+	if (!slotEls.length) return htmlFragment
+  
+  // if there are slots but no provided html, just remove them and return
+  if (!initialHTML || initialHTML.trim() === '') {
+  	for (const slotEl of slotEls) {
+    	slotEl.remove()
+    }
+    return htmlFragment
+  }
 
-  // get all slotted elements, then map each one to an object which
-  // contains both the html string and the `slot` attribute value.
-  const allNamedSlotted = htmlStr.match(namedSlottedRegex)
-    .map(slottedTagStr => ({
-      slottedTagStr,
-      slot: slottedTagStr.replace(slotAttrRegex, '$1')
-    }))
+  // if we've made it this far, then we need to start swapping slots for content.
+  // create a fragment to represent the html provided between the component tags.
+  const initialHtmlFragment = parseHTML(initialHTML)
+  const namedSlottedEls = initialHtmlFragment.querySelectorAll('[slot]')
 
-  // use a reducer to replace parts of the html one slot at a time
-  const htmlOutput = allNamedSlotted.reduce((output, {slottedTagStr, slot}) => {
-    const {slotTagStr} = allNamedSlots.find(s => s.name === slot)
-    return output = output.replace(slotTagStr, slottedTagStr)
-  }, initialHTML)
+	// insert every slotted element in the template before its corresponding slot
+	for (const namedSlottedEl of namedSlottedEls) {
+  	namedSlottedEl.remove() // strip all named slots from initial html fragment
+  	const correspondingSlotEl = Array.from(slotEls).find(
+    	slotEl => slotEl.getAttribute('name') === namedSlottedEl.getAttribute('slot'))
+    if (correspondingSlotEl) {
+      correspondingSlotEl.parentNode.insertBefore(namedSlottedEl, correspondingSlotEl)
+      correspondingSlotEl.remove()
+    }
+  }
+  
+  // whatever content is left over gets appended to the generic slot
+  const genericSlot = htmlFragment.querySelector('slot:not([name])')
+  if (genericSlot)
+  	genericSlot.parentNode.insertBefore(initialHtmlFragment, genericSlot)
+  
+  // remove all slots after we're finished with them
+  for (const slotEl of slotEls) {
+  	slotEl.remove()
+  }
 
-  // finally, after all other slots are replaced, we can replace the
-  // anonymous slot with the unassigned content.  Then, Since only one
-  // anonymous slot is allowed, (even in the shadow DOM,) we just
-  // strip out all others.
-  const anonContent = htmlStr.replace(namedSlottedRegex, '')
-  return htmlOutput
-    .replace(anonSlotRegex, anonContent)
-    .replace(globalAnonSlotRegex, '')
-}
+  // return the parsed fragment after all replacements have been made
+  return htmlFragment
+}).bind(null, parseHTML)
