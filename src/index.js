@@ -100,6 +100,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
       for (const cleanup of component.cleanupMap.values()) {
         cleanup()
       }
+      delete window.handlers[component.key]
     }
 
   }

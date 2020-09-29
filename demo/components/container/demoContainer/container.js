@@ -1,11 +1,4 @@
-export default ({createHandler, runWithCleanup, useComponentState}) => {
-
-  const [name, setName] = useComponentState('name', 'World')
-
-  createHandler('handleClick', () => {
-    if (name === 'Jon') setName('World')
-    else setName('Jon')
-  })
+export default ({runWithCleanup}) => {
 
   runWithCleanup('keydown', () => {
     const sayHi = () => alert('hello dude')
@@ -16,11 +9,7 @@ export default ({createHandler, runWithCleanup, useComponentState}) => {
   return /*html*/`
     <presentational-component>
       <header slot="header">my header text</header>
-      <div>Hello ${name}</div>
-      <button onclick="handleClick()">toggle name</button>
-      <div>
-        <router-link href="/page">demo page link</router-link>
-      </div>
+      <slot></slot>
       <footer slot="footer">my footer text</footer>
     </presentational-component>
   `
