@@ -52,12 +52,9 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
       const generateUniqueKey = () => {
         const uniqueKey = Math.random().toString(36).slice(2)
         if (window.components[uniqueKey]) return generateUniqueKey()
-        window.components[uniqueKey] = {
-          handlers: {},
-          state: new Map(),
-        }
         return uniqueKey
       }
+      console.log(component.dataset.key)
       component.key = component.dataset.key = component.dataset.key || generateUniqueKey()
 
       // the "root" of the component can either be the shadowRoot or
@@ -77,10 +74,6 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
       // track all cleanup functions on the component, so we can run on disconnected
       component.cleanupMap = new Map()
 
-      // track the component state on the global scope along with its handlers,
-      // to persist the state through rerender cycles.
-      component.state = window.components[component.key].state
-
       // define the utilities on the instance, because we want these bindings to
       // happen only once, and it's easier to destructure later rather than
       // passing around an extra argument.
@@ -89,7 +82,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
         runWithCleanup: runWithCleanup.bind(null, component.cleanupMap),
         updateRoute: updateRoute.bind(null, window),
         useComponentState: useComponentState.bind(
-          null, component, getHTML, renderComponent, component.state),
+          null, component, getHTML, renderComponent),
         head: window.document.head,
         component,
       }
@@ -99,6 +92,11 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
     connectedCallback() {
       const component = this
       component.parent = component.parentElement
+      window.components[component.key] = window.components[component.key] || {
+        handlers: {},
+        state: new Map(),
+      }
+      component.state = window.components[component.key].state
       renderComponent(component, getHTML)
     }
 
@@ -113,7 +111,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
       // event loop, then do not delete its data.
       setTimeout(() => {
         const {parent} = component
-        const componentSelector = `[data-key=${component.key}]`
+        const componentSelector = `[data-key="${component.key}"]`
         const instanceStillExists = parent.querySelectorAll(componentSelector)
         if (instanceStillExists) return
         delete window.components[component.key]

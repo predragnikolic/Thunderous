@@ -41,7 +41,8 @@ export const createHandler = (global, componentKey, handlerKey, handler) => {
  * 
  * @returns {ComponentState}
  */
-export const useComponentState = (component, getHTML, renderComponent, state, key, value) => {
+export const useComponentState = (component, getHTML, renderComponent, key, value) => {
+  const {state} = component
   const updateValue = value => {
     state.set(key, value)
     renderComponent(component, getHTML)
