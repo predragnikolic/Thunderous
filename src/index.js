@@ -94,6 +94,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
     // we just want to render when it loads, nothing fancy.
     connectedCallback() {
       const component = this
+      component.parent = component.parentElement
       renderComponent(component, getHTML)
     }
 
@@ -103,7 +104,16 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
       for (const cleanup of component.cleanupMap.values()) {
         cleanup()
       }
-      // delete window.components[component.key]
+
+      // If this element can be queried after all the scripts in the current
+      // event loop, then do not delete its data.
+      setTimeout(() => {
+        const {parent} = component
+        const componentSelector = `[data-key=${component.key}]`
+        const instanceStillExists = parent.querySelectorAll(componentSelector)
+        if (instanceStillExists) return
+        delete window.components[component.key]
+      }, 0)
     }
 
   }
