@@ -87,10 +87,6 @@ export const updateRoute = (window, path) => {
   dispatchEvent(pushStateEvent)
 }
 
-const rememberChildComponentKeys = parent => {
-  const childComponents = parent.querySelectorAll('[data-key]')
-}
-
 /**
  * This is just a simple render function.
  * 
