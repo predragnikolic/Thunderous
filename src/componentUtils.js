@@ -130,3 +130,13 @@ export const renderComponent = ((document, parseHandlers, clearHTML, getFragment
   root.appendChild(instance)
 
 }).bind(null, globalThis.document, parseHandlers, clearHTML, getFragment)
+
+/**
+ * This is a quick utility to use for loops within templates.
+ * 
+ * @param {Array} arr - the array to iterate over
+ * @param {function} callback - the callback to run on each item - should return an HTML string
+ * 
+ * @returns {string} - the full combined HTML string from each of the iterations
+ */
+export const repeat = (arr, callback) => arr.map(callback).join('')

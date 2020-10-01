@@ -4,6 +4,7 @@ import {
   useComponentState,
   updateRoute,
   renderComponent,
+  repeat,
 } from './componentUtils.js'
 
 const defaultConfig = {
@@ -83,6 +84,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
         useComponentState: useComponentState.bind(
           null, component, getHTML, renderComponent),
         head: window.document.head,
+        repeat,
         component,
       }
     }
