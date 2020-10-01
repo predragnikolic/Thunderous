@@ -77,6 +77,10 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
       // track all cleanup functions on the component, so we can run on disconnected
       component.cleanupMap = new Map()
 
+      // track the component state on the global scope along with its handlers,
+      // to persist the state through rerender cycles.
+      component.state = window.components[component.key].state
+
       // define the utilities on the instance, because we want these bindings to
       // happen only once, and it's easier to destructure later rather than
       // passing around an extra argument.
@@ -85,7 +89,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
         runWithCleanup: runWithCleanup.bind(null, component.cleanupMap),
         updateRoute: updateRoute.bind(null, window),
         useComponentState: useComponentState.bind(
-          null, component, getHTML, renderComponent, new Map()),
+          null, component, getHTML, renderComponent, component.state),
         head: window.document.head,
         component,
       }
