@@ -54,7 +54,6 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
         if (window.components[uniqueKey]) return generateUniqueKey()
         return uniqueKey
       }
-      console.log(component.dataset.key)
       component.key = component.dataset.key = component.dataset.key || generateUniqueKey()
 
       // the "root" of the component can either be the shadowRoot or
