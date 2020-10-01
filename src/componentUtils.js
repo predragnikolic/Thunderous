@@ -17,7 +17,7 @@ import { parseHandlers, clearHTML, getFragment } from './htmlHelpers.js'
  * @param {function} handler - the function definition of the event handler
  */
 export const createHandler = (global, componentKey, handlerKey, handler) => {
-  global.handlers[componentKey][handlerKey] = handler
+  global.components[componentKey].handlers[handlerKey] = handler
 }
 
 /**
@@ -87,6 +87,10 @@ export const updateRoute = (window, path) => {
   dispatchEvent(pushStateEvent)
 }
 
+const rememberChildComponentKeys = parent => {
+  const childComponents = parent.querySelectorAll('[data-key]')
+}
+
 /**
  * This is just a simple render function.
  * 
@@ -99,12 +103,33 @@ export const updateRoute = (window, path) => {
  */
 export const renderComponent = ((document, parseHandlers, clearHTML, getFragment, component, getHTML) => {
   const { root, utilities, key, useSlots, initialHTML } = component
-  const templateElement = document.createElement('template')
+
+  // process HTML with functions passed in
   const rawHtml = getHTML(utilities)
   const htmlWithHandlers = parseHandlers(key, rawHtml)
   const fragment = getFragment(useSlots, htmlWithHandlers, initialHTML)
+
+  // clone a template element for use of slot elements
+  const templateElement = document.createElement('template')
   templateElement.content.appendChild(fragment)
   const instance = templateElement.content.cloneNode(true)
+
+  // remember component keys from previous render, and carry over to next render.
+  const previousChildComponents = [...component.querySelectorAll('[data-key]')]
+  const newChildComponents = [...instance.querySelectorAll('[data-key]')]
+  previousChildComponents.forEach((child, idx) => {
+    const hasId = child.id && child.id.trim() !== ''
+    const corresponding = hasId
+      ? newChildComponents.find(c => c.id === child.id)
+      : newChildComponents[idx]
+    if (!corresponding) return
+    corresponding.dataset.key = child.dataset.key
+  })
+
+  // clear the previously rendered HTML
   clearHTML(root)
+
+  // replace it with newly rendered HTML
   root.appendChild(instance)
+
 }).bind(null, globalThis.document, parseHandlers, clearHTML, getFragment)

@@ -37,8 +37,8 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
   const assignedConfig = Object.assign({}, defaultConfig, config)
   const { Element, useShadowDOM, shadowMode, passUtilities, useSlots } = assignedConfig
 
-  // set up handlers object on the global scope
-  window.handlers = window.handlers || {}
+  // set up components object on the global scope
+  if (typeof window.components !== 'object') window.components = {}
 
   // return the component class for the developer to define it with customElements.define()
   return class Component extends Element {
@@ -51,11 +51,14 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
       // This is mainly done to address the issue of context on event handlers.
       const generateUniqueKey = () => {
         const uniqueKey = Math.random().toString(36).slice(2)
-        if (window.handlers[uniqueKey]) return generateUniqueKey()
-        window.handlers[uniqueKey] = {}
+        if (window.components[uniqueKey]) return generateUniqueKey()
+        window.components[uniqueKey] = {
+          handlers: {},
+          state: new Map(),
+        }
         return uniqueKey
       }
-      component.key = generateUniqueKey()
+      component.key = component.dataset.key = component.dataset.key || generateUniqueKey()
 
       // the "root" of the component can either be the shadowRoot or
       // the so-called lightRoot, depending on the config options.
@@ -100,7 +103,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
       for (const cleanup of component.cleanupMap.values()) {
         cleanup()
       }
-      delete window.handlers[component.key]
+      // delete window.components[component.key]
     }
 
   }
