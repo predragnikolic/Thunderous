@@ -133,6 +133,13 @@ export const renderComponent = ((document, parseHandlers, clearHTML, getFragment
   // replace it with newly rendered HTML
   root.appendChild(instance)
 
+  // refresh the element references
+  const refNodes = [...component.querySelectorAll('[data-ref]')]
+  component.refs = refNodes.reduce((acc, cur) => {
+    acc[cur.dataset.ref] = cur
+    return acc
+  }, {})
+
 }).bind(null, globalThis.document, parseHandlers, clearHTML, getFragment)
 
 /**

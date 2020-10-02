@@ -103,11 +103,6 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
       }
       component.state = window.components[id].state
       renderComponent(component, getHTML)
-      const refNodes = [...component.querySelectorAll('[data-ref]')]
-      component.refs = refNodes.reduce((acc, cur) => {
-        acc[cur.dataset.ref] = cur
-        return acc
-      }, {})
     }
 
     // run all the cleanup functions on disconnect
