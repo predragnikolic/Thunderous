@@ -1,18 +1,17 @@
-export default ({createHandler, useComponentState, repeat, component}) => {
+export default ({createHandler, useComponentState, repeat}) => {
 
-  const [list, setList] = useComponentState('test', [])
+  const [toDoList, setToDoList] = useComponentState('test', [])
 
-  createHandler('removeLink', (event, idx) => {
-    event.preventDefault()
-    list.splice(idx, 1)
-    setList(list)
+  createHandler('removeLink', idx => {
+    toDoList.splice(idx, 1)
+    setToDoList(toDoList)
   })
 
-  createHandler('addToDo', (event) => {
+  createHandler('addToDo', event => {
     event.preventDefault()
     const { value } = event.target.querySelector('#ToDoInput')
-    list.push(value)
-    setList(list)
+    toDoList.push(value)
+    setToDoList(toDoList)
   })
 
   return /*html*/`
@@ -23,10 +22,10 @@ export default ({createHandler, useComponentState, repeat, component}) => {
       <form onsubmit="addToDo(event)">
         <input id="ToDoInput"/> <button>Add item</button>
       </form>
-      ${repeat(list, (toDoItem, idx) => /*html*/`
+      ${repeat(toDoList, (toDoItem, idx) => /*html*/`
         <div>
           <span>${toDoItem}</span>
-          <button onclick="removeLink(event, ${idx})">&times;</button>
+          <button onclick="removeLink(${idx})">&times;</button>
         </div>
       `)}
       <footer slot="footer">my footer text</footer>
