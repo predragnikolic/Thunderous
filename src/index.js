@@ -50,12 +50,12 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
 
       // assign a unique key to this component so it can be tracked in a parallel scope.
       // This is mainly done to address the issue of context on event handlers.
-      const generateUniqueKey = () => {
-        const uniqueKey = Math.random().toString(36).slice(2)
-        if (window.components[uniqueKey]) return generateUniqueKey()
-        return uniqueKey
+      const generateUniqueId = () => {
+        const uniqueId = Math.random().toString(36).slice(2)
+        if (window.components[uniqueId]) return generateUniqueId()
+        return uniqueId
       }
-      component.key = component.dataset.key = component.dataset.key || generateUniqueKey()
+      component.dataset.id = component.dataset.id || generateUniqueId()
 
       // the "root" of the component can either be the shadowRoot or
       // the so-called lightRoot, depending on the config options.
@@ -78,7 +78,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
       // happen only once, and it's easier to destructure later rather than
       // passing around an extra argument.
       if (passUtilities) component.utilities = {
-        createHandler: createHandler.bind(null, window, component.key),
+        createHandler: createHandler.bind(null, window, component.dataset.id),
         runWithCleanup: runWithCleanup.bind(null, component.cleanupMap),
         updateRoute: updateRoute.bind(null, window),
         useComponentState: useComponentState.bind(
@@ -92,12 +92,13 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
     // we just want to render when it loads, nothing fancy.
     connectedCallback() {
       const component = this
+      const { id } = component.dataset
       component.parent = component.parentElement
-      window.components[component.key] = window.components[component.key] || {
+      window.components[id] = window.components[id] || {
         handlers: {},
         state: new Map(),
       }
-      component.state = window.components[component.key].state
+      component.state = window.components[id].state
       renderComponent(component, getHTML)
     }
 

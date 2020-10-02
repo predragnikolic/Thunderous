@@ -99,11 +99,12 @@ export const updateRoute = (window, path) => {
  * @param {function} getHTML - the component function which should return some HTML to render
  */
 export const renderComponent = ((document, parseHandlers, clearHTML, getFragment, component, getHTML) => {
-  const { root, utilities, key, useSlots, initialHTML } = component
+  const { root, utilities, useSlots, initialHTML } = component
+  const { id } = component.dataset
 
   // process HTML with functions passed in
   const rawHtml = getHTML(utilities)
-  const htmlWithHandlers = parseHandlers(key, rawHtml)
+  const htmlWithHandlers = parseHandlers(id, rawHtml)
   const fragment = getFragment(useSlots, htmlWithHandlers, initialHTML)
 
   // clone a template element for use of slot elements
@@ -111,17 +112,19 @@ export const renderComponent = ((document, parseHandlers, clearHTML, getFragment
   templateElement.content.appendChild(fragment)
   const instance = templateElement.content.cloneNode(true)
 
-  // remember component keys from previous render, and carry over to next render.
-  const previousChildComponents = [...component.querySelectorAll('[data-key]')]
-  const newChildComponents = [...instance.querySelectorAll('[data-key]')]
-  previousChildComponents.forEach((child, idx) => {
-    const hasId = child.id && child.id.trim() !== ''
-    const corresponding = hasId
-      ? newChildComponents.find(c => c.id === child.id)
-      : newChildComponents[idx]
-    if (!corresponding) return
-    corresponding.dataset.key = child.dataset.key
-  })
+  // remember component IDs from previous render, and carry over to next render.
+  const previousChildComponentNodes = [...component.querySelectorAll('[data-id]')]
+  const previousChildComponentTags = previousChildComponentNodes.reduce((acc, cur) => {
+    if (!acc[cur.tagName]) acc[cur.tagName] = []
+    acc[cur.tagName].push(cur)
+    return acc
+  }, {})
+
+  for (const tag in previousChildComponentTags) {
+    const correspondingNodes = [...instance.querySelectorAll(tag)]
+    correspondingNodes.forEach((node, idx) =>
+      node.dataset.id = previousChildComponentTags[tag][idx].dataset.id)
+  }
 
   // clear the previously rendered HTML
   clearHTML(root)
