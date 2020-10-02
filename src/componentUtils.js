@@ -112,7 +112,7 @@ export const renderComponent = ((document, parseHandlers, clearHTML, getFragment
   templateElement.content.appendChild(fragment)
   const instance = templateElement.content.cloneNode(true)
 
-  // remember component IDs from previous render, and carry over to next render.
+  // remember component IDs from previous render...
   const previousChildComponentNodes = [...component.querySelectorAll('[data-id]')]
   const previousChildComponentTags = previousChildComponentNodes.reduce((acc, cur) => {
     if (!acc[cur.tagName]) acc[cur.tagName] = []
@@ -120,6 +120,7 @@ export const renderComponent = ((document, parseHandlers, clearHTML, getFragment
     return acc
   }, {})
 
+  // ...and carry over to next render.
   for (const tag in previousChildComponentTags) {
     const correspondingNodes = [...instance.querySelectorAll(tag)]
     correspondingNodes.forEach((node, idx) =>
