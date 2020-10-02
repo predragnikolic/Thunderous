@@ -1,4 +1,4 @@
-export default ({createHandler, useComponentState, repeat}) => {
+export default ({createHandler, useComponentState, repeat, component}) => {
 
   const [toDoList, setToDoList] = useComponentState('test', [])
 
@@ -9,7 +9,7 @@ export default ({createHandler, useComponentState, repeat}) => {
 
   createHandler('addToDo', event => {
     event.preventDefault()
-    const { value } = event.target.querySelector('#ToDoInput')
+    const { value } = component.refs.toDoInput
     toDoList.push(value)
     setToDoList(toDoList)
   })
@@ -20,7 +20,7 @@ export default ({createHandler, useComponentState, repeat}) => {
       <slot></slot>
       <h2>To-Dos:</h2>
       <form onsubmit="addToDo(event)">
-        <input id="ToDoInput"/> <button>Add item</button>
+        <input data-ref="toDoInput"/> <button>Add item</button>
       </form>
       ${repeat(toDoList, (toDoItem, idx) => /*html*/`
         <div>
