@@ -4,8 +4,8 @@ export default createContainerComponent(() => {
 
   return /*html*/`
     <container-component>
-      <h1>demo page</h1>
       <router-link href="/">Go Back</router-link>
+      <h1>demo page</h1>
     </container-component>
   `
 })

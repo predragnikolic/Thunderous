@@ -2,21 +2,33 @@ export default /*css*/`
 
 :host {
   background-color: #000;
+  box-sizing: border-box;
   color: #fff;
-  display: block;
-  padding: 20px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  font-family: sans-serif;
   font-size: 20px;
+  height: 100%;
 }
 
 .header,
 .footer {
+  background-color: #222;
   display: inline-block;
-  font-size: 15px;
-  padding: 10px 10px 10px 0;
 }
 
+.header {
+  font-size: 30px;
+}
+
+.footer {
+  font-size: 15px;
+}
+
+.header,
+.footer,
 .content {
-  padding: 10px;
+  padding: 30px;
 }
 
 `
