@@ -1,4 +1,4 @@
-export default ({runWithCleanup, createHandler, useComponentState, repeat}) => {
+export default ({createHandler, useComponentState, repeat, component}) => {
 
   const [list, setList] = useComponentState('test', [])
 
@@ -8,23 +8,27 @@ export default ({runWithCleanup, createHandler, useComponentState, repeat}) => {
     setList(list)
   })
 
-  runWithCleanup('keydown', () => {
-    const sayHi = () => {
-      list.push('remove')
-      setList(list)
-    }
-    window.addEventListener('keydown', sayHi)
-    return () => window.removeEventListener('keydown', sayHi)
+  createHandler('addToDo', (event) => {
+    event.preventDefault()
+    const { value } = event.target.querySelector('#ToDoInput')
+    list.push(value)
+    setList(list)
   })
 
   return /*html*/`
     <presentational-component>
-      <header slot="header">
-        ${repeat(list, (link, idx) => /*html*/`
-          <a href="#" onclick="removeLink(event, ${idx})">${link} ${idx}</a>
-        `)}
-      </header>
+      <header slot="header">my header text</header>
       <slot></slot>
+      <h2>To-Dos:</h2>
+      <form onsubmit="addToDo(event)">
+        <input id="ToDoInput"/> <button>Add item</button>
+      </form>
+      ${repeat(list, (toDoItem, idx) => /*html*/`
+        <div>
+          <span>${toDoItem}</span>
+          <button onclick="removeLink(event, ${idx})">&times;</button>
+        </div>
+      `)}
       <footer slot="footer">my footer text</footer>
     </presentational-component>
   `
