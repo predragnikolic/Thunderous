@@ -1,4 +1,4 @@
-import style from './presentational.style.js'
+import style from './page.style.js'
 
 export default () => /*html*/`
   <style>${style}</style>

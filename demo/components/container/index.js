@@ -1,4 +1,6 @@
 import { createContainerComponent } from '../../../src/index.js'
-import containerCallback from './demoContainer/container.js'
+import pageContainer from './page/page.js'
+import toDos from './toDos/toDos.js'
 
-export const Container = createContainerComponent(containerCallback)
+export const PageContainer = createContainerComponent(pageContainer)
+export const ToDos = createContainerComponent(toDos)

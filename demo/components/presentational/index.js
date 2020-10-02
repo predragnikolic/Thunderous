@@ -1,4 +1,6 @@
 import { createPresentationalComponent } from '../../../src/index.js'
-import presentationalCallback from './demoPresentational/presentational.js'
+import presentationalPage from './page/page.js'
+import presentationalLink from './link/link.js'
 
-export const Presentational = createPresentationalComponent(presentationalCallback)
+export const PresentationalPage = createPresentationalComponent(presentationalPage)
+export const PresentationalLink = createPresentationalComponent(presentationalLink)

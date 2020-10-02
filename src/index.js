@@ -88,15 +88,18 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
           null, component, getHTML, renderComponent),
         head: window.document.head,
         repeat,
-        component,
       }
+
+      // always pass the component itself
+      if (!component.utilities) component.utilities = {}
+      component.utilities.component = component
     }
 
     // we just want to render when it loads, nothing fancy.
     connectedCallback() {
       const component = this
       const { id } = component.dataset
-      component.parent = component.parentElement
+      component.parent = component.root
       window.components[id] = window.components[id] || {
         handlers: {},
         state: new Map(),
@@ -116,8 +119,8 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
       // event loop, then do not delete its data.
       setTimeout(() => {
         const {parent} = component
-        const componentSelector = `[data-key="${component.key}"]`
-        const instanceStillExists = parent.querySelectorAll(componentSelector)
+        const componentSelector = `[data-key="${component.dataset.id}"]`
+        const instanceStillExists = !!parent && parent.querySelectorAll(componentSelector)
         if (instanceStillExists) return
         delete window.components[component.key]
       }, 0)
