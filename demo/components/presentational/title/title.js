@@ -1,4 +1,4 @@
-import style from './link.style.js' 
+import style from './title.style.js'
 
 export default () => /*html*/`
   <style>${style}</style>

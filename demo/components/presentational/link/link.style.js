@@ -1,14 +1,14 @@
 export default /*css*/`
 
-a,
-a:visited {
+::slotted(*),
+::slotted(*:visited) {
   color: #aaf;
   text-decoration: none;
   transition: color .5s;
 }
 
-a:hover,
-a:active {
+::slotted(*:hover),
+::slotted(*:active) {
   color: #faa;
   text-decoration: underline;
 }

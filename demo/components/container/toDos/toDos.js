@@ -17,7 +17,9 @@ export default ({createHandler, useComponentState, repeat, component}) => {
   return /*html*/`
     <h2>To-Dos:</h2>
     <form onsubmit="addToDo(event)">
-      <input data-ref="toDoInput"/> <button>Add item</button>
+      <to-do-form>
+        <input data-ref="toDoInput"/> <button>Add item</button>
+      </to-do-form>
     </form>
     ${repeat(toDoList, (toDoItem, idx) => /*html*/`
       <div>
