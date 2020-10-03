@@ -130,11 +130,20 @@ export const renderComponent = ((document, parseHandlers, clearHTML, getFragment
     })
   }
 
-  // clear the previously rendered HTML
-  clearHTML(root)
+  // keep track of the active element
+  const { activeElement } = document
+  const activeElementId = activeElement && activeElement.id
+  const wasFocused = activeElement && component.contains(activeElement) && activeElement.matches(':focus')
+  if (wasFocused && !activeElementId)
+    console.warn('It is recommended that you assign focusable elements a unique ID so that they can remain focused through rerenders.')
+  const newActiveElement = instance.getElementById(activeElementId)
 
-  // replace it with newly rendered HTML
+  // clear the previously rendered HTML and replace it with newly rendered HTML
+  clearHTML(root)
   root.appendChild(instance)
+
+  // refocus the active element
+  if (newActiveElement) newActiveElement.focus()
 
   // refresh the element references
   const refNodes = [...component.querySelectorAll('[data-ref]')]
