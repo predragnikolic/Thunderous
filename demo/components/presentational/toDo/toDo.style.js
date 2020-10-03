@@ -1,5 +1,10 @@
 export default /*css*/`
 
+:host {
+  display: block;
+  padding-bottom: 10px;
+}
+
 ::slotted(button) {
   --size: 20px;
   background-color: #66c;

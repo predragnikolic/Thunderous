@@ -123,8 +123,11 @@ export const renderComponent = ((document, parseHandlers, clearHTML, getFragment
   // ...and carry over to next render.
   for (const tag in previousChildComponentTags) {
     const correspondingNodes = [...instance.querySelectorAll(tag)]
-    correspondingNodes.forEach((node, idx) =>
-      node.dataset.id = previousChildComponentTags[tag][idx].dataset.id)
+    correspondingNodes.forEach((node, idx) => {
+      const previousNode = previousChildComponentTags[tag][idx]
+      if (!previousNode) return
+      node.dataset.id = previousNode.dataset.id
+    })
   }
 
   // clear the previously rendered HTML
