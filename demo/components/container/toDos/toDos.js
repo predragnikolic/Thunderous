@@ -22,10 +22,10 @@ export default ({createHandler, useComponentState, repeat, component}) => {
       </to-do-form>
     </form>
     ${repeat(toDoList, (toDoItem, idx) => /*html*/`
-      <div>
-        <span>${toDoItem}</span>
+      <to-do>
         <button onclick="removeLink(${idx})">&times;</button>
-      </div>
+        ${toDoItem}
+      </to-do>
     `)}
   `
 }
