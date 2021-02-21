@@ -85,9 +85,7 @@ export const getFragment = ((parseHTML, useSlots, htmlStr, initialHTML) => {
     genericSlot.parentNode.insertBefore(initialHtmlFragment, genericSlot)
 
   // remove all slots after we're finished with them
-  for (const slotEl of slotEls) {
-    slotEl.remove()
-  }
+  for (const slotEl of slotEls) slotEl.remove()
 
   // return the parsed fragment after all replacements have been made
   return htmlFragment
