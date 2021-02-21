@@ -27,5 +27,11 @@ export default /*css*/`
   background-color: #c66;
 }
 
+::slotted(button[disabled]) {
+  background-color: #ccc;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
 `
 

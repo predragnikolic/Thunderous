@@ -1,5 +1,5 @@
 export default /*css*/`
-::slotted(h1) {
+::slotted(*) {
   font-size: inherit;
   margin: 0;
 }

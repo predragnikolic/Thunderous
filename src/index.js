@@ -135,7 +135,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
  * should be concerned with style alone, not data or meaningful semantics.
  * Therefore, this component does not provide utilities to the function, but
  * it does make use of the shadow DOM, which allows <slot> and <style>. Since
- * presentation is not intended for SEO impact, this type of component will
+ * presentation is not intended for SEO impact, this type of component should
  * not concern itself with SSR.
  * 
  * @param {object} defaultConfig - (implicit)
@@ -165,7 +165,7 @@ export const createPresentationalComponent = ((defaultConfig, _config, _getHTML)
  * often seen in React projects.  The idea is that container components
  * should be concerned with data and meaningful semantics, not style.
  * Therefore, this component provides helpful utilities to the function, and
- * does not use the shadow DOM.  This means its markup will be rendered with SSR
+ * does not use the shadow DOM.  This means its markup may be rendered with SSR
  * and it does not support style.  The only non-native option available to this
  * type of component is slotted templates for the light DOM, for the sake of
  * template composition.

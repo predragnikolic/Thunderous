@@ -143,7 +143,19 @@ export const renderComponent = ((document, parseHandlers, clearHTML, getFragment
   root.appendChild(instance)
 
   // refocus the active element
-  if (newActiveElement) newActiveElement.focus()
+  if (newActiveElement) {
+    newActiveElement.focus()
+
+    // set cursor where it left off
+    const { tagName, type } = activeElement
+    const isTextOrNumber = type === 'text' || type === 'number'
+    const isInput = tagName === 'INPUT' && isTextOrNumber || tagName === 'TEXTAREA'
+    if (isInput) {
+      const offset = newActiveElement.value.length - activeElement.value.length
+      const iCaretPos = activeElement.selectionStart + offset
+      newActiveElement.selectionStart = newActiveElement.selectionEnd = iCaretPos
+    }
+  }
 
   // refresh the element references
   const refNodes = [...component.querySelectorAll('[data-ref]')]

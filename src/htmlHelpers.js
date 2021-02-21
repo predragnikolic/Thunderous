@@ -30,7 +30,7 @@ export const clearHTML = element => {
  * @returns {string} - the final parsed HTML (onclick="handleClick()" becomes onclick="handlers['xxxxxx'].handleClick()")
  */
 export const parseHandlers = (componentKey, htmlStr) =>
-  htmlStr.replace(/ on(.+)\="(.+)"/g, ` on$1="components['${componentKey}'].handlers.$2"`)
+  htmlStr.replace(/ on([^\=]+)\="([^"]+)"/g, ` on$1="components['${componentKey}'].handlers.$2"`)
 
 /**
  * Since slots are not supported in the light DOM, we are parsing them out of an html string,
