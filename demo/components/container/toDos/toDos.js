@@ -1,6 +1,6 @@
 export default ({createHandler, useComponentState, repeat, component}) => {
 
-  const [toDoList, setToDoList] = useComponentState('test', [])
+  const [toDoList, setToDoList] = useComponentState('toDoList', [])
   const [toDoInput, setToDoInput] = useComponentState('toDoInput', '')
   const [disabled, setDisabled] = useComponentState('disabled', true)
 
