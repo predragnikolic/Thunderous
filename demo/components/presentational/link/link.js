@@ -1,6 +1,6 @@
-import style from './link.style.js' 
+import style from './link.style.js'
 
-export default () => /*html*/`
+export default () => /* html */`
   <style>${style}</style>
   <slot></slot>
 `

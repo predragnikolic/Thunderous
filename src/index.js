@@ -20,12 +20,12 @@ const defaultConfig = {
  * from React's functional component approach.  The utilities, however,
  * are injected in the props of the component function, so the developer
  * won't need to import anything and the function remains pure.
- * 
+ *
  * @param {object} window - (implicit)
  * @param {object} defaultConfig - (implicit)
  * @param {object|function} _config - since custom configuration is optional, this parameter may also be used for the getHTML function
  * @param {function} _getHTML - this is the main component function, which should return an html string.
- * 
+ *
  * @returns {class} - the extended class of HTMLElement (or whatever else was specified in the config)
  */
 export const createWebComponent = ((window, defaultConfig, _config, _getHTML) => {
@@ -60,7 +60,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
       // the "root" of the component can either be the shadowRoot or
       // the so-called lightRoot, depending on the config options.
       component.root = useShadowDOM
-        ? component.attachShadow({mode: shadowMode})
+        ? component.attachShadow({ mode: shadowMode })
         : component
 
       // the useSlots configuration option determines whether we should be
@@ -118,7 +118,7 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
       // If this element can be queried after all the scripts in the current
       // event loop, then do not delete its data.
       setTimeout(() => {
-        const {parent} = component
+        const { parent } = component
         const componentSelector = `[data-key="${component.dataset.id}"]`
         const instanceStillExists = !!parent && parent.querySelectorAll(componentSelector)
         if (instanceStillExists) return
@@ -137,11 +137,11 @@ export const createWebComponent = ((window, defaultConfig, _config, _getHTML) =>
  * it does make use of the shadow DOM, which allows <slot> and <style>. Since
  * presentation is not intended for SEO impact, this type of component should
  * not concern itself with SSR.
- * 
+ *
  * @param {object} defaultConfig - (implicit)
  * @param {object|function} _config - since custom configuration is optional, this parameter may also be used for the getHTML function
  * @param {function} _getHTML - this is the main component function, which should return an html string.
- * 
+ *
  * @returns {class} - the extended class of HTMLElement (or whatever else was specified in the config)
  */
 export const createPresentationalComponent = ((defaultConfig, _config, _getHTML) => {
@@ -169,11 +169,11 @@ export const createPresentationalComponent = ((defaultConfig, _config, _getHTML)
  * and it does not support style.  The only non-native option available to this
  * type of component is slotted templates for the light DOM, for the sake of
  * template composition.
- * 
+ *
  * @param {object} defaultConfig - (implicit)
  * @param {object|function} _config - since custom configuration is optional, this parameter may also be used for the getHTML function
  * @param {function} _getHTML - this is the main component function, which should return an html string.
- * 
+ *
  * @returns {class} - the extended class of HTMLElement (or whatever else was specified in the config)
  */
 export const createContainerComponent = ((defaultConfig, _config, _getHTML) => {
@@ -196,17 +196,17 @@ export const createContainerComponent = ((defaultConfig, _config, _getHTML) => {
  * This takes heavier inspiration from Vue/Angular.  This is
  * used to create a router component that renders content based
  * on the URL, then listens for client-side changes.
- * 
+ *
  * @param {object} window - (implicit)
  * @param {object} config - the router configuration, using relative URLs as object keys
  * @param {string} config[route].title - the title of the page, corresponding with the document title
  * @param {string} config[route].component - the component tag to render when the page matches the given route
- * 
+ *
  * @returns {class} - the RouterPage class which extends HTMLElement
  */
 export const createRouterPage = ((window, config) => {
 
-  return createContainerComponent(({useComponentState, runWithCleanup}) => {
+  return createContainerComponent(({ useComponentState, runWithCleanup }) => {
 
     // destructure what we need from window for purity's sake
     const { document, location } = window
@@ -244,7 +244,7 @@ export const createRouterPage = ((window, config) => {
  * in favor of using the router instead.  This is just a component class that the developer may
  * import and use with customElements.define()
  */
-export const RouterLink = createContainerComponent(({updateRoute, createHandler, component}) => {
+export const RouterLink = createContainerComponent(({ updateRoute, createHandler, component }) => {
 
   const href = component.getAttribute('href')
 
@@ -253,7 +253,7 @@ export const RouterLink = createContainerComponent(({updateRoute, createHandler,
     updateRoute(href)
   })
 
-  return /*html*/`
+  return /* html */`
     <a href="${href}" onclick="useRouter(event)">
       <slot></slot>
     </a>

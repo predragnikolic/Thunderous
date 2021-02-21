@@ -1,4 +1,4 @@
-export default /*css*/`
+export default /* css */`
 
 ::slotted(input) {
   background-color: #ccf;
@@ -34,4 +34,3 @@ export default /*css*/`
 }
 
 `
-

@@ -1,6 +1,6 @@
 import style from './page.style.js'
 
-export default () => /*html*/`
+export default () => /* html */`
   <style>${style}</style>
 
   <slot name="header" class="header"></slot>

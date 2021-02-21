@@ -1,6 +1,6 @@
 export default () => {
 
-  return /*html*/`
+  return /* html */`
     <presentational-page>
       <header slot="header">
         <presentational-title>

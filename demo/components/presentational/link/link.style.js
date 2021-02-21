@@ -1,4 +1,4 @@
-export default /*css*/`
+export default /* css */`
 
 ::slotted(*),
 ::slotted(*:visited) {

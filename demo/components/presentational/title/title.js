@@ -1,6 +1,6 @@
 import style from './title.style.js'
 
-export default () => /*html*/`
+export default () => /* html */`
   <style>${style}</style>
   <slot></slot>
 `

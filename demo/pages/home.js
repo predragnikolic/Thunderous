@@ -1,7 +1,7 @@
 import { createContainerComponent } from '../../src/index.js'
 
 export default createContainerComponent(() => {
-  return /*html*/`
+  return /* html */`
     <page-container>
       <presentational-link>
         <router-link href="/about">Read more about this</router-link>

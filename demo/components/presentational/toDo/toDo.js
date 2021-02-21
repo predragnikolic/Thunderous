@@ -1,6 +1,6 @@
-import style from './toDo.style.js' 
+import style from './toDo.style.js'
 
-export default () => /*html*/`
+export default () => /* html */`
   <style>${style}</style>
   <span><slot></slot></span>
 `

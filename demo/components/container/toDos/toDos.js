@@ -1,4 +1,4 @@
-export default ({createHandler, useComponentState, repeat, component}) => {
+export default ({ createHandler, useComponentState, repeat, component }) => {
 
   const [toDoList, setToDoList] = useComponentState('toDoList', [])
   const [toDoInput, setToDoInput] = useComponentState('toDoInput', '')
@@ -22,7 +22,7 @@ export default ({createHandler, useComponentState, repeat, component}) => {
     setToDoList(toDoList)
   })
 
-  return /*html*/`
+  return /* html */`
     <h2>To-Dos:</h2>
     <form onsubmit="addToDo(event)">
       <to-do-form>
@@ -30,7 +30,7 @@ export default ({createHandler, useComponentState, repeat, component}) => {
         <button ${disabled ? 'disabled' : ''}>Add item</button>
       </to-do-form>
     </form>
-    ${repeat(toDoList, (toDoItem, idx) => /*html*/`
+    ${repeat(toDoList, (toDoItem, idx) => /* html */`
       <to-do>
         <button onclick="removeLink(${idx})" id="ToDoRemove-${idx}">&times;</button>
         ${toDoItem}

@@ -2,7 +2,7 @@ import { createContainerComponent } from '../../src/index.js'
 
 export default createContainerComponent(() => {
 
-  return /*html*/`
+  return /* html */`
     <page-container>
       <presentational-link><router-link href="/">Go Back</router-link></presentational-link>
       <p>Thunderous was mainly inspired by React, with some ideas taken from Vue and Angular.  The idea is to make a library that offers a complete solution using native web components to build applications.</p>
