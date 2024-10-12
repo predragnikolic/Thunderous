@@ -59,35 +59,11 @@ MyElement.define('my-element');
 
 ### The Native Features
 
-Everything the native class definition can do, this can do too. You'll find that these things are not far removed from the native approach, so they ought to be familiar.
-
-#### Defining Custom Elements
-
-The `customElement` function allows you to author the web component with the render function and it returns an `ElementResult` that has some helpful methods like `define()` and `eject()`.
-
-- `ElementResult.define()` is a little safer than `customElements.define()` because it first checks if the component was already defined, without throwing an error. It will, however, log a warning. There's no need to pass the class since it already has that context.
-
-  ```ts
-  const MyElement = customElement(() => html`<slot></slot>`);
-
-  MyElement.define('my-element');
-  ```
-
-- `ElementResult.eject()` is useful in case you need to access the underlying class for some reason; perhaps you want to extend it and/or set static properties.
-
-  ```ts
-  const MyElementClass = MyElement.eject();
-
-  class MyOtherElement extends MyElementClass {
-    /* ... */
-  }
-  ```
-
-These may also be chained together, like `MyElement.define('my-element').eject()`.
+Everything the native class definition can do, this function can do too. You'll find that these things are not far removed from the native approach, so they ought to be familiar.
 
 #### Lifecycle Methods
 
-Any lifecycle method you may need can be accessed from the params of your render function. The only difference is that these are callback registrations, so the same callback you would normally write is just passed in.
+Any lifecycle method you may need can be accessed from the params of your render function. The only difference is that these are callback registrations, so the same callback you would normally write is just passed in instead.
 
 <!-- prettier-ignore-start -->
 ```ts
@@ -114,24 +90,6 @@ const MyElement = customElement((params) => {
     formResetCallback,
     formStateRestoreCallback,
   } = params;
-
-  /* ... */
-}, { formAssociated: true });
-```
-<!-- prettier-ignore-end -->
-
-#### Element Internals
-
-You can always define the internals the same as you usually would.
-
-<!-- prettier-ignore-start -->
-```ts
-const MyElement = customElement((params) => {
-  const {
-    internals,
-  } = params;
-
-  internals.ariaRequired = 'true';
 
   /* ... */
 }, { formAssociated: true });
@@ -291,6 +249,30 @@ const MyElement = customElement((params) => {
 MyElement.define('my-element');
 ```
 <!-- prettier-ignore-end -->
+
+### Defining Custom Elements
+
+The `customElement()` function allows you to author a web component, returning an `ElementResult` that has some helpful methods like `define()` and `eject()`.
+
+- `ElementResult.define()` is a little safer than `customElements.define()` because it first checks if the component was already defined, without throwing an error. It will, however, log a warning. There's no need to pass the class since it already has that context.
+
+  ```ts
+  const MyElement = customElement(() => html`<slot></slot>`);
+
+  MyElement.define('my-element');
+  ```
+
+- `ElementResult.eject()` is useful in case you need to access the underlying class for some reason; perhaps you want to extend it and/or set static properties.
+
+  ```ts
+  const MyElementClass = MyElement.eject();
+
+  class MyOtherElement extends MyElementClass {
+    /* ... */
+  }
+  ```
+
+These may also be chained together, like `MyElement.define('my-element').eject()`.
 
 ## Contributing
 
