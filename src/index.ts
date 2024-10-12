@@ -1,4 +1,4 @@
-export { customElement } from './custom-element.js';
+export { customElement, createRegistry } from './custom-element.js';
 export { createEffect, createSignal, derived } from './signals.js';
 export { html, css } from './render.js';
 

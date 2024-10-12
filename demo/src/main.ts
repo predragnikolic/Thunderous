@@ -1,4 +1,4 @@
-import { createSignal, derived, css, html, customElement } from 'thunderous';
+import { createSignal, derived, css, html, customElement, createRegistry } from 'thunderous';
 
 const MyElement = customElement(
 	({ attrSignals, refs, connectedCallback, internals, adoptStyleSheet }) => {
@@ -51,7 +51,11 @@ const MyElement = customElement(
 	{ formAssociated: true },
 );
 
-MyElement.define('my-element');
+const registry = createRegistry();
+
+MyElement.define('my-element').register(registry);
+
+console.log(registry.getTagName(MyElement.eject()));
 
 const myElement = document.querySelector('my-element')!;
 

@@ -1,6 +1,12 @@
 import { setInnerHTML } from './html-helpers';
 import { createSignal, Signal } from './signals';
 
+type ElementResult = {
+	define: (tagname: `${string}-${string}`) => ElementResult;
+	register: (registry: Registry) => ElementResult;
+	eject: () => CustomElementConstructor;
+};
+
 type AttributeChangedCallback = (name: string, oldValue: string | null, newValue: string | null) => void;
 
 export type RenderProps = {
@@ -29,7 +35,7 @@ const DEFAULT_RENDER_OPTIONS: RenderOptions = {
 
 export type RenderFunction = (props: RenderProps) => DocumentFragment;
 
-export const customElement = (render: RenderFunction, options?: RenderOptions) => {
+export const customElement = (render: RenderFunction, options?: RenderOptions): ElementResult => {
 	const { formAssociated } = { ...DEFAULT_RENDER_OPTIONS, ...options };
 	class CustomElement extends HTMLElement {
 		#attrSignals: Record<string, Signal<string | null>> = {};
@@ -141,14 +147,44 @@ export const customElement = (render: RenderFunction, options?: RenderOptions) =
 			}
 		}
 	}
+	let _tagname: string | null = null;
 	return {
-		eject: () => CustomElement,
-		define: (tagname: `${string}-${string}`) => {
+		define(tagname) {
 			if (customElements.get(tagname) !== undefined) {
 				console.warn(`Custom element "${tagname}" was already defined. Skipping...`);
-				return;
+				return this;
 			}
 			customElements.define(tagname, CustomElement);
+			_tagname = tagname;
+			return this;
 		},
+		register(registry) {
+			if (_tagname === null) {
+				console.error('Custom element must be defined before registering.');
+				return this;
+			}
+			registry.register(_tagname, CustomElement);
+			return this;
+		},
+		eject: () => CustomElement,
+	};
+};
+
+type Registry = {
+	register: (tagName: string, element: CustomElementConstructor) => void;
+	getTagName: (element: CustomElementConstructor) => string | undefined;
+};
+
+export const createRegistry = (): Registry => {
+	const registry = new Map<CustomElementConstructor, string>();
+	return {
+		register: (tagName: string, element: CustomElementConstructor) => {
+			if (registry.has(element)) {
+				console.warn(`Custom element class "${element.constructor.name}" was already registered. Skipping...`);
+				return;
+			}
+			registry.set(element, tagName.toUpperCase());
+		},
+		getTagName: (element: CustomElementConstructor) => registry.get(element),
 	};
 };
