@@ -12,12 +12,27 @@
 		"/README.md",
 		"/LICENSE"
 	],
+	"author": "Jonathan DeWitt",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Thunder-Solutions/Thunderous"
+	},
+	"keywords": [
+		"thunderous",
+		"web components",
+		"functional",
+		"signals",
+		"custom elements"
+	],
+	"bugs": {
+		"url": "https://github.com/Thunder-Solutions/Thunderous/issues"
+	},
+	"homepage": "https://github.com/Thunder-Solutions/Thunderous#readme",
+	"license": "MIT",
 	"scripts": {
 		"demo": "cd demo && rm -rf node_modules && npm i && npm start",
 		"build": "tsup src/index.ts --format cjs,esm --dts --no-clean"
 	},
-	"author": "",
-	"license": "MIT",
 	"devDependencies": {
 		"@types/eslint": "^8.56.10",
 		"@typescript-eslint/eslint-plugin": "^7.1.1",
