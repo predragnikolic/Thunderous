@@ -34,15 +34,10 @@ const myStyleSheet = css`
   }
 `;
 
-const MyElement = customElement((params) => {
-  const { customCallback, refs, adoptStyleSheet } = params;
-
+const MyElement = customElement(({ customCallback, refs, adoptStyleSheet }) => {
   const [count, setCount] = createSignal(0);
-
   const increment = customCallback(() => setCount(count() + 1));
-
   adoptStyleSheet(myStyleSheet);
-
   return html`
     <button onclick="${increment}">Increment</button>
     <output>${count}</output>
@@ -70,7 +65,6 @@ const MyElement = customElement((params) => {
     disconnectedCallback,
     attributeChangedCallback,
   } = params;
-
   /* ... */
 });
 ```
@@ -86,7 +80,6 @@ const MyElement = customElement((params) => {
     formResetCallback,
     formStateRestoreCallback,
   } = params;
-
   /* ... */
 }, { formAssociated: true });
 ```
@@ -98,17 +91,10 @@ You can always define the internals the same as you usually would, and if for so
 
 <!-- prettier-ignore-start -->
 ```ts
-const MyElement = customElement((params) => {
-  const {
-    internals,
-    elementRef,
-    root,
-  } = params;
-
+const MyElement = customElement(({ internals, elementRef, root }) => {
   internals.ariaRequired = 'true';
   const childLink = elementRef.querySelector('a[href]'); // light DOM
   const innerLink = root.querySelector('a[href]'); // shadow DOM
-
   /* ... */
 }, { formAssociated: true });
 ```
@@ -133,11 +119,8 @@ const myStyleSheet = css`
   }
 `;
 
-const MyElement = customElement((params) => {
-  const { adoptStyleSheet } = params;
-
+const MyElement = customElement(({ adoptStyleSheet }) => {
   adoptStyleSheet(myStyleSheet);
-
   /* ... */
 });
 ```
@@ -156,11 +139,8 @@ Creating signals should look pretty familiar to most modern developers.
 import { createSignal } from 'thunderous';
 
 const [count, setCount] = createSignal(0);
-
 console.log(count()); // 0
-
 setCount(1);
-
 console.log(count()) // 1
 ```
 <!-- prettier-ignore-end -->
@@ -175,9 +155,7 @@ import { createSignal, customElement, html } from 'thunderous';
 
 const MyElement = customElement(() => {
   const [count, setCount] = createSignal(0);
-
   // presumably setCount() gets called
-
   return html`<output>${count}</output>`;
 });
 ```
@@ -191,19 +169,26 @@ By binding signals to templates, you allow fine-grained updates to be made direc
 
 ##### Attribute Signals
 
-Instead of worrying about the manual `observedAttributes` approach, each element is observed with a `MutationObserver` watching all attributes. All changes trigger the `attributeChangedCallback` and you can access all attributes as signals. This makes it much less cumbersome to write reactive attributes.
+By default, each element is observed with a `MutationObserver` watching all attributes. Changes to _any_ attribute trigger the `attributeChangedCallback` and you can access all attributes as signals. This makes it much less cumbersome to write reactive attributes.
 
 <!-- prettier-ignore-start -->
 ```ts
-const MyElement = customElement((params) => {
-  const { attrSignals } = params;
-
+const MyElement = customElement(({ attrSignals }) => {
   const [heading, setHeading] = attrSignals['my-heading'];
-
   // setHeading() will also update the attribute in the DOM.
-
   return html`<h2>${heading}</h2>`;
 });
+```
+<!-- prettier-ignore-end -->
+
+However, the `MutationObserver` does impose a small performance tradeoff that may add up if you render a lot of elements. To better optimize for performance, you can pass `observedAttributes` to the options. Doing so will disable the `MutationObserver`, and only the observed attributes will trigger the `attributeChangedCallback`.
+
+<!-- prettier-ignore-start -->
+```ts
+const MyElement = customElement(({ attrSignals }) => {
+  const [heading, setHeading] = attrSignals['my-heading'];
+  return html`<h2>${heading}</h2>`;
+}, { observedAttributes: ['my-heading'] });
 ```
 <!-- prettier-ignore-end -->
 
@@ -223,13 +208,9 @@ If you want to calculate a value based on another signal's value, you should use
 import { derived, createSignal } from 'thunderous';
 
 const [count, setCount] = createSignal(0);
-
 const timesTen = derived(() => count() * 10);
-
 console.log(timesTen()); // 0
-
 setCount(10);
-
 console.log(timesTen()); // 100
 ```
 
@@ -241,7 +222,6 @@ To run a callback each time a signal is changed, use the `createEffect()` functi
 import { createEffect } from 'thunderous';
 
 /* ... */
-
 createEffect(() => {
   console.log(count());
 });
@@ -253,13 +233,10 @@ The refs property exists for convenience to avoid manually querying the DOM. Sin
 
 <!-- prettier-ignore-start -->
 ```ts
-const MyElement = customElement((params) => {
-  const { connectedCallback, refs } = params;
-
+const MyElement = customElement(({ connectedCallback, refs }) => {
   connectedCallback(() => {
     console.log(refs.heading.textContent); // hello world
   });
-
   return html`<h2 ref="heading">hello world</h2>`;
 });
 ```
@@ -271,13 +248,9 @@ While you could bind events in the `connectedCallback()` with `refs.button.addEv
 
 <!-- prettier-ignore-start -->
 ```ts
-const MyElement = customElement((params) => {
-  const { customCallback } = params;
-
+const MyElement = customElement(({ customCallback }) => {
   const [count, setCount] = createSignal(0);
-
   const increment = customCallback(() => setCount(count() + 1));
-
   return html`
     <button onclick="${increment}">Increment</button>
     <output>${count}</output>

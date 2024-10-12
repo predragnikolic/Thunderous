@@ -27,17 +27,19 @@ export type RenderProps = {
 };
 
 type RenderOptions = {
-	formAssociated?: boolean;
+	formAssociated: boolean;
+	observedAttributes: string[];
 };
 
 const DEFAULT_RENDER_OPTIONS: RenderOptions = {
 	formAssociated: false,
+	observedAttributes: [],
 };
 
 export type RenderFunction = (props: RenderProps) => DocumentFragment;
 
-export const customElement = (render: RenderFunction, options?: RenderOptions): ElementResult => {
-	const { formAssociated } = { ...DEFAULT_RENDER_OPTIONS, ...options };
+export const customElement = (render: RenderFunction, options?: Partial<RenderOptions>): ElementResult => {
+	const { formAssociated, observedAttributes } = { ...DEFAULT_RENDER_OPTIONS, ...options };
 	class CustomElement extends HTMLElement {
 		#attrSignals: Record<string, Signal<string | null>> = {};
 		#attributeChangedFns = new Set<AttributeChangedCallback>();
@@ -50,20 +52,23 @@ export const customElement = (render: RenderFunction, options?: RenderOptions): 
 		__customCallbackFns = new Map<string, () => void>();
 		#shadowRoot = this.attachShadow({ mode: 'closed' });
 		#internals = this.attachInternals();
-		#observer = new MutationObserver((mutations) => {
-			for (const mutation of mutations) {
-				const attrName = mutation.attributeName;
-				if (mutation.type !== 'attributes' || attrName === null) continue;
-				const [value, setValue] = this.#attrSignals[attrName];
-				const _oldValue = value();
-				const oldValue = _oldValue === null ? null : _oldValue;
-				const newValue = this.getAttribute(attrName);
-				setValue(newValue);
-				for (const fn of this.#attributeChangedFns) {
-					fn(attrName, oldValue, newValue);
-				}
-			}
-		});
+		#observer =
+			observedAttributes.length > 0
+				? null
+				: new MutationObserver((mutations) => {
+						for (const mutation of mutations) {
+							const attrName = mutation.attributeName;
+							if (mutation.type !== 'attributes' || attrName === null) continue;
+							const [value, setValue] = this.#attrSignals[attrName];
+							const _oldValue = value();
+							const oldValue = _oldValue === null ? null : _oldValue;
+							const newValue = this.getAttribute(attrName);
+							setValue(newValue);
+							for (const fn of this.#attributeChangedFns) {
+								fn(attrName, oldValue, newValue);
+							}
+						}
+					});
 		#render() {
 			const fragment = render({
 				elementRef: this,
@@ -115,6 +120,9 @@ export const customElement = (render: RenderFunction, options?: RenderOptions): 
 		static get formAssociated() {
 			return formAssociated;
 		}
+		static get observedAttributes() {
+			return observedAttributes;
+		}
 		constructor() {
 			super();
 			for (const attr of this.attributes) {
@@ -123,15 +131,26 @@ export const customElement = (render: RenderFunction, options?: RenderOptions): 
 			this.#render();
 		}
 		connectedCallback() {
-			this.#observer.observe(this, { attributes: true });
+			if (this.#observer !== null) {
+				this.#observer.observe(this, { attributes: true });
+			}
 			for (const fn of this.#connectedFns) {
 				fn();
 			}
 		}
 		disconnectedCallback() {
-			this.#observer.disconnect();
+			if (this.#observer !== null) {
+				this.#observer.disconnect();
+			}
 			for (const fn of this.#disconnectedFns) {
 				fn();
+			}
+		}
+		attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
+			const [, setValue] = this.#attrSignals[name];
+			setValue(newValue);
+			for (const fn of this.#attributeChangedFns) {
+				fn(name, oldValue, newValue);
 			}
 		}
 		adoptedCallback() {

@@ -46,7 +46,7 @@ const MyElement = customElement(
 			</div>
 		`;
 	},
-	{ formAssociated: true },
+	{ formAssociated: true, observedAttributes: ['heading'] },
 );
 
 const registry = createRegistry();
