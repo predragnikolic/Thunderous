@@ -63,7 +63,19 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 	return fragment;
 };
 
-export const css = (strings: TemplateStringsArray, ...values: unknown[]): CSSStyleSheet => {
+const adoptedStylesSupported: boolean =
+	typeof window !== 'undefined' &&
+	window.ShadowRoot?.prototype.hasOwnProperty('adoptedStyleSheets') &&
+	window.CSSStyleSheet?.prototype.hasOwnProperty('replace');
+
+// This should be a string if constructible stylesheets are not supported
+export type Styles = CSSStyleSheet | HTMLStyleElement;
+
+export const isCSSStyleSheet = (stylesheet?: Styles): stylesheet is CSSStyleSheet => {
+	return typeof CSSStyleSheet !== 'undefined' && stylesheet instanceof CSSStyleSheet;
+};
+
+export const css = (strings: TemplateStringsArray, ...values: unknown[]): Styles => {
 	let cssText = '';
 	const signalMap = new Map();
 	const signalBindingRegex = /(\{\{signal:.+\}\})/;
@@ -76,7 +88,7 @@ export const css = (strings: TemplateStringsArray, ...values: unknown[]): CSSSty
 		}
 		cssText += string + String(value);
 	});
-	const stylesheet = new CSSStyleSheet();
+	let stylesheet = adoptedStylesSupported ? new CSSStyleSheet() : document.createElement('style');
 	const textList = cssText.split(signalBindingRegex);
 	createEffect(() => {
 		const newCSSTextList: string[] = [];
@@ -87,7 +99,11 @@ export const css = (strings: TemplateStringsArray, ...values: unknown[]): CSSSty
 			newCSSTextList.push(newText);
 		}
 		const newCSSText = newCSSTextList.join('');
-		stylesheet.replace(newCSSText);
+		if (isCSSStyleSheet(stylesheet)) {
+			stylesheet.replace(newCSSText);
+		} else {
+			stylesheet.textContent = newCSSText;
+		}
 	});
 	return stylesheet;
 };

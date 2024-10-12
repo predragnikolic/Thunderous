@@ -1,4 +1,5 @@
 import { setInnerHTML } from './html-helpers';
+import { isCSSStyleSheet, Styles } from './render';
 import { createSignal, Signal } from './signals';
 
 type ElementResult = {
@@ -23,7 +24,7 @@ export type RenderProps = {
 	customCallback: (fn: () => void) => `{{callback:${string}}}`;
 	attrSignals: Record<string, Signal<string | null>>;
 	refs: Record<string, HTMLElement | null>;
-	adoptStyleSheet: (stylesheet: CSSStyleSheet) => void;
+	adoptStyleSheet: (stylesheet: Styles) => void;
 };
 
 type RenderOptions = {
@@ -112,7 +113,13 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 					},
 				),
 				adoptStyleSheet: (stylesheet) => {
-					this.#shadowRoot.adoptedStyleSheets.push(stylesheet);
+					if (isCSSStyleSheet(stylesheet)) {
+						this.#shadowRoot.adoptedStyleSheets.push(stylesheet);
+					} else {
+						requestAnimationFrame(() => {
+							this.#shadowRoot.appendChild(stylesheet);
+						});
+					}
 				},
 			});
 			setInnerHTML(this.#shadowRoot, fragment);
