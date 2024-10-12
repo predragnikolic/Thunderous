@@ -20,6 +20,7 @@ export type RenderProps = {
 	formDisabledCallback: (fn: () => void) => void;
 	formResetCallback: (fn: () => void) => void;
 	formStateRestoreCallback: (fn: () => void) => void;
+	customCallback: (fn: () => void) => `{{callback:${string}}}`;
 	attrSignals: Record<string, Signal<string | null>>;
 	refs: Record<string, HTMLElement | null>;
 	adoptStyleSheet: (stylesheet: CSSStyleSheet) => void;
@@ -46,6 +47,7 @@ export const customElement = (render: RenderFunction, options?: RenderOptions): 
 		#formDisabledCallbackFns = new Set<() => void>();
 		#formResetCallbackFns = new Set<() => void>();
 		#formStateRestoreCallbackFns = new Set<() => void>();
+		__customCallbackFns = new Map<string, () => void>();
 		#shadowRoot = this.attachShadow({ mode: 'closed' });
 		#internals = this.attachInternals();
 		#observer = new MutationObserver((mutations) => {
@@ -74,6 +76,11 @@ export const customElement = (render: RenderFunction, options?: RenderOptions): 
 				formDisabledCallback: (fn) => this.#formDisabledCallbackFns.add(fn),
 				formResetCallback: (fn) => this.#formResetCallbackFns.add(fn),
 				formStateRestoreCallback: (fn) => this.#formStateRestoreCallbackFns.add(fn),
+				customCallback: (fn) => {
+					const key = crypto.randomUUID();
+					this.__customCallbackFns.set(key, fn);
+					return `{{callback:${key}}}`;
+				},
 				attrSignals: new Proxy(
 					{},
 					{

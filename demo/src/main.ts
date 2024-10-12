@@ -1,7 +1,7 @@
 import { createSignal, derived, css, html, customElement, createRegistry } from 'thunderous';
 
 const MyElement = customElement(
-	({ attrSignals, refs, connectedCallback, internals, adoptStyleSheet }) => {
+	({ attrSignals, customCallback, internals, adoptStyleSheet }) => {
 		const [count, setCount] = createSignal(0);
 		const [heading] = attrSignals.heading;
 
@@ -12,11 +12,9 @@ const MyElement = customElement(
 
 		internals.setFormValue(String(count()));
 
-		connectedCallback(() => {
-			refs.increment!.addEventListener('click', () => {
-				setCount(count() + 1);
-				internals.setFormValue(String(count()));
-			});
+		const increment = customCallback(() => {
+			setCount(count() + 1);
+			internals.setFormValue(String(count()));
 		});
 
 		adoptStyleSheet(css`
@@ -41,7 +39,7 @@ const MyElement = customElement(
 
 		return html`
 			<div><h1>${heading}</h1></div>
-			<button ref="increment">increment</button>
+			<button onclick="${increment}">increment</button>
 			<output>count: ${count}</output>
 			<div>
 				<slot></slot>

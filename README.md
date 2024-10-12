@@ -35,20 +35,16 @@ const myStyleSheet = css`
 `;
 
 const MyElement = customElement((params) => {
-  const { connectedCallback, refs, adoptStyleSheet } = params;
+  const { customCallback, refs, adoptStyleSheet } = params;
 
   const [count, setCount] = createSignal(0);
 
-  connectedCallback(() => {
-    refs.increment.addEventListener('click', () => {
-      setCount(count() + 1);
-    });
-  });
+  const increment = customCallback(() => setCount(count() + 1));
 
   adoptStyleSheet(myStyleSheet);
 
   return html`
-    <button ref="increment">Increment</button>
+    <button onclick="${increment}">Increment</button>
     <output>${count}</output>
   `;
 });
@@ -157,19 +153,15 @@ Creating signals should look pretty familiar to most modern developers.
 
 <!-- prettier-ignore-start -->
 ```ts
-import { createSignal, customElement } from 'thunderous';
+import { createSignal } from 'thunderous';
 
-const MyElement = customElement(() => {
-  const [count, setCount] = createSignal(0);
+const [count, setCount] = createSignal(0);
 
-  console.log(count()); // 0
+console.log(count()); // 0
 
-  setCount(1);
+setCount(1);
 
-  console.log(count()) // 1
-
-  /* ... */
-});
+console.log(count()) // 1
 ```
 <!-- prettier-ignore-end -->
 
@@ -223,32 +215,78 @@ Usage:
 
 > NOTICE: Since `attrSignals` is a `Proxy` object, _any_ property will return a signal and auto-bind it to the attribute it corresponds with.
 
+##### Derived Signals
+
+If you want to calculate a value based on another signal's value, you should use the `derived()` function. This signal will trigger its subscribers each time the signals inside change.
+
+```ts
+import { derived, createSignal } from 'thunderous';
+
+const [count, setCount] = createSignal(0);
+
+const timesTen = derived(() => count() * 10);
+
+console.log(timesTen()); // 0
+
+setCount(10);
+
+console.log(timesTen()); // 100
+```
+
+##### Effects
+
+To run a callback each time a signal is changed, use the `createEffect()` function. Any signal used inside will trigger the callback when they're changed.
+
+```ts
+import { createEffect } from 'thunderous';
+
+/* ... */
+
+createEffect(() => {
+  console.log(count());
+});
+```
+
 #### Refs
 
-Finally, the refs property exists for convenience to avoid manually querying the DOM. Since the DOM is only available after rendering, refs will only work in and after the `connectedCallback` method. This is the best place for event binding to occur.
+The refs property exists for convenience to avoid manually querying the DOM. Since the DOM is only available after rendering, refs will only work in and after the `connectedCallback` method.
 
 <!-- prettier-ignore-start -->
 ```ts
 const MyElement = customElement((params) => {
   const { connectedCallback, refs } = params;
 
-  const [count, setCount] = createSignal(0);
-
   connectedCallback(() => {
-    refs.increment.addEventListener('click', () => {
-      setCount(count() + 1);
-    });
+    console.log(refs.heading.textContent); // hello world
   });
 
+  return html`<h2 ref="heading">hello world</h2>`;
+});
+```
+<!-- prettier-ignore-end -->
+
+#### Event Binding
+
+While you could bind events in the `connectedCallback()` with `refs.button.addEventListener('click', handleClick)` for example, it may be more convenient to register a custom callback and bind it to the template.
+
+<!-- prettier-ignore-start -->
+```ts
+const MyElement = customElement((params) => {
+  const { customCallback } = params;
+
+  const [count, setCount] = createSignal(0);
+
+  const increment = customCallback(() => setCount(count() + 1));
+
   return html`
-    <button ref="increment">Increment</button>
+    <button onclick="${increment}">Increment</button>
     <output>${count}</output>
   `;
 });
-
-MyElement.define('my-element');
 ```
 <!-- prettier-ignore-end -->
+
+> NOTICE: This uses the native HTML inline event-binding syntax. There is no special syntax for `on` attributes, because it simply renders a reference to `this.getRootNode().host` and extracts the callback from there.
 
 ### Defining Custom Elements
 
