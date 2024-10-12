@@ -1,7 +1,7 @@
-import { parseFragment } from './html-helpers';
+import { parseFragment, ElementParent } from './html-helpers';
 import { createEffect } from './signals';
 
-export const html = (strings, ...values) => {
+export const html = (strings: TemplateStringsArray, ...values: unknown[]): DocumentFragment => {
 	let innerHTML = '';
 	const signalMap = new Map();
 	strings.forEach((string, i) => {
@@ -11,11 +11,11 @@ export const html = (strings, ...values) => {
 			signalMap.set(uniqueKey, value);
 			value = `{{signal:${uniqueKey}}}`;
 		}
-		innerHTML += string + value;
+		innerHTML += string + String(value);
 	});
 	const fragment = parseFragment(innerHTML);
 	const signalBindingRegex = /(\{\{signal:.+\}\})/;
-	const parseChildren = (element) => {
+	const parseChildren = (element: ElementParent) => {
 		for (const child of element.childNodes) {
 			if (child instanceof Text && signalBindingRegex.test(child.data)) {
 				const textList = child.data.split(signalBindingRegex);
@@ -59,7 +59,7 @@ export const html = (strings, ...values) => {
 	return fragment;
 };
 
-export const css = (strings, ...values) => {
+export const css = (strings: TemplateStringsArray, ...values: unknown[]): CSSStyleSheet => {
 	let cssText = '';
 	const signalMap = new Map();
 	const signalBindingRegex = /(\{\{signal:.+\}\})/;
@@ -70,7 +70,7 @@ export const css = (strings, ...values) => {
 			signalMap.set(uniqueKey, value);
 			value = `{{signal:${uniqueKey}}}`;
 		}
-		cssText += string + value;
+		cssText += string + String(value);
 	});
 	const stylesheet = new CSSStyleSheet();
 	const textList = cssText.split(signalBindingRegex);

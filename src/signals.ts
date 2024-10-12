@@ -1,5 +1,10 @@
+
+export type SignalGetter<T> = () => T;
+export type SignalSetter<T> = (newValue: T) => void;
+export type Signal<T = unknown> = [SignalGetter<T>, SignalSetter<T>];
+
 let subscriber: (() => void) | null = null;
-export const createSignal = <T = unknown>(initVal?: T) => {
+export const createSignal = <T = undefined>(initVal?: T): Signal<T> => {
 	const subscribers = new Set<() => void>();
 	let value = initVal as T;
 	const getter = (): T => {
@@ -17,8 +22,8 @@ export const createSignal = <T = unknown>(initVal?: T) => {
 	return [getter, setter];
 };
 
-export const derived = (fn: () => void) => {
-	const [getter, setter] = createSignal();
+export const derived = <T>(fn: () => T): SignalGetter<T> => {
+	const [getter, setter] = createSignal<T>();
 	createEffect(() => {
 		setter(fn());
 	});

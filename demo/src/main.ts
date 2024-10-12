@@ -1,4 +1,4 @@
-import { customFormElement, createSignal, derived, html, css } from './thunderous/index.js';
+import { createSignal, customFormElement, derived, css, html } from 'thunderous';
 
 const MyElement = customFormElement(({ attrSignals, refs, connectedCallback, internals, adoptStyleSheet }) => {
 	const [count, setCount] = createSignal(0);
@@ -9,12 +9,12 @@ const MyElement = customFormElement(({ attrSignals, refs, connectedCallback, int
 		return value > 255 ? 255 : value;
 	});
 
-	internals.setFormValue(count());
+	internals.setFormValue(String(count()));
 
 	connectedCallback(() => {
-		refs.increment.addEventListener('click', () => {
+		refs.increment!.addEventListener('click', () => {
 			setCount(count() + 1);
-			internals.setFormValue(count());
+			internals.setFormValue(String(count()));
 		});
 	});
 
@@ -50,9 +50,9 @@ const MyElement = customFormElement(({ attrSignals, refs, connectedCallback, int
 
 customElements.define('my-element', MyElement);
 
-const myElement = document.querySelector('my-element');
+const myElement = document.querySelector('my-element')!;
 
-document.querySelector('button').addEventListener('click', () => {
+document.querySelector('button')!.addEventListener('click', () => {
 	const prev = myElement.getAttribute('heading');
 	myElement.setAttribute('heading', prev === 'title A' ? 'title B' : 'title A');
 });

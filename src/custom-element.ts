@@ -1,10 +1,26 @@
 import { setInnerHTML } from './html-helpers';
-import { createSignal } from './signals';
+import { createSignal, Signal } from './signals';
 
-export const customElement = (render) => {
+type AttributeChangedCallback = (name: string, oldValue: string | null, newValue: string | null) => void;
+
+export type RenderProps = {
+	elementRef: HTMLElement;
+	root: ShadowRoot;
+	internals: ElementInternals;
+	attributeChangedCallback: (fn: AttributeChangedCallback) => void;
+	connectedCallback: (fn: () => void) => void;
+	disconnectedCallback: (fn: () => void) => void;
+	attrSignals: Record<string, Signal<string | null>>;
+	refs: Record<string, HTMLElement | null>;
+	adoptStyleSheet: (stylesheet: CSSStyleSheet) => void;
+};
+
+export type RenderFunction = (props: RenderProps) => DocumentFragment;
+
+export const customElement = (render: RenderFunction) => {
 	return class extends HTMLElement {
-		#attrSignals = {};
-		#attributeChangedFns = new Set<(name: string, oldValue: string | null, newValue: string | null) => void>();
+		#attrSignals: Record<string, Signal<string | null>> = {};
+		#attributeChangedFns = new Set<AttributeChangedCallback>();
 		#connectedFns = new Set<() => void>();
 		#disconnectedFns = new Set<() => void>();
 		#shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -15,7 +31,7 @@ export const customElement = (render) => {
 				if (mutation.type !== 'attributes' || attrName === null) continue;
 				const [value, setValue] = this.#attrSignals[attrName];
 				const _oldValue = value();
-				const oldValue = _oldValue === null ? null : String(_oldValue);
+				const oldValue = _oldValue === null ? null : _oldValue;
 				const newValue = this.getAttribute(attrName);
 				setValue(newValue);
 				for (const fn of this.#attributeChangedFns) {
@@ -64,7 +80,7 @@ export const customElement = (render) => {
 		constructor() {
 			super();
 			for (const attr of this.attributes) {
-				this.#attrSignals[attr.name] = createSignal(attr.value);
+				this.#attrSignals[attr.name] = createSignal<string | null>(attr.value);
 			}
 			this.#render();
 		}
@@ -83,7 +99,7 @@ export const customElement = (render) => {
 	};
 };
 
-export const customFormElement = (render) => {
+export const customFormElement = (render: RenderFunction) => {
 	return class extends customElement(render) {
 		static get formAssociated() {
 			return true;
