@@ -21,31 +21,33 @@ npm install thunderous
 
 ## Usage
 
-Below is a basic usage of the functions available.
+Below is a basic usage of the `customElement` function.
 
 ```ts
 import { customElement, html, css, createSignal } from 'thunderous';
 
-const MyElement = customElement(({ attrSignals, connectedCallback, refs, adoptStyleSheet }) => {
-	const [heading] = attrSignals.heading;
-	const [count, setCount] = createSignal(0);
-	connectedCallback(() => {
-		refs.increment.addEventListener('click', () => {
-			setCount(count() + 1);
-		});
-	});
-	adoptStyleSheet(css`
-		:host {
-			display: block;
-			font-family: sans-serif;
-		}
-	`);
-	return html`
-		<h2>${heading}</h2>
-		<button ref="increment">Increment</button>
-		<output>${count}</output>
-	`;
-});
+const MyElement = customElement(
+  ({ attrSignals, connectedCallback, refs, adoptStyleSheet }) => {
+    const [heading] = attrSignals.heading;
+    const [count, setCount] = createSignal(0);
+    connectedCallback(() => {
+      refs.increment.addEventListener('click', () => {
+        setCount(count() + 1);
+      });
+    });
+    adoptStyleSheet(css`
+      :host {
+        display: block;
+        font-family: sans-serif;
+      }
+    `);
+    return html`
+      <h2>${heading}</h2>
+      <button ref="increment">Increment</button>
+      <output>${count}</output>
+    `;
+  },
+);
 
 MyElement.define('my-element');
 ```
