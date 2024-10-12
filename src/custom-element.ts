@@ -10,19 +10,36 @@ export type RenderProps = {
 	attributeChangedCallback: (fn: AttributeChangedCallback) => void;
 	connectedCallback: (fn: () => void) => void;
 	disconnectedCallback: (fn: () => void) => void;
+	adoptedCallback: (fn: () => void) => void;
+	formDisabledCallback: (fn: () => void) => void;
+	formResetCallback: (fn: () => void) => void;
+	formStateRestoreCallback: (fn: () => void) => void;
 	attrSignals: Record<string, Signal<string | null>>;
 	refs: Record<string, HTMLElement | null>;
 	adoptStyleSheet: (stylesheet: CSSStyleSheet) => void;
 };
 
+type RenderOptions = {
+	formAssociated?: boolean;
+};
+
+const DEFAULT_RENDER_OPTIONS: RenderOptions = {
+	formAssociated: false,
+};
+
 export type RenderFunction = (props: RenderProps) => DocumentFragment;
 
-export const customElement = (render: RenderFunction) => {
-	return class extends HTMLElement {
+export const customElement = (render: RenderFunction, options?: RenderOptions) => {
+	const { formAssociated } = { ...DEFAULT_RENDER_OPTIONS, ...options };
+	class CustomElement extends HTMLElement {
 		#attrSignals: Record<string, Signal<string | null>> = {};
 		#attributeChangedFns = new Set<AttributeChangedCallback>();
 		#connectedFns = new Set<() => void>();
 		#disconnectedFns = new Set<() => void>();
+		#adoptedCallbackFns = new Set<() => void>();
+		#formDisabledCallbackFns = new Set<() => void>();
+		#formResetCallbackFns = new Set<() => void>();
+		#formStateRestoreCallbackFns = new Set<() => void>();
 		#shadowRoot = this.attachShadow({ mode: 'closed' });
 		#internals = this.attachInternals();
 		#observer = new MutationObserver((mutations) => {
@@ -47,6 +64,10 @@ export const customElement = (render: RenderFunction) => {
 				attributeChangedCallback: (fn) => this.#attributeChangedFns.add(fn),
 				connectedCallback: (fn) => this.#connectedFns.add(fn),
 				disconnectedCallback: (fn) => this.#disconnectedFns.add(fn),
+				adoptedCallback: (fn) => this.#adoptedCallbackFns.add(fn),
+				formDisabledCallback: (fn) => this.#formDisabledCallbackFns.add(fn),
+				formResetCallback: (fn) => this.#formResetCallbackFns.add(fn),
+				formStateRestoreCallback: (fn) => this.#formStateRestoreCallbackFns.add(fn),
 				attrSignals: new Proxy(
 					{},
 					{
@@ -77,6 +98,9 @@ export const customElement = (render: RenderFunction) => {
 			});
 			setInnerHTML(this.#shadowRoot, fragment);
 		}
+		static get formAssociated() {
+			return formAssociated;
+		}
 		constructor() {
 			super();
 			for (const attr of this.attributes) {
@@ -96,13 +120,35 @@ export const customElement = (render: RenderFunction) => {
 				fn();
 			}
 		}
-	};
-};
-
-export const customFormElement = (render: RenderFunction) => {
-	return class extends customElement(render) {
-		static get formAssociated() {
-			return true;
+		adoptedCallback() {
+			for (const fn of this.#adoptedCallbackFns) {
+				fn();
+			}
 		}
+		formDisabledCallback() {
+			for (const fn of this.#formDisabledCallbackFns) {
+				fn();
+			}
+		}
+		formResetCallback() {
+			for (const fn of this.#formResetCallbackFns) {
+				fn();
+			}
+		}
+		formStateRestoreCallback() {
+			for (const fn of this.#formStateRestoreCallbackFns) {
+				fn();
+			}
+		}
+	}
+	return {
+		eject: () => CustomElement,
+		define: (tagname: `${string}-${string}`) => {
+			if (customElements.get(tagname) !== undefined) {
+				console.warn(`Custom element "${tagname}" was already defined. Skipping...`);
+				return;
+			}
+			customElements.define(tagname, CustomElement);
+		},
 	};
 };
