@@ -227,6 +227,27 @@ createEffect(() => {
 });
 ```
 
+##### Debugging Signals
+
+If you're having a tough time tracing an issue, you can provide the `debugMode` option to any signal to log potentially helpful information to the console. For differentiating values, you can also provide an optional `label` property to easily associate logs with their respective sources. These options can be passed to signals themselves, or to specific calls to setters and getters.
+
+```ts
+const [count, setCount] = createSignal(0, {
+  debugMode: true,
+  label: 'count signal',
+});
+
+setCount(1, {
+  debugMode: true,
+  label: 'start count',
+});
+
+const newCount = count({
+  debugMode: true,
+  label: 'new count',
+});
+```
+
 #### Refs
 
 The refs property exists for convenience to avoid manually querying the DOM. Since the DOM is only available after rendering, refs will only work in and after the `connectedCallback` method.
