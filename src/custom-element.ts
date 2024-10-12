@@ -78,6 +78,7 @@ export const customElement = (render: RenderFunction, options?: RenderOptions): 
 					{},
 					{
 						get: (_, prop: string) => {
+							if (!(prop in this.#attrSignals)) this.#attrSignals[prop] = createSignal<string | null>(null);
 							const [getter] = this.#attrSignals[prop];
 							const setter = (newValue: string) => this.setAttribute(prop, newValue);
 							return [getter, setter];
