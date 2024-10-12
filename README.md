@@ -21,46 +21,278 @@ npm install thunderous
 
 ## Usage
 
-Below is a basic usage of the `customElement` function.
+Thunderous makes it easy to define smaller components with less noise.
 
+<!-- prettier-ignore-start -->
 ```ts
 import { customElement, html, css, createSignal } from 'thunderous';
 
-const MyElement = customElement(
-  ({ attrSignals, connectedCallback, refs, adoptStyleSheet }) => {
-    const [heading] = attrSignals.heading;
-    const [count, setCount] = createSignal(0);
-    connectedCallback(() => {
-      refs.increment.addEventListener('click', () => {
-        setCount(count() + 1);
-      });
+const myStyleSheet = css`
+  :host {
+    display: block;
+    font-family: sans-serif;
+  }
+`;
+
+const MyElement = customElement((params) => {
+  const { connectedCallback, refs, adoptStyleSheet } = params;
+
+  const [count, setCount] = createSignal(0);
+
+  connectedCallback(() => {
+    refs.increment.addEventListener('click', () => {
+      setCount(count() + 1);
     });
-    adoptStyleSheet(css`
-      :host {
-        display: block;
-        font-family: sans-serif;
-      }
-    `);
-    return html`
-      <h2>${heading}</h2>
-      <button ref="increment">Increment</button>
-      <output>${count}</output>
-    `;
-  },
-);
+  });
+
+  adoptStyleSheet(myStyleSheet);
+
+  return html`
+    <button ref="increment">Increment</button>
+    <output>${count}</output>
+  `;
+});
 
 MyElement.define('my-element');
 ```
+<!-- prettier-ignore-end -->
 
-If you should need to access the class directly for some reason, you can use the `eject` method.
+### The Native Features
 
+Everything the native class definition can do, this can do too. You'll find that these things are not far removed from the native approach, so they ought to be familiar.
+
+#### Defining Custom Elements
+
+The `customElement` function allows you to author the web component with the render function and it returns an `ElementResult` that has some helpful methods like `define()` and `eject()`.
+
+- `ElementResult.define()` is a little safer than `customElements.define()` because it first checks if the component was already defined, without throwing an error. It will, however, log a warning. There's no need to pass the class since it already has that context.
+
+  ```ts
+  const MyElement = customElement(() => html`<slot></slot>`);
+
+  MyElement.define('my-element');
+  ```
+
+- `ElementResult.eject()` is useful in case you need to access the underlying class for some reason; perhaps you want to extend it and/or set static properties.
+
+  ```ts
+  const MyElementClass = MyElement.eject();
+
+  class MyOtherElement extends MyElementClass {
+    /* ... */
+  }
+  ```
+
+These may also be chained together, like `MyElement.define('my-element').eject()`.
+
+#### Lifecycle Methods
+
+Any lifecycle method you may need can be accessed from the params of your render function. The only difference is that these are callback registrations, so the same callback you would normally write is just passed in.
+
+<!-- prettier-ignore-start -->
 ```ts
-const MyElementClass = MyElement.eject();
+const MyElement = customElement((params) => {
+  const {
+    adoptedCallback,
+    connectedCallback,
+    disconnectedCallback,
+    attributeChangedCallback,
+  } = params;
+
+  /* ... */
+});
+```
+<!-- prettier-ignore-end -->
+
+If you need to support forms, pass an options object as the second argument to `customElement`.
+
+<!-- prettier-ignore-start -->
+```ts
+const MyElement = customElement((params) => {
+  const {
+    formDisabledCallback,
+    formResetCallback,
+    formStateRestoreCallback,
+  } = params;
+
+  /* ... */
+}, { formAssociated: true });
+```
+<!-- prettier-ignore-end -->
+
+#### Element Internals
+
+You can always define the internals the same as you usually would.
+
+<!-- prettier-ignore-start -->
+```ts
+const MyElement = customElement((params) => {
+  const {
+    internals,
+  } = params;
+
+  internals.ariaRequired = 'true';
+
+  /* ... */
+}, { formAssociated: true });
+```
+<!-- prettier-ignore-end -->
+
+#### Roots and Element Internals
+
+You can always define the internals the same as you usually would, and if for some reason you need access to either the element itself or the shadow root, you can do so as illustrated below.
+
+<!-- prettier-ignore-start -->
+```ts
+const MyElement = customElement((params) => {
+  const {
+    internals,
+    elementRef,
+    root,
+  } = params;
+
+  internals.ariaRequired = 'true';
+  const childLink = elementRef.querySelector('a[href]'); // light DOM
+  const innerLink = root.querySelector('a[href]'); // shadow DOM
+
+  /* ... */
+}, { formAssociated: true });
+```
+<!-- prettier-ignore-end -->
+
+#### Adopted Style Sheets
+
+This one diverges from native slightly, since the native approach is a bit manual. For convenience, you can use the `adoptStyleSheet()` function.
+
+> If you prefer the manual approach, `root.adoptedStyleSheets = []`, you can always do that with the `root` property listed above.
+
+The `css` tagged template function will construct a `CSSStyleSheet` object that can be adopted by documents and shadow roots.
+
+<!-- prettier-ignore-start -->
+```ts
+import { customElement, css } from 'thunderous';
+
+const myStyleSheet = css`
+  :host {
+    display: block;
+    font-family: sans-serif;
+  }
+`;
+
+const MyElement = customElement((params) => {
+  const { adoptStyleSheet } = params;
+
+  adoptStyleSheet(myStyleSheet);
+
+  /* ... */
+});
+```
+<!-- prettier-ignore-end -->
+
+### Non-Native extras
+
+In addition to the native features, there are a few features that supercharge your web components. Most notably, signals.
+
+#### Signals
+
+Creating signals should look pretty familiar to most modern developers.
+
+<!-- prettier-ignore-start -->
+```ts
+import { createSignal, customElement } from 'thunderous';
+
+const MyElement = customElement(() => {
+  const [count, setCount] = createSignal(0);
+
+  console.log(count()); // 0
+
+  setCount(1);
+
+  console.log(count()) // 1
+
+  /* ... */
+});
+```
+<!-- prettier-ignore-end -->
+
+##### Binding Signals to Templates
+
+To bind signals to a template, use the provided `html` tagged template function to pass them in.
+
+<!-- prettier-ignore-start -->
+```ts
+import { createSignal, customElement, html } from 'thunderous';
+
+const MyElement = customElement(() => {
+  const [count, setCount] = createSignal(0);
+
+  // presumably setCount() gets called
+
+  return html`<output>${count}</output>`;
+});
+```
+<!-- prettier-ignore-end -->
+
+> NOTICE: we are not running the signal's getter above. This is intentional, as we delegate that to the template to run for proper binding.
+
+By binding signals to templates, you allow fine-grained updates to be made directly to DOM nodes every time the signal changes, without requiring any diffing or re-rendering.
+
+> This also works for `css`, but bear in mind that passing signals to a shared `CSSStyleSheet` may not have the effect you expect. Sharing Style Sheets across many component instances is best for performance, but signals will update every instance of each component with that approach. The suggested alternative is to write static CSS and toggle classes in the HTML instead.
+
+##### Attribute Signals
+
+Instead of worrying about the manual `observedAttributes` approach, each element is observed with a `MutationObserver` watching all attributes. All changes trigger the `attributeChangedCallback` and you can access all attributes as signals. This makes it much less cumbersome to write reactive attributes.
+
+<!-- prettier-ignore-start -->
+```ts
+const MyElement = customElement((params) => {
+  const { attrSignals } = params;
+
+  const [heading, setHeading] = attrSignals['my-heading'];
+
+  // setHeading() will also update the attribute in the DOM.
+
+  return html`<h2>${heading}</h2>`;
+});
+```
+<!-- prettier-ignore-end -->
+
+Usage:
+
+```html
+<my-element my-heading="My Element's Title"></my-element>
 ```
 
-[more examples to be updated...]
+> NOTICE: Since `attrSignals` is a `Proxy` object, _any_ property will return a signal and auto-bind it to the attribute it corresponds with.
 
-## Development
+#### Refs
+
+Finally, the refs property exists for convenience to avoid manually querying the DOM. Since the DOM is only available after rendering, refs will only work in and after the `connectedCallback` method. This is the best place for event binding to occur.
+
+<!-- prettier-ignore-start -->
+```ts
+const MyElement = customElement((params) => {
+  const { connectedCallback, refs } = params;
+
+  const [count, setCount] = createSignal(0);
+
+  connectedCallback(() => {
+    refs.increment.addEventListener('click', () => {
+      setCount(count() + 1);
+    });
+  });
+
+  return html`
+    <button ref="increment">Increment</button>
+    <output>${count}</output>
+  `;
+});
+
+MyElement.define('my-element');
+```
+<!-- prettier-ignore-end -->
+
+## Contributing
 
 ### Local Server
 
@@ -69,6 +301,10 @@ To see it in action, start the demo server with:
 ```sh
 npm run demo
 ```
+
+The demo's `package.json` points to the parent directory with the `file:` prefix. To preview the updated library code, you must run `npm run build` at the top level.
+
+Please open a corresponding issue for any pull request you'd like to raise.
 
 ## License
 
