@@ -91,10 +91,20 @@ You can always define the internals the same as you usually would, and if for so
 
 <!-- prettier-ignore-start -->
 ```ts
-const MyElement = customElement(({ internals, elementRef, root }) => {
-  internals.ariaRequired = 'true';
-  const childLink = elementRef.querySelector('a[href]'); // light DOM
-  const innerLink = root.querySelector('a[href]'); // shadow DOM
+const MyElement = customElement((params) => {
+  const {
+    internals,
+    elementRef,
+    root,
+    connectedCallback,
+  } = params;
+
+  internals.setFormValue('hello world');
+  connectedCallback(() => {
+    const childLink = elementRef.querySelector('a[href]'); // light DOM
+    const innerLink = root.querySelector('a[href]'); // shadow DOM
+    /* ... */
+  });
   /* ... */
 }, { formAssociated: true });
 ```
