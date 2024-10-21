@@ -23,26 +23,62 @@ export type RenderProps = {
 	formStateRestoreCallback: (fn: () => void) => void;
 	customCallback: (fn: () => void) => `{{callback:${string}}}`;
 	attrSignals: Record<string, Signal<string | null>>;
+	propSignals: Record<string, Signal<unknown>>;
 	refs: Record<string, HTMLElement | null>;
 	adoptStyleSheet: (stylesheet: Styles) => void;
 };
 
+type Coerce<T = unknown> = (value: string) => T;
+
 type RenderOptions = {
 	formAssociated: boolean;
 	observedAttributes: string[];
+	attributesAsProperties: [string, Coerce][];
 };
 
 const DEFAULT_RENDER_OPTIONS: RenderOptions = {
 	formAssociated: false,
 	observedAttributes: [],
+	attributesAsProperties: [],
+};
+
+type AttrProp<T = unknown> = {
+	prop: string;
+	coerce: Coerce<T>;
+	value: T | null;
 };
 
 export type RenderFunction = (props: RenderProps) => DocumentFragment;
 
+const getPropName = (attrName: string) =>
+	attrName
+		.replace(/^([A-Z]+)/, (_, letter) => letter.toLowerCase())
+		.replace(/(-|_| )([a-zA-Z])/g, (_, letter) => letter.toUpperCase());
+
 export const customElement = (render: RenderFunction, options?: Partial<RenderOptions>): ElementResult => {
-	const { formAssociated, observedAttributes } = { ...DEFAULT_RENDER_OPTIONS, ...options };
+	const {
+		formAssociated,
+		observedAttributes: _observedAttributes,
+		attributesAsProperties,
+	} = { ...DEFAULT_RENDER_OPTIONS, ...options };
+
+	// must set observedAttributes prior to defining the class
+	const observedAttributesSet = new Set(_observedAttributes);
+	const attributesAsPropertiesMap = new Map<string, AttrProp>();
+	for (const [attrName, coerce] of attributesAsProperties) {
+		observedAttributesSet.add(attrName);
+		attributesAsPropertiesMap.set(attrName, {
+			prop: getPropName(attrName),
+			coerce,
+			value: null,
+		});
+	}
+	const observedAttributes = Array.from(observedAttributesSet);
+
 	class CustomElement extends HTMLElement {
-		#attrSignals: Record<string, Signal<string | null>> = {};
+		#attributesAsPropertiesMap = new Map(attributesAsPropertiesMap);
+		#attrSignals: Record<string, Signal<string | null> | undefined> = {};
+		#propSignals: Record<string, Signal<unknown> | undefined> = {};
 		#attributeChangedFns = new Set<AttributeChangedCallback>();
 		#connectedFns = new Set<() => void>();
 		#disconnectedFns = new Set<() => void>();
@@ -54,17 +90,18 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 		#shadowRoot = this.attachShadow({ mode: 'closed' });
 		#internals = this.attachInternals();
 		#observer =
-			observedAttributes.length > 0
+			options?.observedAttributes !== undefined
 				? null
 				: new MutationObserver((mutations) => {
 						for (const mutation of mutations) {
 							const attrName = mutation.attributeName;
 							if (mutation.type !== 'attributes' || attrName === null) continue;
-							const [value, setValue] = this.#attrSignals[attrName];
-							const _oldValue = value();
+							if (!(attrName in this.#attrSignals)) this.#attrSignals[attrName] = createSignal<string | null>(null);
+							const [getter, setter] = this.#attrSignals[attrName] as Signal<string | null>;
+							const _oldValue = getter();
 							const oldValue = _oldValue === null ? null : _oldValue;
 							const newValue = this.getAttribute(attrName);
-							setValue(newValue);
+							setter(newValue);
 							for (const fn of this.#attributeChangedFns) {
 								fn(attrName, oldValue, newValue);
 							}
@@ -92,8 +129,26 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 					{
 						get: (_, prop: string) => {
 							if (!(prop in this.#attrSignals)) this.#attrSignals[prop] = createSignal<string | null>(null);
-							const [getter] = this.#attrSignals[prop];
+							const [getter] = this.#attrSignals[prop] as Signal<string | null>;
 							const setter = (newValue: string) => this.setAttribute(prop, newValue);
+							return [getter, setter];
+						},
+						set: () => {
+							console.error('Signals must be assigned via setters.');
+							return false;
+						},
+					},
+				),
+				propSignals: new Proxy(
+					{},
+					{
+						get: (_, prop: string) => {
+							if (!(prop in this.#propSignals)) this.#propSignals[prop] = createSignal<unknown>(null);
+							const [getter, _setter] = this.#propSignals[prop] as Signal<unknown>;
+							const setter = (newValue: unknown) => {
+								this[prop] = newValue;
+								_setter(newValue);
+							};
 							return [getter, setter];
 						},
 						set: () => {
@@ -132,6 +187,32 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 		}
 		constructor() {
 			super();
+			for (const [attrName, attr] of this.#attributesAsPropertiesMap) {
+				this.#attrSignals[attrName] = createSignal<string | null>(null);
+				Object.defineProperty(this, attr.prop, {
+					get: () => {
+						if (!(attrName in this.#attrSignals)) this.#attrSignals[attrName] = createSignal<string | null>(null);
+						const [getter] = this.#attrSignals[attrName] as Signal<string | null>;
+						const raw = getter();
+						const rawOnly = raw !== null && attr.value === null;
+						const value = rawOnly ? attr.coerce(raw) : attr.value; // avoid coercion when possible
+						return value === null ? null : value;
+					},
+					set: (newValue) => {
+						attr.value = newValue;
+						if (!(attrName in this.#attrSignals)) this.#attrSignals[attrName] = createSignal<string | null>(null);
+						const [attrGetter, attrSetter] = this.#attrSignals[attrName] as Signal<string | null>;
+						const attrValue = newValue === null ? null : String(newValue);
+						const oldValue = attrGetter();
+						if (oldValue === attrValue) return;
+						attrSetter(attrValue);
+						if (attrValue === null) this.removeAttribute(attrName);
+						else this.setAttribute(attrName, attrValue);
+					},
+					configurable: true,
+					enumerable: true,
+				});
+			}
 			for (const attr of this.attributes) {
 				this.#attrSignals[attr.name] = createSignal<string | null>(attr.value);
 			}
@@ -154,8 +235,12 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 			}
 		}
 		attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
-			const [, setValue] = this.#attrSignals[name];
-			setValue(newValue);
+			const [, attrSetter] = this.#attrSignals[name] ?? [];
+			attrSetter?.(newValue);
+			const prop = this.#attributesAsPropertiesMap.get(name);
+			if (prop !== undefined) {
+				this[prop.prop] = newValue === null ? null : prop.coerce(newValue);
+			}
 			for (const fn of this.#attributeChangedFns) {
 				fn(name, oldValue, newValue);
 			}

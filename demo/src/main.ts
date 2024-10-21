@@ -1,8 +1,9 @@
-import { createSignal, derived, css, html, customElement, createRegistry } from 'thunderous';
+import { createSignal, derived, css, html, customElement, createRegistry, Signal } from 'thunderous';
 
 const MyElement = customElement(
-	({ attrSignals, customCallback, internals, adoptStyleSheet }) => {
-		const [count, setCount] = createSignal(0);
+	({ attrSignals, propSignals, customCallback, internals, adoptStyleSheet }) => {
+		const [count, setCount] = propSignals.count as Signal<number>;
+		setCount(0);
 		const [heading] = attrSignals.heading;
 
 		const redValue = derived(() => {
@@ -46,7 +47,7 @@ const MyElement = customElement(
 			</div>
 		`;
 	},
-	{ formAssociated: true, observedAttributes: ['heading'] },
+	{ formAssociated: true, observedAttributes: ['heading'], attributesAsProperties: [['count', Number]] },
 );
 
 const registry = createRegistry();
