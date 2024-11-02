@@ -185,7 +185,7 @@ By default, each element is observed with a `MutationObserver` watching all attr
 ```ts
 const MyElement = customElement(({ attrSignals }) => {
   const [heading, setHeading] = attrSignals['my-heading'];
-  // setHeading() will also update the attribute in the DOM.
+  // setHeading() will also update the attribute in the HTML.
   return html`<h2>${heading}</h2>`;
 });
 ```
@@ -209,6 +209,53 @@ Usage:
 ```
 
 > NOTICE: Since `attrSignals` is a `Proxy` object, _any_ property will return a signal and auto-bind it to the attribute it corresponds with.
+
+##### Property Signals
+
+In addition to attributes, there are also properties. Though often conflated, there is an important distinction: _attributes_ are strings defined in HTML, and _properties_ can be any type of data, strictly in JavaScript and completely invisible to HTML.
+
+Modern templating solutions often allow developers to assign properties via HTML attribute _syntax_, even though they are not actually attributes. While this distinction may seem trivial for those working with modern frameworks, it becomes much more relevant when defining custom elements that may be used in plain HTML.
+
+Thunderous supports properties for cases where strings are not sufficient. These are also reflected as signals _within_ the component, but the _consumer_ of the component will not directly interact with this signal. `myElement.count = 1` will update the internal signal.
+
+<!-- prettier-ignore-start -->
+```ts
+const MyElement = customElement(({ propSignals }) => {
+  const [count, setCount] = propSignals['prop'];
+  // setCount() will also update the property in the DOM
+  return html`<output>${count}</output>`;
+});
+```
+<!-- prettier-ignore-end -->
+
+There is also a way to sync attributes with properties, though it should be used deliberately, with caution. Since it requires some coercion to occur, it may introduce some performance overhead. It's best not to use this to parse JSON strings, for example.
+
+To use this feature, pass `attributesAsProperties` in the options. It accepts an array of `[propertyName, coerceFn]` pairs. For primitive types, you can use their constructors for coercion, like `['count', Number]`.
+
+<!-- prettier-ignore-start -->
+```ts
+const MyElement = customElement(({ propSignals }) => {
+  const [count, setCount] = propSignals['prop'];
+  // setCount() will also update the property in the DOM
+  return html`<output>${count}</output>`;
+}, { attributesAsProperties: [['count', Number]] });
+```
+<!-- prettier-ignore-end -->
+
+With the above snippet, `count` may be controlled by setting the attribute, like so:
+
+```html
+<my-element count="1"></my-element>
+```
+
+...and the attribute will reflect changes made to the property as well:
+
+```ts
+const myElement = document.querySelector('my-element');
+myElement.count = 1;
+```
+
+In both cases, the `count()` signal will be updated.
 
 ##### Derived Signals
 
