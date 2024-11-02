@@ -110,13 +110,35 @@ const MyElement = customElement((params) => {
 ```
 <!-- prettier-ignore-end -->
 
+If you need to pass certain options to the `attachShadow()` call, you can do so by passing `shadowRootOptions`.
+
+<!-- prettier-ignore-start -->
+```ts
+const MyElement = customElement(() => {
+  /* ... */
+}, { shadowRootOptions: { delegatesFocus: true } });
+```
+<!-- prettier-ignore-end -->
+
+To opt out of using shadow DOM at all, pass `false` to `attachShadow`. This will change `root` above to reference the element itself, and stylesheets will apply to the global document rather than being encapsulated within the component.
+
+<!-- prettier-ignore-start -->
+```ts
+const MyElement = customElement(() => {
+  /* ... */
+}, { attachShadow: false });
+```
+<!-- prettier-ignore-end -->
+
 #### Adopted Style Sheets
 
 This one diverges from native slightly, since the native approach is a bit manual. For convenience, you can use the `adoptStyleSheet()` function.
 
-> If you prefer the manual approach, `root.adoptedStyleSheets = []`, you can always do that with the `root` property listed above.
+> If you prefer the manual approach, `root.adoptedStyleSheets = []`, you can always do that with the `root` property above, or the global `document`.
 
 The `css` tagged template function will construct a `CSSStyleSheet` object that can be adopted by documents and shadow roots.
+
+> When `attachShadow` is set to `false`, `adoptStyleSheet()` will use the global document to adopt the styles.
 
 <!-- prettier-ignore-start -->
 ```ts
@@ -335,9 +357,14 @@ const MyElement = customElement(({ customCallback }) => {
   `;
 });
 ```
-<!-- prettier-ignore-end -->
 
-> NOTICE: This uses the native HTML inline event-binding syntax. There is no special syntax for `on` attributes, because it simply renders a reference to `this.getRootNode().host` and extracts the callback from there.
+> NOTICE: This uses the native HTML inline event-binding syntax. There is no special syntax for `on` attributes, because it simply renders the reference to the host element.
+>
+> You will see something like this when you inspect the element in the browser:
+> ```html
+> <my-element onclick="this.getRootNode().host.__customCallbackFns.get('d7121610-e89d-4629-ab00-d4e22644f16b')(event)">
+> ```
+<!-- prettier-ignore-end -->
 
 ### Defining Custom Elements
 
