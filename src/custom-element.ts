@@ -34,12 +34,16 @@ type RenderOptions = {
 	formAssociated: boolean;
 	observedAttributes: string[];
 	attributesAsProperties: [string, Coerce][];
+	shadowRootOptions: ShadowRootInit;
 };
 
 const DEFAULT_RENDER_OPTIONS: RenderOptions = {
 	formAssociated: false,
 	observedAttributes: [],
 	attributesAsProperties: [],
+	shadowRootOptions: {
+		mode: 'closed',
+	},
 };
 
 type AttrProp<T = unknown> = {
@@ -60,6 +64,7 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 		formAssociated,
 		observedAttributes: _observedAttributes,
 		attributesAsProperties,
+		shadowRootOptions,
 	} = { ...DEFAULT_RENDER_OPTIONS, ...options };
 
 	// must set observedAttributes prior to defining the class
@@ -87,7 +92,7 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 		#formResetCallbackFns = new Set<() => void>();
 		#formStateRestoreCallbackFns = new Set<() => void>();
 		__customCallbackFns = new Map<string, () => void>();
-		#shadowRoot = this.attachShadow({ mode: 'closed' });
+		#shadowRoot = this.attachShadow(shadowRootOptions);
 		#internals = this.attachInternals();
 		#observer =
 			options?.observedAttributes !== undefined
