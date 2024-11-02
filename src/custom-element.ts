@@ -64,8 +64,10 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 		formAssociated,
 		observedAttributes: _observedAttributes,
 		attributesAsProperties,
-		shadowRootOptions,
+		shadowRootOptions: _shadowRootOptions,
 	} = { ...DEFAULT_RENDER_OPTIONS, ...options };
+
+	const shadowRootOptions = { ...DEFAULT_RENDER_OPTIONS.shadowRootOptions, ..._shadowRootOptions };
 
 	// must set observedAttributes prior to defining the class
 	const observedAttributesSet = new Set(_observedAttributes);
