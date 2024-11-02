@@ -199,13 +199,15 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 						return value === null ? null : value;
 					},
 					set: (newValue) => {
+						const oldValue = attr.value;
 						attr.value = newValue;
 						if (!(attrName in this.#attrSignals)) this.#attrSignals[attrName] = createSignal<string | null>(null);
-						const [attrGetter, attrSetter] = this.#attrSignals[attrName] as Signal<string | null>;
+						const [, attrSetter] = this.#attrSignals[attrName] as Signal<string | null>;
+						const [, propSetter] = this.#propSignals[attrName] as Signal;
 						const attrValue = newValue === null ? null : String(newValue);
-						const oldValue = attrGetter();
-						if (oldValue === attrValue) return;
+						if (String(oldValue) === attrValue) return;
 						attrSetter(attrValue);
+						propSetter(newValue);
 						if (attrValue === null) this.removeAttribute(attrName);
 						else this.setAttribute(attrName, attrValue);
 					},

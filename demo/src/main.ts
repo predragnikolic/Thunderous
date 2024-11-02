@@ -54,8 +54,6 @@ const registry = createRegistry();
 
 MyElement.define('my-element').register(registry);
 
-console.log(registry.getTagName(MyElement.eject()));
-
 const myElement = document.querySelector('my-element')!;
 
 document.querySelector('button')!.addEventListener('click', () => {
