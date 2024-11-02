@@ -1,6 +1,12 @@
 import { parseFragment, ElementParent } from './html-helpers';
 import { createEffect } from './signals';
 
+declare global {
+	interface Element {
+		__findHost: () => Element;
+	}
+}
+
 export const html = (strings: TemplateStringsArray, ...values: unknown[]): DocumentFragment => {
 	let innerHTML = '';
 	const signalMap = new Map();
@@ -51,6 +57,11 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 							child.setAttribute(attr.name, newText);
 						});
 					} else if (callbackBindingRegex.test(attr.value)) {
+						const getRootNode = child.getRootNode.bind(child);
+						child.getRootNode = () => {
+							const rootNode = getRootNode();
+							return rootNode instanceof ShadowRoot ? rootNode : fragment;
+						};
 						const uniqueKey = attr.value.replace(/\{\{callback:(.+)\}\}/, '$1');
 						child.setAttribute(attr.name, `this.getRootNode().host.__customCallbackFns.get('${uniqueKey}')(event)`);
 					}

@@ -2,6 +2,12 @@ import { setInnerHTML } from './html-helpers';
 import { isCSSStyleSheet, Styles } from './render';
 import { createSignal, Signal } from './signals';
 
+declare global {
+	interface DocumentFragment {
+		host: HTMLElement;
+	}
+}
+
 type ElementResult = {
 	define: (tagname: `${string}-${string}`) => ElementResult;
 	register: (registry: Registry) => ElementResult;
@@ -12,7 +18,7 @@ type AttributeChangedCallback = (name: string, oldValue: string | null, newValue
 
 export type RenderProps = {
 	elementRef: HTMLElement;
-	root: ShadowRoot;
+	root: ShadowRoot | HTMLElement;
 	internals: ElementInternals;
 	attributeChangedCallback: (fn: AttributeChangedCallback) => void;
 	connectedCallback: (fn: () => void) => void;
@@ -34,6 +40,7 @@ type RenderOptions = {
 	formAssociated: boolean;
 	observedAttributes: string[];
 	attributesAsProperties: [string, Coerce][];
+	attachShadow: boolean;
 	shadowRootOptions: ShadowRootInit;
 };
 
@@ -41,6 +48,7 @@ const DEFAULT_RENDER_OPTIONS: RenderOptions = {
 	formAssociated: false,
 	observedAttributes: [],
 	attributesAsProperties: [],
+	attachShadow: true,
 	shadowRootOptions: {
 		mode: 'closed',
 	},
@@ -64,6 +72,7 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 		formAssociated,
 		observedAttributes: _observedAttributes,
 		attributesAsProperties,
+		attachShadow,
 		shadowRootOptions: _shadowRootOptions,
 	} = { ...DEFAULT_RENDER_OPTIONS, ...options };
 
@@ -94,7 +103,7 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 		#formResetCallbackFns = new Set<() => void>();
 		#formStateRestoreCallbackFns = new Set<() => void>();
 		__customCallbackFns = new Map<string, () => void>();
-		#shadowRoot = this.attachShadow(shadowRootOptions);
+		#shadowRoot = attachShadow ? this.attachShadow(shadowRootOptions) : null;
 		#internals = this.attachInternals();
 		#observer =
 			options?.observedAttributes !== undefined
@@ -115,9 +124,10 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 						}
 					});
 		#render() {
+			const root = this.#shadowRoot ?? this;
 			const fragment = render({
 				elementRef: this,
-				root: this.#shadowRoot,
+				root,
 				internals: this.#internals,
 				attributeChangedCallback: (fn) => this.#attributeChangedFns.add(fn),
 				connectedCallback: (fn) => this.#connectedFns.add(fn),
@@ -167,7 +177,7 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 				refs: new Proxy(
 					{},
 					{
-						get: (_, prop: string) => this.#shadowRoot.querySelector(`[ref=${prop}]`),
+						get: (_, prop: string) => root.querySelector(`[ref=${prop}]`),
 						set: () => {
 							console.error('Refs are readonly and cannot be assigned.');
 							return false;
@@ -175,16 +185,31 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 					},
 				),
 				adoptStyleSheet: (stylesheet) => {
+					if (!attachShadow) {
+						console.warn(
+							'Styles are only encapsulated when using shadow DOM. The stylesheet will be applied to the global document instead.',
+						);
+					}
 					if (isCSSStyleSheet(stylesheet)) {
+						if (this.#shadowRoot === null) {
+							for (const rule of stylesheet.cssRules) {
+								if (rule instanceof CSSStyleRule && rule.selectorText.includes(':host')) {
+									console.error('Styles with :host are not supported when not using shadow DOM.');
+								}
+							}
+							document.adoptedStyleSheets.push(stylesheet);
+							return;
+						}
 						this.#shadowRoot.adoptedStyleSheets.push(stylesheet);
 					} else {
 						requestAnimationFrame(() => {
-							this.#shadowRoot.appendChild(stylesheet);
+							root.appendChild(stylesheet);
 						});
 					}
 				},
 			});
-			setInnerHTML(this.#shadowRoot, fragment);
+			fragment.host = this;
+			setInnerHTML(root, fragment);
 		}
 		static get formAssociated() {
 			return formAssociated;
