@@ -1,5 +1,6 @@
 import { css, customElement, html } from 'thunderous';
 import { theme } from '../_styles/theme';
+import logo from '../thunder-solutions-logo-light.svg';
 
 export const DocPage = customElement(({ adoptStyleSheet }) => {
 	adoptStyleSheet(theme);
@@ -10,7 +11,7 @@ export const DocPage = customElement(({ adoptStyleSheet }) => {
 				<header>
 					<h1 class="site-heading">
 						<th-invisible-link href="/">
-							<img class="logo" src="/thunder-solutions-logo-light.svg" alt="Thunder Solutions Logo" />
+							<img class="logo" src="${logo}" alt="Thunder Solutions Logo" />
 							<span>Thunderous</span>
 						</th-invisible-link>
 					</h1>

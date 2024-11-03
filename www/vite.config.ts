@@ -12,7 +12,6 @@ export default defineConfig({
 			input: glob.sync(resolve(__dirname, 'src', '**/*.html')),
 		},
 	},
-	// @ts-expect-error // TODO: add tsconfig and fix issues
 	plugins: [ViteEjsPlugin()],
 	server: {
 		open: true,
