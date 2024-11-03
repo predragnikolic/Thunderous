@@ -62,7 +62,7 @@ export const DocPage = customElement(({ adoptStyleSheet }) => {
 										<th-link href="/docs/derived-signals/" class="link">Derived Signals</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/derived-signals/" class="link">Effects</th-link>
+										<th-link href="/docs/effects/" class="link">Effects</th-link>
 									</li>
 									<li>
 										<th-link href="/docs/debugging-signals/" class="link">Debugging Signals</th-link>

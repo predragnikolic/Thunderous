@@ -4,16 +4,19 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="Documentation for the Thunderous library." />
-		<title>Thunderous | Docs</title>
+		<title>Thunderous | Effects</title>
 		<link rel="stylesheet" href="/global.css" />
 		<link rel="favicon" href="/favicon.ico" />
 	</head>
 	<body>
 		<th-doc-page>
-			<th-page-header>Docs</th-page-header>
+			<th-page-header>Effects</th-page-header>
 			<th-content-group>
-				<th-text>text</th-text>
-				<th-code-block lang="ts"><%= include('_code-snippets/internals.ejs') %></th-code-block>
+				<th-text>
+					To run a callback each time a signal is changed, use the <th-code>createEffect()</th-code> function. Any
+					signal used inside will trigger the callback when they're changed.
+				</th-text>
+				<th-code-block lang="ts"><%= include('_code-snippets/effect.ejs') %></th-code-block>
 			</th-content-group>
 		</th-doc-page>
 		<script type="module" src="/main.ts"></script>
