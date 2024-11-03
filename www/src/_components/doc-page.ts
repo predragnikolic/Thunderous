@@ -9,12 +9,14 @@ export const DocPage = customElement(({ adoptStyleSheet }) => {
 			<div class="doc-page">
 				<header>
 					<div class="header-content">
-						<a href="/">
+						<th-invisible-link href="/">
 							<h1><img src="/thunder-solutions-logo-light.svg" alt="Thunder Solutions Logo" />Thunderous</h1>
-						</a>
+						</th-invisible-link>
 						<nav>
 							<ul>
-								<li><a href="/docs/">Getting Started</a></li>
+								<li>
+									<th-link href="/docs/">Getting Started</th-link>
+								</li>
 							</ul>
 						</nav>
 					</div>

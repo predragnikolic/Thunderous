@@ -6,5 +6,6 @@ export const theme = css`
 		--color-site-1-c: #fff;
 		--color-site-2: #111;
 		--color-site-2-c: #fff;
+		--color-link-1: #71b5db;
 	}
 `;
