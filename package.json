@@ -43,7 +43,11 @@
 		"eslint-plugin-promise": "^7.1.0",
 		"express": "^4.17.1",
 		"prettier": "^3.3.3",
-		"typescript": "^5.6.3",
-		"tsup": "^8.3.0"
+		"tsup": "^8.3.0",
+		"typescript": "^5.6.3"
+	},
+	"dependencies": {
+		"ejs": "^3.1.10",
+		"vite-plugin-ejs": "^1.7.0"
 	}
 }

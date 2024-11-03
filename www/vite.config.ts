@@ -1,6 +1,7 @@
 import { glob } from 'glob';
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import { ViteEjsPlugin } from 'vite-plugin-ejs';
 
 export default defineConfig({
 	root: 'src',
@@ -11,6 +12,8 @@ export default defineConfig({
 			input: glob.sync(resolve(__dirname, 'src', '**/*.html')),
 		},
 	},
+	// @ts-expect-error // TODO: add tsconfig and fix issues
+	plugins: [ViteEjsPlugin()],
 	server: {
 		open: true,
 	},

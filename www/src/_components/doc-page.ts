@@ -17,7 +17,7 @@ export const DocPage = customElement(({ adoptStyleSheet }) => {
 					<nav>
 						<ul>
 							<li>
-								<th-link href="/docs/" class="link">Getting Started</th-link>
+								<th-link href="/docs/" class="link">Quick Start</th-link>
 							</li>
 						</ul>
 					</nav>
