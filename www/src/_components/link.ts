@@ -38,3 +38,30 @@ const invisibleLinkStyles = css`
 		text-decoration: none;
 	}
 `;
+
+export const LinkButton = customElement(({ attrSignals, adoptStyleSheet }) => {
+	adoptStyleSheet(linkButtonStyles);
+	const [href] = attrSignals.href;
+	return html`<a href="${href}" part="a"><slot></slot></a>`;
+});
+
+const linkButtonStyles = css`
+	a {
+		display: inline-block;
+		padding: 1em 2em;
+		background-color: var(--color-link-1);
+		color: var(--color-link-1-c);
+		text-decoration: none;
+		border: 0.4em solid var(--color-link-1-1);
+		border-radius: 1em;
+		box-shadow: 0 0 2em 0.2em rgba(0, 0, 100, 0.2);
+		transition: all 0.3s;
+	}
+	a:hover {
+		background-color: var(--color-link-1);
+		box-shadow: 0 0 2em 0.5em rgba(68, 198, 255, 0.2);
+	}
+	a:active {
+		background-color: var(--color-link-1);
+	}
+`;
