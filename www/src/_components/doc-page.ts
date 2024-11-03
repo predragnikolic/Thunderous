@@ -8,18 +8,19 @@ export const DocPage = customElement(({ adoptStyleSheet }) => {
 		<th-page>
 			<div class="doc-page">
 				<header>
-					<div class="header-content">
+					<h1 class="site-heading">
 						<th-invisible-link href="/">
-							<h1><img src="/thunder-solutions-logo-light.svg" alt="Thunder Solutions Logo" />Thunderous</h1>
+							<img class="logo" src="/thunder-solutions-logo-light.svg" alt="Thunder Solutions Logo" />
+							<span>Thunderous</span>
 						</th-invisible-link>
-						<nav>
-							<ul>
-								<li>
-									<th-link href="/docs/">Getting Started</th-link>
-								</li>
-							</ul>
-						</nav>
-					</div>
+					</h1>
+					<nav>
+						<ul>
+							<li>
+								<th-link href="/docs/" class="link">Getting Started</th-link>
+							</li>
+						</ul>
+					</nav>
 				</header>
 				<main>
 					<slot></slot>
@@ -38,13 +39,52 @@ const styles = css`
 	}
 	header {
 		display: flex;
-		justify-content: end;
+		flex-direction: column;
+		align-items: end;
 		background-color: var(--color-site-2);
 		color: white;
 		padding: 1em;
 	}
+	header,
+	main {
+		overflow: auto;
+		scrollbar-width: thin;
+		scrollbar-color: rgba(255, 255, 255, 0.1) var(--color-site-2);
+	}
+	.site-heading {
+		margin: 0;
+		font-size: 1.5em;
+		display: flex;
+		align-items: center;
+		gap: 0.3em;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+		padding-bottom: 0.5em;
+	}
+	.logo {
+		height: 1.2em;
+		width: 1.2em;
+		object-fit: contain;
+	}
 	main {
 		background-color: var(--color-site-1);
 		padding: 1em;
+	}
+	ul {
+		list-style: none;
+	}
+	ul,
+	li {
+		margin: 0;
+		padding: 0;
+	}
+	ul {
+		display: grid;
+		gap: 1em;
+		padding: 1em 0;
+	}
+	.link::part(a) {
+		width: 100%;
+		display: block;
+		box-sizing: border-box;
 	}
 `;

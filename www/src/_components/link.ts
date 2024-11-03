@@ -5,7 +5,7 @@ export const Link = customElement(({ attrSignals, adoptStyleSheet }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(linkStyles);
 	const [href] = attrSignals.href;
-	return html`<a href="${href}"><slot></slot></a>`;
+	return html`<a href="${href}" part="a"><slot></slot></a>`;
 });
 
 const linkStyles = css`
@@ -15,7 +15,7 @@ const linkStyles = css`
 		text-decoration: none;
 	}
 	a:hover {
-		text-decoration: underline;
+		border-bottom: 1px solid;
 	}
 `;
 
@@ -26,11 +26,14 @@ export const InvisibleLink = customElement(({ attrSignals, adoptStyleSheet }) =>
 });
 
 const invisibleLinkStyles = css`
+	:host {
+		display: contents;
+	}
 	a,
 	a:visited,
 	a:hover,
 	a:active {
-		display: inline-block;
+		display: contents;
 		color: inherit;
 		text-decoration: none;
 	}
