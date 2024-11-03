@@ -16,7 +16,23 @@
 					You can always define the internals the same as you usually would, and if for some reason you need access to
 					either the element itself or the shadow root, you can do so as illustrated below.
 				</th-text>
+
 				<th-code-block lang="ts"><%= include('_code-snippets/internals.ejs') %></th-code-block>
+
+				<th-text>
+					If you need to pass certain options to the <th-code>attachShadow()</th-code> call, you can do so by passing
+					<th-code>shadowRootOptions</th-code>.
+				</th-text>
+
+				<th-code-block lang="ts"><%= include('_code-snippets/shadow-root-options.ejs') %></th-code-block>
+
+				<th-text>
+					To opt out of using shadow DOM at all, pass <th-code>false</th-code> to <th-code>attachShadow</th-code>. This
+					will change <th-code>root</th-code> above to reference the element itself, and stylesheets will apply to the
+					global document rather than being encapsulated within the component.
+				</th-text>
+
+				<th-code-block lang="ts"><%= include('_code-snippets/no-shadow.ejs') %></th-code-block>
 			</th-content-group>
 		</th-doc-page>
 		<script type="module" src="/main.ts"></script>

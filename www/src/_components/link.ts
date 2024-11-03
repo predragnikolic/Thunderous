@@ -11,7 +11,7 @@ export const Link = customElement(({ attrSignals, adoptStyleSheet }) => {
 const linkStyles = css`
 	a {
 		display: inline-block;
-		color: var(--color-link-1);
+		color: var(--color-site-2);
 		text-decoration: none;
 		border-bottom: 1px solid transparent;
 		transition: border-bottom-color 0.3s;
@@ -51,19 +51,19 @@ const linkButtonStyles = css`
 	a {
 		display: inline-block;
 		padding: 1em 2em;
-		background-color: var(--color-link-1);
-		color: var(--color-link-1-c);
+		background-color: var(--color-site-2);
+		color: var(--color-site-2-c);
 		text-decoration: none;
-		border: 0.4em solid var(--color-link-1-1);
+		border: 0.4em solid var(--color-site-2-1);
 		border-radius: 1em;
 		box-shadow: 0 0 2em 0.2em rgba(0, 0, 100, 0.2);
 		transition: all 0.3s;
 	}
 	a:hover {
-		background-color: var(--color-link-1);
+		background-color: var(--color-site-2);
 		box-shadow: 0 0 2em 0.5em rgba(68, 198, 255, 0.2);
 	}
 	a:active {
-		background-color: var(--color-link-1);
+		background-color: var(--color-site-2);
 	}
 `;

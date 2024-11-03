@@ -91,7 +91,7 @@ const styles = css`
 		display: flex;
 		flex-direction: column;
 		align-items: end;
-		background-color: var(--color-site-2);
+		background-color: var(--color-site-1-1);
 		color: white;
 		padding: 1em;
 		padding-right: 2em;
@@ -100,7 +100,7 @@ const styles = css`
 	main {
 		overflow: auto;
 		scrollbar-width: thin;
-		scrollbar-color: rgba(255, 255, 255, 0.1) var(--color-site-2);
+		scrollbar-color: rgba(255, 255, 255, 0.1) var(--color-site-1-1);
 	}
 	.site-heading {
 		margin: 0;

@@ -22,7 +22,7 @@ const styles = css`
 		align-content: center;
 		place-items: center;
 		height: 100vh;
-		background-image: linear-gradient(135deg, var(--color-site-3), var(--color-site-2));
+		background-image: linear-gradient(135deg, var(--color-site-1-2), var(--color-site-1-1));
 		text-align: center;
 		padding-bottom: 6em;
 		box-sizing: border-box;

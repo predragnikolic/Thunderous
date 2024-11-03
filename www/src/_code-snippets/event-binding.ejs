@@ -1,0 +1,8 @@
+const MyElement = customElement(({ customCallback }) => {
+  const [count, setCount] = createSignal(0);
+  const increment = customCallback(() => setCount(count() + 1));
+  return html`
+    <button onclick="${increment}">Increment</button>
+    <output>${count}</output>
+  `;
+});
