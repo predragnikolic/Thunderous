@@ -10,7 +10,9 @@ export const ContentGroup = customElement(({ adoptStyleSheet }) => {
 const styles = css`
 	div {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 1em;
-		padding: 2em;
+		padding: 2em 4em;
+		max-width: 50em;
 	}
 `;

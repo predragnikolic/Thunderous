@@ -20,6 +20,55 @@ export const DocPage = customElement(({ adoptStyleSheet }) => {
 							<li>
 								<th-link href="/docs/" class="link">Quick Start</th-link>
 							</li>
+							<li>
+								<h3>Overview</h3>
+								<ul>
+									<li>
+										<th-link href="/docs/lifecycle-methods/" class="link">Lifecycle Methods</th-link>
+									</li>
+									<li>
+										<th-link href="/docs/root-and-internals/" class="link">Root and Element Internals</th-link>
+									</li>
+									<li>
+										<th-link href="/docs/adopted-stylesheets/" class="link">Adopted Stylesheets</th-link>
+									</li>
+									<li>
+										<th-link href="/docs/event-binding/" class="link">Event Binding</th-link>
+									</li>
+									<li>
+										<th-link href="/docs/refs/" class="link">Refs</th-link>
+									</li>
+									<li>
+										<th-link href="/docs/defining-custom-elements/" class="link">Defining Custom Elements</th-link>
+									</li>
+								</ul>
+							</li>
+							<li>
+								<h3>Signals</h3>
+								<ul>
+									<li>
+										<th-link href="/docs/signals/" class="link">Signals Overview</th-link>
+									</li>
+									<li>
+										<th-link href="/docs/binding-signals/" class="link">Binding Signals</th-link>
+									</li>
+									<li>
+										<th-link href="/docs/attribute-signals/" class="link">Attribute Signals</th-link>
+									</li>
+									<li>
+										<th-link href="/docs/property-signals/" class="link">Property Signals</th-link>
+									</li>
+									<li>
+										<th-link href="/docs/derived-signals/" class="link">Derived Signals</th-link>
+									</li>
+									<li>
+										<th-link href="/docs/derived-signals/" class="link">Effects</th-link>
+									</li>
+									<li>
+										<th-link href="/docs/debugging-signals/" class="link">Debugging Signals</th-link>
+									</li>
+								</ul>
+							</li>
 						</ul>
 					</nav>
 				</header>
@@ -35,7 +84,7 @@ const styles = css`
 	.doc-page {
 		height: 100%;
 		display: grid;
-		grid-template-columns: minmax(15em, 1fr) minmax(0, 3fr);
+		grid-template-columns: minmax(16em, 1fr) minmax(0, 2fr);
 		margin: 0 auto;
 	}
 	header {
@@ -45,6 +94,7 @@ const styles = css`
 		background-color: var(--color-site-2);
 		color: white;
 		padding: 1em;
+		padding-right: 2em;
 	}
 	header,
 	main {
@@ -60,6 +110,8 @@ const styles = css`
 		gap: 0.3em;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 		padding-bottom: 0.5em;
+		width: 100%;
+		max-width: 9em;
 	}
 	.logo {
 		height: 1.2em;
@@ -73,7 +125,8 @@ const styles = css`
 		list-style: none;
 	}
 	ul,
-	li {
+	li,
+	h3 {
 		margin: 0;
 		padding: 0;
 	}
@@ -82,9 +135,10 @@ const styles = css`
 		gap: 1em;
 		padding: 1em 0;
 	}
+	li > ul {
+		padding-left: 1em;
+	}
 	.link::part(a) {
-		width: 100%;
-		display: block;
 		box-sizing: border-box;
 	}
 `;

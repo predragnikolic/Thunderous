@@ -17,7 +17,7 @@ const pageHeaderStyles = css`
 	header {
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		padding-bottom: 0.8em;
-		margin: 1em;
+		margin: 1em 2em;
 		margin-bottom: 0;
 	}
 	h2 {

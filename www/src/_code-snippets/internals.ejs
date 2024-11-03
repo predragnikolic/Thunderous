@@ -1,0 +1,16 @@
+const MyElement = customElement((params) => {
+  const {
+    internals,
+    elementRef,
+    root,
+    connectedCallback,
+  } = params;
+
+  internals.setFormValue('hello world');
+  connectedCallback(() => {
+    const childLink = elementRef.querySelector('a[href]'); // light DOM
+    const innerLink = root.querySelector('a[href]'); // shadow DOM
+    /* ... */
+  });
+  /* ... */
+}, { formAssociated: true });

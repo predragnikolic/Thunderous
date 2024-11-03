@@ -13,9 +13,11 @@ const linkStyles = css`
 		display: inline-block;
 		color: var(--color-link-1);
 		text-decoration: none;
+		border-bottom: 1px solid transparent;
+		transition: border-bottom-color 0.3s;
 	}
 	a:hover {
-		border-bottom: 1px solid;
+		border-bottom-color: currentColor;
 	}
 `;
 

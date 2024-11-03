@@ -21,17 +21,17 @@ export const CodeBlock = customElement(({ adoptStyleSheet, attrSignals, connecte
 	adoptStyleSheet(theme);
 	adoptStyleSheet(highlight);
 	adoptStyleSheet(codeBlockStyles);
-	const [language] = attrSignals.language;
+	const [lang] = attrSignals.lang;
 	connectedCallback(() => {
 		const content = elementRef.innerHTML;
 		const code = refs.code;
 		if (code === null) return;
 		code.innerHTML = content;
 		createEffect(() => {
-			if (language() === null) {
+			if (lang() === null) {
 				code.className = 'no-highlight hljs';
 			} else {
-				code.className = `language-${language()}`;
+				code.className = `language-${lang()}`;
 			}
 		});
 		hljs.highlightElement(code);
