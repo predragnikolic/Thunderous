@@ -67,7 +67,6 @@ const styles = css`
 	}
 	main {
 		background-color: var(--color-site-1);
-		padding: 1em;
 	}
 	ul {
 		list-style: none;
