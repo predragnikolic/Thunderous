@@ -17,23 +17,28 @@
 					in.
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/binding-signals.ejs') %></th-code-block>
+				<th-text>
+					Binding may only occur in attribute values and text content. To remove an attribute, set the value to
+					<th-code>null</th-code>.
+				</th-text>
+				<th-code-block lang="ts"><%= include('_code-snippets/binding-signals-null.ejs') %></th-code-block>
+				<th-block-quote>
+					<p>
+						NOTICE: we are not <em>running</em> the signal's getter above. This is intentional, as we delegate that
+						responsibility to the template for proper binding.
+					</p>
+					<p>
+						By binding signals to templates, you allow fine-grained updates to be made directly to DOM nodes every time
+						the signal changes, without requiring any diffing or re-rendering.
+					</p>
+					<p>
+						This also works for <th-code>css</th-code>, but bear in mind that passing signals to a shared
+						<th-code>CSSStyleSheet</th-code> may not have the effect you expect. Sharing Style Sheets across many
+						component instances is best for performance, but signals will update every instance of each component with
+						that approach. The suggested alternative is to write static CSS and toggle classes in the HTML instead.
+					</p>
+				</th-block-quote>
 			</th-content-group>
-			<th-block-quote>
-				<p>
-					NOTICE: we are not running the signal's getter above. This is intentional, as we delegate that to the template
-					to run for proper binding.
-				</p>
-				<p>
-					By binding signals to templates, you allow fine-grained updates to be made directly to DOM nodes every time
-					the signal changes, without requiring any diffing or re-rendering.
-				</p>
-				<p>
-					This also works for <th-code>css</th-code>, but bear in mind that passing signals to a shared
-					<th-code>CSSStyleSheet</th-code> may not have the effect you expect. Sharing Style Sheets across many
-					component instances is best for performance, but signals will update every instance of each component with
-					that approach. The suggested alternative is to write static CSS and toggle classes in the HTML instead.
-				</p>
-			</th-block-quote>
 		</th-doc-page>
 		<script type="module" src="/main.ts"></script>
 	</body>

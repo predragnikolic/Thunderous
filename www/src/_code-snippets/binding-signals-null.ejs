@@ -1,0 +1,9 @@
+import { createSignal, customElement, html } from 'thunderous';
+
+const MyElement = customElement(({ connectedCallback }) => {
+  const [inert, setInert] = createSignal('');
+  connectedCallback(() => {
+    setInert(null); // inert attribute is removed
+  });
+  return html`<div inert="${inert}"></div>`;
+});
