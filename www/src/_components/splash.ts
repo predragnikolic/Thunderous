@@ -1,12 +1,11 @@
 import { css, customElement, html } from 'thunderous';
-import logo from '../thunder-solutions-logo-light.svg';
 
 export const Splash = customElement(({ adoptStyleSheet }) => {
 	adoptStyleSheet(styles);
 	return html`
 		<main>
 			<header>
-				<h1><img src="${logo}" alt="Thunder Solutions Logo" /><span>Thunderous</span></h1>
+				<h1><img src="/thunder-solutions-logo-light.svg" alt="Thunder Solutions Logo" /><span>Thunderous</span></h1>
 				<h2>Building web components has never been easier.</h2>
 			</header>
 			<p>Thunderous is a functional-style web component authoring library, supercharged with signals!</p>
@@ -32,8 +31,9 @@ const styles = css`
 		width: 1em;
 	}
 	h1 {
-		font-size: 6em;
+		font-size: 12vw;
 		display: flex;
+		justify-content: center;
 		gap: 0.3em;
 		align-items: center;
 		margin: 0;
@@ -53,5 +53,10 @@ const styles = css`
 	}
 	a:active {
 		color: green;
+	}
+	@media (min-width: 50em) {
+		h1 {
+			font-size: 6em;
+		}
 	}
 `;
