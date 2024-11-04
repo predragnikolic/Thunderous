@@ -17,11 +17,17 @@ const pageHeaderStyles = css`
 	header {
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		padding-bottom: 0.8em;
-		margin: 1em 2em;
+		margin: 1em;
 		margin-bottom: 0;
 	}
 	h2 {
 		margin: 0;
+	}
+	@media (min-width: 60em) {
+		header {
+			margin: 1em 2em;
+			margin-bottom: 0;
+		}
 	}
 `;
 

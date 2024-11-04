@@ -12,7 +12,12 @@ const styles = css`
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
 		gap: 1em;
-		padding: 2em 4em;
+		padding: 2em;
 		max-width: 50em;
+	}
+	@media (min-width: 60em) {
+		div {
+			padding: 2em 4em;
+		}
 	}
 `;
