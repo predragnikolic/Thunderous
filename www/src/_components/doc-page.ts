@@ -1,18 +1,12 @@
-import { createSignal, css, customElement, derived, html } from 'thunderous';
+import { createEffect, createSignal, css, customElement, derived, html } from 'thunderous';
 import { theme } from '../_styles/theme';
 
 export const DocPage = customElement(
 	({ adoptStyleSheet, customCallback, connectedCallback, disconnectedCallback, refs }) => {
 		adoptStyleSheet(theme);
 		adoptStyleSheet(styles);
-		const [navOpen, _setNavOpen] = createSignal(false);
-		const [navOpenClass, setNavOpenClass] = createSignal('');
-		const setNavOpen = (value: boolean) => {
-			_setNavOpen(value);
-			setNavOpenClass(value ? 'open' : '');
-			if (refs.header === null) return;
-			refs.header.inert = !value;
-		};
+		const [navOpen, setNavOpen] = createSignal(false);
+		const navOpenClass = derived(() => (navOpen() ? 'open' : ''));
 		const toggleNav = customCallback(() => {
 			setNavOpen(!navOpen());
 		});
@@ -25,6 +19,10 @@ export const DocPage = customElement(
 		};
 		connectedCallback(() => {
 			openIfDesktop();
+			createEffect(() => {
+				if (refs.header === null) return;
+				refs.header.inert = !navOpen();
+			});
 			window.addEventListener('resize', openIfDesktop);
 		});
 		disconnectedCallback(() => {
