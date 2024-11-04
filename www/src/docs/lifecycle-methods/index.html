@@ -14,12 +14,14 @@
 		<th-doc-page>
 			<th-page-header>Lifecycle Methods</th-page-header>
 			<th-content-group>
-				<th-text>
-					Any lifecycle method you may need can be accessed from the params of your render function. The only difference
-					is that these are callback registrations, so the same callback you would normally write is just passed in
-					instead.
-				</th-text>
+				<th-text> Any lifecycle method you may need can be accessed from the params of your render function. </th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/lifecycle-method.ejs') %></th-code-block>
+
+				<th-text>
+					The only difference is that these are callback registrations, not the methods themselves. So the same function
+					you would normally write as a method is just passed in as a callback instead.
+				</th-text>
+				<th-code-block lang="ts"><%= include('_code-snippets/lifecycle-method-usage.ejs') %></th-code-block>
 
 				<th-text>
 					If you need to support forms, pass an options object as the second argument to
