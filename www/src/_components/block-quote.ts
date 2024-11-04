@@ -13,7 +13,9 @@ export const BlockQuote = customElement(({ adoptStyleSheet }) => {
 
 const styles = css`
 	blockquote {
+		padding: 0.3em 0;
 		padding-left: 1em;
 		border-left: 4px solid var(--color-site-2);
+		margin: 0.5em 1em;
 	}
 `;
