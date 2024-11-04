@@ -49,12 +49,19 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 						const textList = attr.value.split(signalBindingRegex);
 						createEffect(() => {
 							let newText = '';
+							let hasNull = false;
 							for (const text of textList) {
 								const uniqueKey = text.replace(/\{\{signal:(.+)\}\}/, '$1');
 								const signal = uniqueKey !== text ? signalMap.get(uniqueKey) : null;
-								newText += signal !== null ? signal() : text;
+								const value = signal !== null ? signal() : text;
+								if (value === null) hasNull = true;
+								newText += value;
 							}
-							child.setAttribute(attr.name, newText);
+							if (hasNull && newText === 'null') {
+								child.removeAttribute(attr.name);
+							} else {
+								child.setAttribute(attr.name, newText);
+							}
 						});
 					} else if (callbackBindingRegex.test(attr.value)) {
 						const getRootNode = child.getRootNode.bind(child);
