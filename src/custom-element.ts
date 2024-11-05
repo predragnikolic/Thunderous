@@ -27,6 +27,7 @@ export type RenderProps = {
 	formDisabledCallback: (fn: () => void) => void;
 	formResetCallback: (fn: () => void) => void;
 	formStateRestoreCallback: (fn: () => void) => void;
+	formAssociatedCallback: (fn: () => void) => void;
 	customCallback: (fn: () => void) => `{{callback:${string}}}`;
 	attrSignals: Record<string, Signal<string | null>>;
 	propSignals: Record<string, Signal<unknown>>;
@@ -67,6 +68,16 @@ const getPropName = (attrName: string) =>
 		.replace(/^([A-Z]+)/, (_, letter) => letter.toLowerCase())
 		.replace(/(-|_| )([a-zA-Z])/g, (_, letter) => letter.toUpperCase());
 
+/**
+ * Create a custom element that can be defined for use in the DOM.
+ * @example
+ * ```ts
+ * const MyElement = customElement(() => {
+ *   return html`<h1>Hello, World!</h1>`;
+ * });
+ * MyElement.define('my-element');
+ * ```
+ */
 export const customElement = (render: RenderFunction, options?: Partial<RenderOptions>): ElementResult => {
 	const {
 		formAssociated,
@@ -99,6 +110,7 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 		#connectedFns = new Set<() => void>();
 		#disconnectedFns = new Set<() => void>();
 		#adoptedCallbackFns = new Set<() => void>();
+		#formAssociatedCallbackFns = new Set<() => void>();
 		#formDisabledCallbackFns = new Set<() => void>();
 		#formResetCallbackFns = new Set<() => void>();
 		#formStateRestoreCallbackFns = new Set<() => void>();
@@ -133,6 +145,7 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 				connectedCallback: (fn) => this.#connectedFns.add(fn),
 				disconnectedCallback: (fn) => this.#disconnectedFns.add(fn),
 				adoptedCallback: (fn) => this.#adoptedCallbackFns.add(fn),
+				formAssociatedCallback: (fn) => this.#formAssociatedCallbackFns.add(fn),
 				formDisabledCallback: (fn) => this.#formDisabledCallbackFns.add(fn),
 				formResetCallback: (fn) => this.#formResetCallbackFns.add(fn),
 				formStateRestoreCallback: (fn) => this.#formStateRestoreCallbackFns.add(fn),
@@ -286,6 +299,11 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 				fn();
 			}
 		}
+		formAssociatedCallback() {
+			for (const fn of this.#formAssociatedCallbackFns) {
+				fn();
+			}
+		}
 		formDisabledCallback() {
 			for (const fn of this.#formDisabledCallbackFns) {
 				fn();
@@ -330,6 +348,16 @@ type Registry = {
 	getTagName: (element: CustomElementConstructor) => string | undefined;
 };
 
+/**
+ * Create a registry for custom elements.
+ * @example
+ * ```ts
+ * const registry = createRegistry();
+ * registry.register('my-element', MyElement);
+ * const tagName = registry.getTagName(MyElement);
+ * console.log(tagName); // 'MY-ELEMENT'
+ * ```
+ */
 export const createRegistry = (): Registry => {
 	const registry = new Map<CustomElementConstructor, string>();
 	return {
