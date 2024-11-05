@@ -1,5 +1,8 @@
 const MyElement = customElement(({ propSignals }) => {
   const [count, setCount] = propSignals['prop'];
-  // setCount() will also update the property in the DOM
+
+  // setCount() will also update the DOM property,
+  // eg. `document.querySelector('my-element').count`
+
   return html`<output>${count}</output>`;
 });

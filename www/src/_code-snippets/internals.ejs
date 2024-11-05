@@ -6,11 +6,12 @@ const MyElement = customElement((params) => {
     connectedCallback,
   } = params;
 
-  internals.setFormValue('hello world');
+  internals.role = 'button';
+
   connectedCallback(() => {
-    const childLink = elementRef.querySelector('a[href]'); // light DOM
-    const innerLink = root.querySelector('a[href]'); // shadow DOM
-    /* ... */
+    console.log(elementRef.querySelector('a[href]')); // light DOM
+    console.log(root.querySelector('a[href]')); // shadow DOM
   });
-  /* ... */
-}, { formAssociated: true });
+
+  // ...
+});

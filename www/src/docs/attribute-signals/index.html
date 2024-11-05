@@ -28,9 +28,9 @@
 					<th-code>MutationObserver</th-code>, and only the observed attributes will trigger the
 					<th-code>attributeChangedCallback</th-code>.
 				</th-text>
-				<th-code-block lang="ts"> <%= include('_code-snippets/observed-attributes.ejs') %> </th-code-block>
+				<th-code-block lang="ts"><%= include('_code-snippets/observed-attributes.ejs') %></th-code-block>
 				<th-text>Usage:</th-text>
-				<th-code-block lang="ts"> <%= include('_code-snippets/attributes-usage.ejs') %> </th-code-block>
+				<th-code-block lang="html"><%= include('_code-snippets/attributes-usage.ejs') %></th-code-block>
 				<th-block-quote>
 					NOTICE: Since <th-code>attrSignals</th-code> is a <th-code>Proxy</th-code> object, <em>any</em> property will
 					return a signal and auto-bind it to the attribute it corresponds with.

@@ -1,9 +1,11 @@
-const MyElement = customElement((params) => {
-  const {
-    adoptedCallback,
-    connectedCallback,
-    disconnectedCallback,
-    attributeChangedCallback,
-  } = params;
-  /* ... */
+const MyElement = customElement(({
+  adoptedCallback,
+  connectedCallback,
+  disconnectedCallback,
+  attributeChangedCallback,
+}) => {
+
+  // ...
+
+  return html`<div>My Element</div>`;
 });

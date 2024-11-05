@@ -21,12 +21,14 @@
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/event-binding.ejs') %></th-code-block>
 				<th-block-quote>
-					<p>
-						NOTICE: This uses the native HTML inline event-binding syntax. There is no special syntax for
-						<th-code>on</th-code> attributes, because it simply renders the reference to the host element.
-					</p>
-					<p>You will see something like this when you inspect the element in the browser:</p>
-					<th-code-block lang="html"> <%= include('_code-snippets/event-binding-inspect.ejs') %> </th-code-block>
+					<th-content-group>
+						<th-text>
+							NOTICE: This uses the native HTML inline event-binding syntax. There is no special syntax for
+							<th-code>on...</th-code> attributes, because it simply renders the reference to the host element.
+						</th-text>
+						<th-text>You will see something like this when you inspect the element in the browser:</th-text>
+						<th-code-block lang="html"> <%= include('_code-snippets/event-binding-inspect.ejs') %> </th-code-block>
+					</th-content-group>
 				</th-block-quote>
 			</th-content-group>
 		</th-doc-page>

@@ -16,7 +16,7 @@
 			<th-content-group>
 				<th-text>
 					The refs property exists for convenience to avoid manually querying the DOM. Since the DOM is only available
-					after rendering, refs will only work in and after the <th-code>connectedCallback</th-code> method.
+					after rendering, refs will be null until the <th-code>connectedCallback</th-code> runs in the lifecycle.
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/refs.ejs') %></th-code-block>
 			</th-content-group>

@@ -18,10 +18,11 @@
 				<th-code-block lang="ts"><%= include('_code-snippets/signals.ejs') %></th-code-block>
 				<th-text>
 					Signals are the new hot way to manage reactive state in your application. Combined with effects, they behave
-					similarly to observables, but subscribers are added automatically with each effect. Unlike traditional state,
-					where everything must run again using the new state, signals only trigger the effects that depend on them.
-					This way, you can make fine-grained updates directly, rather than incurring the cost of re-rendering
-					everything.
+					similarly to observables, but subscribers are added automatically with each effect.
+				</th-text>
+				<th-text>
+					Unlike traditional state, where the state changes and everything runs again, signals only trigger the effects
+					that depend on them.
 				</th-text>
 			</th-content-group>
 		</th-doc-page>

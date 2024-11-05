@@ -14,11 +14,13 @@
 		<th-doc-page>
 			<th-page-header>Binding Signals to Templates</th-page-header>
 			<th-content-group>
+				<th-content-header>How To Bind</th-content-header>
 				<th-text>
 					To bind signals to a template, use the provided <th-code>html</th-code> tagged template function to pass them
 					in. By binding signals to templates, you allow fine-grained updates to be made directly to DOM nodes every
 					time the signal changes, without requiring any diffing or re-rendering.
 				</th-text>
+				<th-text> Currently, binding is only supported in attribute values and text content. </th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/binding-signals.ejs') %></th-code-block>
 				<th-text>
 					Notice we are not <em>running</em> the signal's getter above. This is intentional, as that responsibility is
@@ -26,10 +28,11 @@
 					<em>If you run the getter yourself, the template will not update when the signal changes.</em>
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/binding-signals-examples.ejs') %></th-code-block>
+				<th-content-header>How To Remove Attributes</th-content-header>
 				<th-text>
-					Currently, binding is only supported in attribute values and text content. To remove an attribute, set the
-					value to
-					<th-code>null</th-code>.
+					Sometimes, setting an attribute to false is not sufficient, and the entire attribute must be added or removed.
+					To remove an attribute, set the value to <th-code>null</th-code>. To add it back, you can set it to an empty
+					string.
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/binding-signals-null.ejs') %></th-code-block>
 				<th-block-quote>

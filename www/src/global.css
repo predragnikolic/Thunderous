@@ -8,3 +8,12 @@ body {
 	height: 100%;
 	font-family: 'Kanit', sans-serif;
 }
+
+ul {
+	margin: 0;
+	padding-left: 1.5em;
+}
+
+li:not(:first-child) {
+	margin-top: 1em;
+}

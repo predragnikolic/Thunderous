@@ -19,6 +19,48 @@
 				<th-content-header>Usage</th-content-header>
 				<th-text>Thunderous makes it easy to define smaller components with less noise.</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/usage.ejs') %></th-code-block>
+
+				<th-content-header>What's Exported?</th-content-header>
+				<ul>
+					<li>
+						<th-text>
+							<th-code>customElement</th-code> - A function for writing custom elements with a more declarative syntax.
+							See <th-link href="/docs/defining-custom-elements">Defining Custom Elements</th-link>.
+						</th-text>
+					</li>
+					<li>
+						<th-text>
+							<th-code>html</th-code> - A tagged template function for creating HTML templates. All input is sanitized.
+							Signals can be bound to templates using this function. See
+							<th-link href="/docs/binding-signals">Binding Signals</th-link>.
+						</th-text>
+					</li>
+					<li>
+						<th-text>
+							<th-code>css</th-code> - A tagged template function for constructing style sheet objects that can be
+							adopted by shadow roots and documents. See
+							<th-link href="/docs/adopted-style-sheets">Adopted Style Sheets</th-link>.
+						</th-text>
+					</li>
+					<li>
+						<th-text>
+							<th-code>createSignal</th-code> - A function for creating signals that can be bound to templates. See
+							<th-link href="/docs/binding-signals">Binding Signals</th-link>.
+						</th-text>
+					</li>
+					<li>
+						<th-text>
+							<th-code>createEffect</th-code> - A function for creating an effect that subscribes to the signals used
+							within its body. See <th-link href="/docs/effects">Effects</th-link>.
+						</th-text>
+					</li>
+					<li>
+						<th-text>
+							<th-code>derived</th-code> - A function for creating a derived signal that depends on other signals. See
+							<th-link href="/docs/derived-signals">Derived Signals</th-link>.
+						</th-text>
+					</li>
+				</ul>
 			</th-content-group>
 		</th-doc-page>
 		<script type="module" src="/main.ts"></script>
