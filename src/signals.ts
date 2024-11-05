@@ -7,6 +7,15 @@ let subscriber: (() => void) | null = null;
 const updateQueue: Set<() => void> = new Set();
 let isBatchingUpdates = false;
 
+/**
+ * Create a signal with an initial value.
+ * @example
+ * ```ts
+ * const [getCount, setCount] = createSignal(0);
+ * const increment = () => setCount(getCount() + 1);
+ * const decrement = () => setCount(getCount() - 1);
+ * ```
+ */
 export const createSignal = <T = undefined>(initVal?: T, options?: SignalOptions): Signal<T> => {
 	const subscribers = new Set<() => void>();
 	let value = initVal as T;
@@ -68,6 +77,14 @@ export const createSignal = <T = undefined>(initVal?: T, options?: SignalOptions
 	return [getter, setter];
 };
 
+/**
+ * Create a derived signal that depends on other signals.
+ * @example
+ * ```ts
+ * const [getCount, setCount] = createSignal(0);
+ * const doubleCount = derived(() => getCount() * 2);
+ * ```
+ */
 export const derived = <T>(fn: () => T): SignalGetter<T> => {
 	const [getter, setter] = createSignal<T>();
 	createEffect(() => {
@@ -80,6 +97,16 @@ export const derived = <T>(fn: () => T): SignalGetter<T> => {
 	return getter;
 };
 
+/**
+ * Create an effect that runs when signals change.
+ * @example
+ * ```ts
+ * const [getCount, setCount] = createSignal(0);
+ * createEffect(() => {
+ *  console.log('Count:', getCount());
+ * });
+ * ```
+ */
 export const createEffect = (fn: () => void) => {
 	subscriber = fn;
 	try {
