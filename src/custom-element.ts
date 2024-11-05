@@ -163,6 +163,7 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 							if (!(prop in this.#propSignals)) this.#propSignals[prop] = createSignal<unknown>(null);
 							const [getter, _setter] = this.#propSignals[prop] as Signal<unknown>;
 							const setter = (newValue: unknown) => {
+								// @ts-expect-error // TODO: look into this
 								this[prop] = newValue;
 								_setter(newValue);
 							};
@@ -273,6 +274,7 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 			attrSetter?.(newValue);
 			const prop = this.#attributesAsPropertiesMap.get(name);
 			if (prop !== undefined) {
+				// @ts-expect-error // TODO: look into this
 				this[prop.prop] = newValue === null ? null : prop.coerce(newValue);
 			}
 			for (const fn of this.#attributeChangedFns) {
