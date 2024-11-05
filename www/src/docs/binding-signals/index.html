@@ -16,29 +16,38 @@
 			<th-content-group>
 				<th-text>
 					To bind signals to a template, use the provided <th-code>html</th-code> tagged template function to pass them
-					in.
+					in. By binding signals to templates, you allow fine-grained updates to be made directly to DOM nodes every
+					time the signal changes, without requiring any diffing or re-rendering.
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/binding-signals.ejs') %></th-code-block>
 				<th-text>
-					Binding may only occur in attribute values and text content. To remove an attribute, set the value to
+					Notice we are not <em>running</em> the signal's getter above. This is intentional, as that responsibility is
+					delegated to the template for proper binding.
+					<em>If you run the getter in the template, it will not update the template when the signal changes.</em>
+				</th-text>
+				<th-code-block lang="ts"><%= include('_code-snippets/binding-signals-examples.ejs') %></th-code-block>
+				<th-text>
+					Currently, binding is only supported in attribute values and text content. To remove an attribute, set the
+					value to
 					<th-code>null</th-code>.
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/binding-signals-null.ejs') %></th-code-block>
 				<th-block-quote>
-					<p>
-						NOTICE: we are not <em>running</em> the signal's getter above. This is intentional, as we delegate that
-						responsibility to the template for proper binding.
-					</p>
-					<p>
-						By binding signals to templates, you allow fine-grained updates to be made directly to DOM nodes every time
-						the signal changes, without requiring any diffing or re-rendering.
-					</p>
-					<p>
-						This also works for <th-code>css</th-code>, but bear in mind that passing signals to a shared
-						<th-code>CSSStyleSheet</th-code> may not have the effect you expect. Sharing Style Sheets across many
-						component instances is best for performance, but signals will update every instance of each component with
-						that approach. The suggested alternative is to write static CSS and toggle classes in the HTML instead.
-					</p>
+					<th-content-group>
+						<th-text>
+							Binding also works for the
+							<th-link href="/docs/adopted-style-sheets"><th-code>css</th-code> tagged template function</th-link>, but
+							bear in mind that passing signals to a shared <th-code>CSSStyleSheet</th-code> may not have the effect you
+							expect. Signals bound to externally defined style sheets will reflect across all instances of the same
+							component, not just the current one.
+						</th-text>
+						<th-text>
+							For best performance, the suggested alternative is to write static CSS and toggle classes in the HTML
+							instead. That said, you may also get around this limitation by creating a new
+							<th-code>CSSStyleSheet</th-code>
+							for each instance of the component.
+						</th-text>
+					</th-content-group>
 				</th-block-quote>
 			</th-content-group>
 		</th-doc-page>

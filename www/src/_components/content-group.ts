@@ -1,22 +1,30 @@
 import { html, css, customElement } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const ContentGroup = customElement(({ adoptStyleSheet }) => {
+export const ContentGroup = customElement(({ adoptStyleSheet, connectedCallback, elementRef, refs }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(styles);
-	return html`<div><slot></slot></div>`;
+	connectedCallback(() => {
+		const isNested = elementRef.parentElement?.closest('th-content-group') !== null;
+		if (isNested && refs['content-group'] !== null) {
+			refs['content-group'].classList.add('nested');
+		}
+	});
+	return html`<div ref="content-group" class="content-group"><slot></slot></div>`;
 });
 
 const styles = css`
-	div {
+	.content-group {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
 		gap: 1em;
-		padding: 2em;
 		max-width: 50em;
 	}
+	.content-group:not(.nested) {
+		padding: 2em;
+	}
 	@media (min-width: 60em) {
-		div {
+		.content-group:not(.nested) {
 			padding: 2em 4em;
 		}
 	}
