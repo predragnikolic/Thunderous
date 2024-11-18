@@ -1,8 +1,8 @@
-import { createSignal, derived, css, html, customElement, createRegistry, Signal } from 'thunderous';
+import { derived, css, html, customElement, createRegistry, Signal } from 'thunderous';
 
-const MyElement = customElement(
+const MyElement = customElement<{ count: number }>(
 	({ attrSignals, propSignals, customCallback, internals, adoptStyleSheet }) => {
-		const [count, setCount] = propSignals.count as Signal<number>;
+		const [count, setCount] = propSignals.count;
 		setCount(0);
 		const [heading] = attrSignals.heading;
 
