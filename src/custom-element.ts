@@ -190,10 +190,11 @@ export const customElement = <Props extends CustomElementProps>(
 						const getter: SignalGetter<Props[typeof prop]> = () => {
 							const value = _getter();
 							if (value === undefined)
-								throw new Error("You must set an initial value before calling the signal's getter.");
+								throw new Error(
+									`\n\nProperty: ${prop}\n\nYou must set an initial value before calling a property signal's getter.\n`,
+								);
 							return value;
 						};
-						``;
 						return [getter, setter];
 					},
 					set: () => {
