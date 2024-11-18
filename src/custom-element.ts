@@ -1,6 +1,6 @@
 import { setInnerHTML } from './html-helpers';
 import { isCSSStyleSheet, Styles } from './render';
-import { createSignal, Signal } from './signals';
+import { createSignal, Signal, SignalGetter, SignalSetter } from './signals';
 
 declare global {
 	interface DocumentFragment {
@@ -16,7 +16,9 @@ type ElementResult = {
 
 type AttributeChangedCallback = (name: string, oldValue: string | null, newValue: string | null) => void;
 
-export type RenderProps = {
+type CustomElementProps = Record<PropertyKey, unknown>;
+
+export type RenderArgs<Props extends CustomElementProps> = {
 	elementRef: HTMLElement;
 	root: ShadowRoot | HTMLElement;
 	internals: ElementInternals;
@@ -30,7 +32,9 @@ export type RenderProps = {
 	formAssociatedCallback: (fn: () => void) => void;
 	customCallback: (fn: () => void) => `{{callback:${string}}}`;
 	attrSignals: Record<string, Signal<string | null>>;
-	propSignals: Record<string, Signal<unknown>>;
+	propSignals: {
+		[K in keyof Props]: Signal<Props[K]>;
+	};
 	refs: Record<string, HTMLElement | null>;
 	adoptStyleSheet: (stylesheet: Styles) => void;
 };
@@ -61,7 +65,7 @@ type AttrProp<T = unknown> = {
 	value: T | null;
 };
 
-export type RenderFunction = (props: RenderProps) => DocumentFragment;
+export type RenderFunction<Props extends CustomElementProps> = (args: RenderArgs<Props>) => DocumentFragment;
 
 const getPropName = (attrName: string) =>
 	attrName
@@ -78,7 +82,10 @@ const getPropName = (attrName: string) =>
  * MyElement.define('my-element');
  * ```
  */
-export const customElement = (render: RenderFunction, options?: Partial<RenderOptions>): ElementResult => {
+export const customElement = <Props extends CustomElementProps>(
+	render: RenderFunction<Props>,
+	options?: Partial<RenderOptions>,
+): ElementResult => {
 	const {
 		formAssociated,
 		observedAttributes: _observedAttributes,
@@ -105,7 +112,9 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 	class CustomElement extends HTMLElement {
 		#attributesAsPropertiesMap = new Map(attributesAsPropertiesMap);
 		#attrSignals: Record<string, Signal<string | null> | undefined> = {};
-		#propSignals: Record<string, Signal<unknown> | undefined> = {};
+		#propSignals = {} as {
+			[K in keyof Props]: Signal<Props[K] | undefined>;
+		};
 		#attributeChangedFns = new Set<AttributeChangedCallback>();
 		#connectedFns = new Set<() => void>();
 		#disconnectedFns = new Set<() => void>();
@@ -169,25 +178,29 @@ export const customElement = (render: RenderFunction, options?: Partial<RenderOp
 						},
 					},
 				),
-				propSignals: new Proxy(
-					{},
-					{
-						get: (_, prop: string) => {
-							if (!(prop in this.#propSignals)) this.#propSignals[prop] = createSignal<unknown>(null);
-							const [getter, _setter] = this.#propSignals[prop] as Signal<unknown>;
-							const setter = (newValue: unknown) => {
-								// @ts-expect-error // TODO: look into this
-								this[prop] = newValue;
-								_setter(newValue);
-							};
-							return [getter, setter];
-						},
-						set: () => {
-							console.error('Signals must be assigned via setters.');
-							return false;
-						},
+				propSignals: new Proxy({} as RenderArgs<Props>['propSignals'], {
+					get: (_, prop: Extract<keyof Props, string>) => {
+						if (!(prop in this.#propSignals)) this.#propSignals[prop] = createSignal<Props[typeof prop] | undefined>();
+						const [_getter, _setter] = this.#propSignals[prop];
+						const setter: SignalSetter<Props[typeof prop]> = (newValue: Props[typeof prop]) => {
+							// @ts-expect-error // TODO: look into this
+							this[prop] = newValue;
+							_setter(newValue);
+						};
+						const getter: SignalGetter<Props[typeof prop]> = () => {
+							const value = _getter();
+							if (value === undefined)
+								throw new Error("You must set an initial value before calling the signal's getter.");
+							return value;
+						};
+						``;
+						return [getter, setter];
 					},
-				),
+					set: () => {
+						console.error('Signals must be assigned via setters.');
+						return false;
+					},
+				}),
 				refs: new Proxy(
 					{},
 					{
