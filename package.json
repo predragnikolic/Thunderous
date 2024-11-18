@@ -30,7 +30,8 @@
 	"homepage": "https://github.com/Thunder-Solutions/Thunderous#readme",
 	"license": "MIT",
 	"scripts": {
-		"demo": "cd demo && rm -rf node_modules && npm i && npm start",
+		"demo": "cd demo && npm start",
+		"www": "cd www && npm run dev",
 		"build": "tsup src/index.ts --format cjs,esm --dts --no-clean"
 	},
 	"devDependencies": {

@@ -35,6 +35,11 @@
 
 				<th-code-block lang="ts"><%= include('_code-snippets/property-signals.ejs') %></th-code-block>
 
+				<th-block-quote>
+					NOTICE: The signal's getter will throw an error if the property is accessed before its setter is initially
+					called. This maintains strong typing and prevents unexpected behavior.
+				</th-block-quote>
+
 				<th-content-header>Syncing Attributes With Properties</th-content-header>
 				<th-text>
 					There is also a way to sync attributes with properties by coercing the strings into the desired type, though

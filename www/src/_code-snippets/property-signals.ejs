@@ -1,5 +1,6 @@
-const MyElement = customElement(({ propSignals }) => {
-  const [count, setCount] = propSignals['prop'];
+const MyElement = customElement<{ count: number }>(({ propSignals }) => {
+  const [count, setCount] = propSignals['count'];
+  setCount(0);
 
   // setCount() will also update the DOM property,
   // eg. `document.querySelector('my-element').count`
