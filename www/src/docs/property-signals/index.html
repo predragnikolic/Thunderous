@@ -35,9 +35,14 @@
 
 				<th-code-block lang="ts"><%= include('_code-snippets/property-signals.ejs') %></th-code-block>
 
+				<th-text>
+					To strongly type the property, pass the property types as a generic to <th-code>customElement</th-code>.
+					Without this, the signal's type will default to <th-code>Signal&lt;unknown&gt;</th-code>.
+				</th-text>
+
 				<th-block-quote>
-					NOTICE: The signal's getter will throw an error if the property is accessed before its setter is initially
-					called. This maintains strong typing and prevents unexpected behavior.
+					NOTICE: <th-code>setCount(0)</th-code> is immediately invoked. The signal's getter will throw an error at
+					runtime if the property is accessed before its value is initialized.
 				</th-block-quote>
 
 				<th-content-header>Syncing Attributes With Properties</th-content-header>
