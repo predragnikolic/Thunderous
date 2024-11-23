@@ -3,6 +3,7 @@ import { Code, CodeBlock } from './_components/code';
 import { ContentGroup } from './_components/content-group';
 import { DocPage } from './_components/doc-page';
 import { ContentHeader, PageHeader } from './_components/header';
+import { Icon } from './_components/icon';
 import { InvisibleLink, Link, LinkButton } from './_components/link';
 import { Page } from './_components/page';
 import { Splash } from './_components/splash';
@@ -21,6 +22,7 @@ ContentGroup.define('th-content-group');
 Code.define('th-code');
 CodeBlock.define('th-code-block');
 BlockQuote.define('th-block-quote');
+Icon.define('th-icon');
 
 // correct the path since static HTML is served from the root of each directory
 if (!location.pathname.endsWith('/')) {

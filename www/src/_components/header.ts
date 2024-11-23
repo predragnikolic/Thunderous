@@ -9,12 +9,18 @@ export const PageHeader = customElement(({ adoptStyleSheet }) => {
 			<h2>
 				<slot></slot>
 			</h2>
+			<a href="https://github.com/Thunder-Solutions/Thunderous">
+				<th-icon icon-name="github"></th-icon>
+			</a>
 		</header>
 	`;
 });
 
 const pageHeaderStyles = css`
 	header {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: center;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		padding-bottom: 0.8em;
 		margin: 1em;
@@ -22,6 +28,21 @@ const pageHeaderStyles = css`
 	}
 	h2 {
 		margin: 0;
+	}
+	th-icon {
+		font-size: 1.6em;
+	}
+	a,
+	a:visited,
+	a:hover,
+	a:active {
+		color: inherit;
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+	a:hover {
+		color: var(--color-site-2);
+		transform: scale(1.1);
 	}
 	@media (min-width: 60em) {
 		header {
