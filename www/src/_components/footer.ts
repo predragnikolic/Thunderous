@@ -18,12 +18,19 @@ const styles = css`
 		background-color: var(--color-site-1-1);
 		color: var(--color-site-1-c);
 		padding: 1rem;
-		text-align: center;
+		text-align: end;
+	}
+	small {
+		padding-right: 3em;
 	}
 	.splash {
 		position: fixed;
 		bottom: 0;
 		left: 0;
 		right: 0;
+		text-align: center;
+	}
+	.splash small {
+		padding-right: 0;
 	}
 `;
