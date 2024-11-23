@@ -1,6 +1,6 @@
 {
 	"name": "thunderous-docs",
-	"version": "0.3.4",
+	"version": "0.4.1",
 	"description": "Documentation for the Thunderous NPM library.",
 	"scripts": {
 		"dev": "vite",
