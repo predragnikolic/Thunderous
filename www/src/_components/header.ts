@@ -38,11 +38,22 @@ const pageHeaderStyles = css`
 	a:active {
 		color: inherit;
 		text-decoration: none;
+	}
+	a {
 		transition: all 0.2s;
+		display: flex;
+		place-items: center;
+		place-content: center;
+		padding-right: 2.4em;
 	}
 	a:hover {
 		color: var(--color-site-2);
 		transform: scale(1.1);
+	}
+	@media (min-width: 50em) {
+		a {
+			padding-right: 0;
+		}
 	}
 	@media (min-width: 60em) {
 		header {

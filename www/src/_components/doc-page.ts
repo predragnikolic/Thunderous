@@ -108,6 +108,7 @@ export const DocPage = customElement(({ adoptStyleSheet, customCallback, connect
 				<main>
 					<slot></slot>
 				</main>
+				<th-footer></th-footer>
 			</div>
 		</th-page>
 	`;
@@ -123,7 +124,7 @@ const styles = css`
 		height: 3em;
 		width: 3em;
 		position: fixed;
-		top: 1em;
+		top: 1.15em;
 		right: 1em;
 		cursor: pointer;
 		background: none;
@@ -215,9 +216,13 @@ const styles = css`
 	.link::part(a) {
 		box-sizing: border-box;
 	}
+	main {
+		grid-row-end: span 2;
+	}
 	@media (min-width: 50em) {
 		.doc-page {
 			grid-template-columns: minmax(16em, 1fr) minmax(0, 2fr);
+			grid-template-rows: minmax(0, 1fr) auto;
 		}
 		header {
 			position: static;
