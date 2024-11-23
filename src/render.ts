@@ -1,5 +1,5 @@
 import { parseFragment, ElementParent } from './html-helpers';
-import { createEffect } from './signals';
+import { createEffect, Signal, SignalGetter } from './signals';
 import DOMPurify from 'dompurify';
 
 declare global {
@@ -10,12 +10,12 @@ declare global {
 
 export const html = (strings: TemplateStringsArray, ...values: unknown[]): DocumentFragment => {
 	let innerHTML = '';
-	const signalMap = new Map();
+	const signalMap = new Map<string, SignalGetter<unknown>>();
 	strings.forEach((string, i) => {
 		let value = values[i] ?? '';
 		if (typeof value === 'function') {
 			const uniqueKey = crypto.randomUUID();
-			signalMap.set(uniqueKey, value);
+			signalMap.set(uniqueKey, value as SignalGetter<unknown>);
 			value = `{{signal:${uniqueKey}}}`;
 		}
 		innerHTML += string + String(value);
@@ -30,17 +30,21 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 				const textList = child.data.split(signalBindingRegex);
 				textList.forEach((text, i) => {
 					const uniqueKey = text.replace(/\{\{signal:(.+)\}\}/, '$1');
-					const signal = uniqueKey !== text ? signalMap.get(uniqueKey) : null;
-					const newText = signal !== null ? signal() : text;
-					const newNode = new Text(newText);
+					const signal = uniqueKey !== text ? signalMap.get(uniqueKey) : undefined;
+					const newValue = signal !== undefined ? signal() : text;
+					const newNode = (() => {
+						if (typeof newValue === 'string') return new Text(newValue);
+						if (newValue instanceof DocumentFragment) return newValue;
+						return new Text('');
+					})();
 					if (i === 0) {
 						child.replaceWith(newNode);
 					} else {
 						element.insertBefore(newNode, child.nextSibling);
 					}
-					if (signal !== null) {
+					if (signal !== undefined && newNode instanceof Text) {
 						createEffect(() => {
-							newNode.data = signal();
+							newNode.data = signal() as string;
 						});
 					}
 				});
@@ -54,8 +58,8 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 							let hasNull = false;
 							for (const text of textList) {
 								const uniqueKey = text.replace(/\{\{signal:(.+)\}\}/, '$1');
-								const signal = uniqueKey !== text ? signalMap.get(uniqueKey) : null;
-								const value = signal !== null ? signal() : text;
+								const signal = uniqueKey !== text ? signalMap.get(uniqueKey) : undefined;
+								const value = signal !== undefined ? signal() : text;
 								if (value === null) hasNull = true;
 								newText += value;
 							}
