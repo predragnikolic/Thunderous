@@ -1,5 +1,5 @@
 import { parseFragment, ElementParent } from './html-helpers';
-import { createEffect, Signal, SignalGetter } from './signals';
+import { createEffect, SignalGetter } from './signals';
 import DOMPurify from 'dompurify';
 
 declare global {
