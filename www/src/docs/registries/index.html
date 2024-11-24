@@ -35,17 +35,12 @@
 				</th-text>
 				<th-code-block lang="sh">npm i @webcomponents/scoped-custom-element-registry</th-code-block>
 				<th-code-block lang="ts"><%= include('_code-snippets/scoped-registry.ejs') %></th-code-block>
-				<!-- <th-block-quote>
-					<th-text
-						>This is not to be confused with
-						<th-link
-							href="https://github.com/WICG/webcomponents/blob/gh-pages/proposals/Scoped-Custom-Element-Registries.md"
-							>scoped element registries</th-link
-						>, which allow multiple definitions for a single tag name to exist in different shadow roots. This is a
-						global registry for tracking custom elements and their tag names.</th-text
-					>
-					<th-text>A feature to support scoped registries is currently under development.</th-text>
-				</th-block-quote> -->
+				<th-block-quote>
+					NOTE: To access the native <th-code>CustomElementRegistry</th-code> instance, use
+					<th-code>registry.eject()</th-code>. If the registry was not scoped, this will return the global
+					<th-code>customElements</th-code> object. To check if the registry was scoped, use the boolean
+					<th-code>registry.scoped</th-code>.
+				</th-block-quote>
 			</th-content-group>
 		</th-doc-page>
 		<script type="module" src="/main.ts"></script>
