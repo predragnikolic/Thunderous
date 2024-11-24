@@ -103,8 +103,6 @@ export const customElement = <Props extends CustomElementProps>(
 			? shadowRootOptions.registry
 			: shadowRootOptions.registry?.eject();
 
-	console.log(shadowRootOptions);
-
 	// must set observedAttributes prior to defining the class
 	const observedAttributesSet = new Set(_observedAttributes);
 	const attributesAsPropertiesMap = new Map<string, AttrProp>();
@@ -249,7 +247,7 @@ export const customElement = <Props extends CustomElementProps>(
 			setInnerHTML(root, fragment);
 
 			// this is a workaround for a bug in the scoped elements polyfill
-			root.innerHTML = root.innerHTML;
+			// root.innerHTML = root.innerHTML; // this wipes out the reactivity, need another way around this
 		}
 		static get formAssociated() {
 			return formAssociated;
@@ -358,7 +356,6 @@ export const customElement = <Props extends CustomElementProps>(
 	const elementResult: ElementResult = {
 		define(tagName) {
 			const registry = _registry?.scoped ? _registry.eject() : customElements;
-			console.log(tagName, registry);
 			if (registry.get(tagName) !== undefined) {
 				console.warn(`Custom element "${tagName}" was already defined. Skipping...`);
 				return this;
