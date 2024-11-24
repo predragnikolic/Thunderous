@@ -1,0 +1,9 @@
+import { createRegistry, customElement, html } from 'thunderous';
+
+const registry = createRegistry();
+
+const MyElement = customElement(() => {
+  return html`<div>My Element</div>`;
+});
+
+MyElement.register(registry);

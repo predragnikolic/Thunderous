@@ -36,9 +36,17 @@
 						</th-text>
 						<th-code-block lang="ts"><%= include('_code-snippets/eject.ejs') %></th-code-block>
 					</li>
+					<li>
+						<th-text>
+							<th-code>ElementResult.register()</th-code> allows you to register the custom element with a registry. See
+							<th-link href="/docs/registries/">Registries</th-link> for more information.
+						</th-text>
+						<th-code-block lang="ts"><%= include('_code-snippets/registry.ejs') %></th-code-block>
+					</li>
 				</ul>
 				<th-text>
-					These may also be chained together, like <th-code>MyElement.define('my-element').eject()</th-code>.
+					These may also be chained together, like
+					<th-code>MyElement.register(registry).define('my-element').eject()</th-code>.
 				</th-text>
 			</th-content-group>
 		</th-doc-page>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="Documentation for the Thunderous library." />
+		<meta property="og:image" content="/meta.png" />
+		<meta name="twitter:image" content="/meta.png" />
+		<title>Thunderous | Registries</title>
+		<link rel="stylesheet" href="/global.css" />
+		<link rel="favicon" href="/favicon.ico" />
+	</head>
+	<body>
+		<th-doc-page>
+			<th-page-header>Registries</th-page-header>
+			<th-content-group>
+				<th-text>
+					The <th-code>createRegistry()</th-code> function is used to create a registry for custom elements.
+				</th-text>
+				<th-code-block lang="ts"><%= include('_code-snippets/registry.ejs') %></th-code-block>
+				<th-text>
+					This allows you to delegate custom element definitions to the consumer of your library, by using their
+					associated classes to look up tag names dynamically. This can be useful when you need to select a custom
+					element whose tag name is variable.
+				</th-text>
+				<th-code-block lang="ts"><%= include('_code-snippets/registry-tag-name.ejs') %></th-code-block>
+				<th-block-quote>
+					<th-text
+						>This is not to be confused with
+						<th-link
+							href="https://github.com/WICG/webcomponents/blob/gh-pages/proposals/Scoped-Custom-Element-Registries.md"
+							>scoped element registries</th-link
+						>, which allow multiple definitions for a single tag name to exist in different shadow roots. This is a
+						global registry for tracking custom elements and their tag names.</th-text
+					>
+					<th-text>A feature to support scoped registries is currently under development.</th-text>
+				</th-block-quote>
+			</th-content-group>
+		</th-doc-page>
+		<script type="module" src="/main.ts"></script>
+	</body>
+</html>
