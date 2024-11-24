@@ -24,7 +24,18 @@
 					element whose tag name is variable.
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/registry-tag-name.ejs') %></th-code-block>
-				<th-block-quote>
+				<th-text>
+					To enable
+					<th-link
+						href="https://github.com/WICG/webcomponents/blob/gh-pages/proposals/Scoped-Custom-Element-Registries.md"
+						>scoped custom element registries</th-link
+					>, you must install and import the polyfill, then pass <th-code>scoped: true</th-code> to the arguments of
+					<th-code>createRegistry()</th-code>. This allows you to define custom elements with the same tag name in
+					different shadow roots by passing the registry to the <th-code>shadowRootOptions</th-code>.
+				</th-text>
+				<th-code-block lang="sh">npm i @webcomponents/scoped-custom-element-registry</th-code-block>
+				<th-code-block lang="ts"><%= include('_code-snippets/scoped-registry.ejs') %></th-code-block>
+				<!-- <th-block-quote>
 					<th-text
 						>This is not to be confused with
 						<th-link
@@ -34,7 +45,7 @@
 						global registry for tracking custom elements and their tag names.</th-text
 					>
 					<th-text>A feature to support scoped registries is currently under development.</th-text>
-				</th-block-quote>
+				</th-block-quote> -->
 			</th-content-group>
 		</th-doc-page>
 		<script type="module" src="/main.ts"></script>
