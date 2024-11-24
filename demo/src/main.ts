@@ -1,4 +1,6 @@
-import { derived, css, html, customElement, createRegistry, Signal } from 'thunderous';
+import { derived, css, html, customElement, createRegistry } from 'thunderous';
+
+const registry = createRegistry();
 
 const MyElement = customElement<{ count: number }>(
 	({ attrSignals, propSignals, customCallback, internals, adoptStyleSheet }) => {
@@ -48,11 +50,14 @@ const MyElement = customElement<{ count: number }>(
 		`;
 	},
 	{ formAssociated: true, observedAttributes: ['heading'], attributesAsProperties: [['count', Number]] },
-);
+).register(registry);
 
-const registry = createRegistry();
+requestAnimationFrame(() => {
+	const tagName = registry.getTagName(MyElement);
+	console.log(tagName);
+});
 
-MyElement.define('my-element').register(registry);
+MyElement.define('my-element');
 
 const myElement = document.querySelector('my-element')!;
 

@@ -335,7 +335,15 @@ export const customElement = <Props extends CustomElementProps>(
 		}
 	}
 	let _tagname: string | null = null;
-	return {
+	let _registry: Registry | null = null;
+	let _registered = false;
+	const register = () => {
+		if (_tagname === null || _registry === null || _registered) return;
+		_registry.register(_tagname, CustomElement);
+		_registry.register(_tagname, elementResult);
+		_registered = true;
+	};
+	const elementResult: ElementResult = {
 		define(tagname) {
 			if (customElements.get(tagname) !== undefined) {
 				console.warn(`Custom element "${tagname}" was already defined. Skipping...`);
@@ -343,27 +351,31 @@ export const customElement = <Props extends CustomElementProps>(
 			}
 			customElements.define(tagname, CustomElement);
 			_tagname = tagname;
+			register();
 			return this;
 		},
 		register(registry) {
-			if (_tagname === null) {
-				console.error('Custom element must be defined before registering.');
-				return this;
-			}
-			registry.register(_tagname, CustomElement);
+			_registry = registry;
+			register();
 			return this;
 		},
 		eject: () => CustomElement,
 	};
+	return elementResult;
 };
 
 type Registry = {
-	register: (tagName: string, element: CustomElementConstructor) => void;
-	getTagName: (element: CustomElementConstructor) => string | undefined;
+	register: (tagName: string, element: CustomElementConstructor | ElementResult) => void;
+	getTagName: (element: CustomElementConstructor | ElementResult) => string | undefined;
 };
 
 /**
  * Create a registry for custom elements.
+ *
+ * This allows you to delegate custom element definitions to the consumer of your library,
+ * by using their associated classes to look up tag names dynamically.
+ *
+ * This can be useful when you need to select a custom element whose tag name is variable.
  * @example
  * ```ts
  * const registry = createRegistry();
@@ -373,15 +385,15 @@ type Registry = {
  * ```
  */
 export const createRegistry = (): Registry => {
-	const registry = new Map<CustomElementConstructor, string>();
+	const registry = new Map<CustomElementConstructor | ElementResult, string>();
 	return {
-		register: (tagName: string, element: CustomElementConstructor) => {
+		register: (tagName: string, element: CustomElementConstructor | ElementResult) => {
 			if (registry.has(element)) {
 				console.warn(`Custom element class "${element.constructor.name}" was already registered. Skipping...`);
 				return;
 			}
 			registry.set(element, tagName.toUpperCase());
 		},
-		getTagName: (element: CustomElementConstructor) => registry.get(element),
+		getTagName: (element: CustomElementConstructor | ElementResult) => registry.get(element),
 	};
 };
