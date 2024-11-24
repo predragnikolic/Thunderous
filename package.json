@@ -50,5 +50,13 @@
 	},
 	"dependencies": {
 		"dompurify": "^3.2.1"
+	},
+	"peerDependenciesMeta": {
+		"@webcomponents/scoped-custom-element-registry": {
+			"optional": true
+		}
+	},
+	"peerDependencies": {
+		"@webcomponents/scoped-custom-element-registry": "^0.0.9"
 	}
 }

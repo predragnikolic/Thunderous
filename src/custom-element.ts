@@ -10,7 +10,7 @@ declare global {
 
 type ElementResult = {
 	define: (tagname: `${string}-${string}`) => ElementResult;
-	register: (registry: Registry) => ElementResult;
+	register: (registry: RegistryResult) => ElementResult;
 	eject: () => CustomElementConstructor;
 };
 
@@ -46,7 +46,10 @@ type RenderOptions = {
 	observedAttributes: string[];
 	attributesAsProperties: [string, Coerce][];
 	attachShadow: boolean;
-	shadowRootOptions: ShadowRootInit;
+	shadowRootOptions: Partial<ShadowRootInit> & {
+		customElements?: CustomElementRegistry; // necessary with the polyfill
+		registry?: CustomElementRegistry | RegistryResult; // future proofing
+	};
 };
 
 const DEFAULT_RENDER_OPTIONS: RenderOptions = {
@@ -95,6 +98,12 @@ export const customElement = <Props extends CustomElementProps>(
 	} = { ...DEFAULT_RENDER_OPTIONS, ...options };
 
 	const shadowRootOptions = { ...DEFAULT_RENDER_OPTIONS.shadowRootOptions, ..._shadowRootOptions };
+	shadowRootOptions.registry = shadowRootOptions.customElements =
+		shadowRootOptions.registry instanceof CustomElementRegistry
+			? shadowRootOptions.registry
+			: shadowRootOptions.registry?.eject();
+
+	console.log(shadowRootOptions);
 
 	// must set observedAttributes prior to defining the class
 	const observedAttributesSet = new Set(_observedAttributes);
@@ -124,7 +133,7 @@ export const customElement = <Props extends CustomElementProps>(
 		#formResetCallbackFns = new Set<() => void>();
 		#formStateRestoreCallbackFns = new Set<() => void>();
 		__customCallbackFns = new Map<string, () => void>();
-		#shadowRoot = attachShadow ? this.attachShadow(shadowRootOptions) : null;
+		#shadowRoot = attachShadow ? this.attachShadow(shadowRootOptions as ShadowRootInit) : null;
 		#internals = this.attachInternals();
 		#observer =
 			options?.observedAttributes !== undefined
@@ -238,6 +247,9 @@ export const customElement = <Props extends CustomElementProps>(
 			});
 			fragment.host = this;
 			setInnerHTML(root, fragment);
+
+			// this is a workaround for a bug in the scoped elements polyfill
+			root.innerHTML = root.innerHTML;
 		}
 		static get formAssociated() {
 			return formAssociated;
@@ -334,27 +346,33 @@ export const customElement = <Props extends CustomElementProps>(
 			}
 		}
 	}
-	let _tagname: string | null = null;
-	let _registry: Registry | null = null;
+	let _tagName: string | null = null;
+	let _registry: RegistryResult | null = null;
 	let _registered = false;
 	const register = () => {
-		if (_tagname === null || _registry === null || _registered) return;
-		_registry.register(_tagname, CustomElement);
-		_registry.register(_tagname, elementResult);
+		if (_tagName === null || _registry === null || _registered) return;
+		_registry.register(_tagName, CustomElement);
+		_registry.register(_tagName, elementResult);
 		_registered = true;
 	};
 	const elementResult: ElementResult = {
-		define(tagname) {
-			if (customElements.get(tagname) !== undefined) {
-				console.warn(`Custom element "${tagname}" was already defined. Skipping...`);
+		define(tagName) {
+			const registry = _registry?.scoped ? _registry.eject() : customElements;
+			console.log(tagName, registry);
+			if (registry.get(tagName) !== undefined) {
+				console.warn(`Custom element "${tagName}" was already defined. Skipping...`);
 				return this;
 			}
-			customElements.define(tagname, CustomElement);
-			_tagname = tagname;
+			registry.define(tagName, CustomElement);
+			_tagName = tagName;
 			register();
 			return this;
 		},
 		register(registry) {
+			if (_tagName !== null && registry.scoped) {
+				console.error('Must call `register()` before `define()` for scoped registries.');
+				return this;
+			}
 			_registry = registry;
 			register();
 			return this;
@@ -364,9 +382,15 @@ export const customElement = <Props extends CustomElementProps>(
 	return elementResult;
 };
 
-type Registry = {
-	register: (tagName: string, element: CustomElementConstructor | ElementResult) => void;
-	getTagName: (element: CustomElementConstructor | ElementResult) => string | undefined;
+type RegistryResult = {
+	register: (tagName: string, CustomElement: CustomElementConstructor | ElementResult) => void;
+	getTagName: (CustomElement: CustomElementConstructor | ElementResult) => string | undefined;
+	eject: () => CustomElementRegistry;
+	scoped: boolean;
+};
+
+type RegistryArgs = {
+	scoped: boolean;
 };
 
 /**
@@ -384,16 +408,30 @@ type Registry = {
  * console.log(tagName); // 'MY-ELEMENT'
  * ```
  */
-export const createRegistry = (): Registry => {
-	const registry = new Map<CustomElementConstructor | ElementResult, string>();
+export const createRegistry = (args?: RegistryArgs): RegistryResult => {
+	const { scoped = false } = args ?? {};
+	const registryResult = new Map<CustomElementConstructor | ElementResult, string>();
+	const registry = (() => {
+		try {
+			return new CustomElementRegistry();
+		} catch (error) {
+			if (scoped)
+				console.error(
+					'Scoped custom element registries are not supported in this environment. Please install `@webcomponents/scoped-custom-element-registry` to use this feature.',
+				);
+			return customElements;
+		}
+	})();
 	return {
 		register: (tagName: string, element: CustomElementConstructor | ElementResult) => {
-			if (registry.has(element)) {
+			if (registryResult.has(element)) {
 				console.warn(`Custom element class "${element.constructor.name}" was already registered. Skipping...`);
 				return;
 			}
-			registry.set(element, tagName.toUpperCase());
+			registryResult.set(element, tagName.toUpperCase());
 		},
-		getTagName: (element: CustomElementConstructor | ElementResult) => registry.get(element),
+		getTagName: (element: CustomElementConstructor | ElementResult) => registryResult.get(element),
+		eject: () => registry,
+		scoped,
 	};
 };

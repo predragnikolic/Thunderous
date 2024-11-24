@@ -1,6 +1,14 @@
+import '@webcomponents/scoped-custom-element-registry';
 import { derived, css, html, customElement, createRegistry } from 'thunderous';
 
-const registry = createRegistry();
+const globalRegistry = createRegistry();
+
+const registry = createRegistry({ scoped: true });
+customElement(() => {
+	return html`<strong>nested element</strong>`;
+})
+	.register(registry)
+	.define('nested-element');
 
 const MyElement = customElement<{ count: number }>(
 	({ attrSignals, propSignals, customCallback, internals, adoptStyleSheet }) => {
@@ -47,13 +55,20 @@ const MyElement = customElement<{ count: number }>(
 			<div>
 				<slot></slot>
 			</div>
+			<span>this is a scoped element:</span>
+			<nested-element></nested-element>
 		`;
 	},
-	{ formAssociated: true, observedAttributes: ['heading'], attributesAsProperties: [['count', Number]] },
-).register(registry);
+	{
+		formAssociated: true,
+		observedAttributes: ['heading'],
+		attributesAsProperties: [['count', Number]],
+		shadowRootOptions: { registry },
+	},
+).register(globalRegistry);
 
 requestAnimationFrame(() => {
-	const tagName = registry.getTagName(MyElement);
+	const tagName = globalRegistry.getTagName(MyElement);
 	console.log(tagName);
 });
 
