@@ -77,14 +77,16 @@ declare global {
 		__tagNames: Set<string>;
 	}
 }
-class TrackableCustomElementRegistry extends CustomElementRegistry {
-	__tagNames = new Set<string>();
-	define(tagName: string, constructor: CustomElementConstructor) {
-		super.define(tagName, constructor);
-		this.__tagNames.add(tagName);
+if (typeof window !== 'undefined') {
+	class TrackableCustomElementRegistry extends window.CustomElementRegistry {
+		__tagNames = new Set<string>();
+		define(tagName: string, constructor: CustomElementConstructor) {
+			super.define(tagName, constructor);
+			this.__tagNames.add(tagName);
+		}
 	}
+	window.CustomElementRegistry = TrackableCustomElementRegistry;
 }
-window.CustomElementRegistry = TrackableCustomElementRegistry;
 // ------ end polyfill ------
 
 const getPropName = (attrName: string) =>
