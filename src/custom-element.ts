@@ -276,9 +276,12 @@ export const customElement = <Props extends CustomElementProps>(
 
 			if (registry !== undefined && registry.__tagNames !== undefined) {
 				for (const tagName of registry.__tagNames) {
-					const upgradedElement = root.querySelector(tagName)!;
-					const nonUpgradedElement = fragment.querySelector(tagName)!;
-					nonUpgradedElement.replaceWith(upgradedElement);
+					const upgradedElements = root.querySelectorAll(tagName);
+					const nonUpgradedElements = fragment.querySelectorAll(tagName);
+					upgradedElements.forEach((upgradedElement, index) => {
+						const nonUpgradedElement = nonUpgradedElements[index];
+						nonUpgradedElement.replaceWith(upgradedElement);
+					});
 				}
 			}
 			// ------ end workaround ------
