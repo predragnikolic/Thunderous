@@ -33,10 +33,6 @@
 					<th-code>createRegistry()</th-code>. This allows you to define custom elements with the same tag name in
 					different shadow roots by passing the registry to the <th-code>shadowRootOptions</th-code>.
 				</th-text>
-				<th-block-quote>
-					NOTE: there's a bug in the polyfill that prevents reactive templates from working with scoped registries out
-					of the box. This will be fixed in the next release.
-				</th-block-quote>
 				<th-code-block lang="sh">npm i @webcomponents/scoped-custom-element-registry</th-code-block>
 				<th-code-block lang="ts"><%= include('_code-snippets/scoped-registry.ejs') %></th-code-block>
 				<th-block-quote>
