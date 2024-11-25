@@ -70,6 +70,23 @@ type AttrProp<T = unknown> = {
 
 export type RenderFunction<Props extends CustomElementProps> = (args: RenderArgs<Props>) => DocumentFragment;
 
+// Extend CustomElementRegistry to track tag names.
+// This is only needed to support scoped elements.
+declare global {
+	interface CustomElementRegistry {
+		__tagNames: Set<string>;
+	}
+}
+class TrackableCustomElementRegistry extends CustomElementRegistry {
+	__tagNames = new Set<string>();
+	define(tagName: string, constructor: CustomElementConstructor) {
+		super.define(tagName, constructor);
+		this.__tagNames.add(tagName);
+	}
+}
+window.CustomElementRegistry = TrackableCustomElementRegistry;
+// ------ end polyfill ------
+
 const getPropName = (attrName: string) =>
 	attrName
 		.replace(/^([A-Z]+)/, (_, letter) => letter.toLowerCase())
@@ -244,10 +261,29 @@ export const customElement = <Props extends CustomElementProps>(
 				},
 			});
 			fragment.host = this;
-			setInnerHTML(root, fragment);
 
-			// this is a workaround for a bug in the scoped elements polyfill
-			// root.innerHTML = root.innerHTML; // this wipes out the reactivity, need another way around this
+			// The polyfill only supports upgrading scoped elements when using innerHTML.
+			// The following code is a workaround to upgrade elements when appending a DocumentFragment.
+			const registry =
+				shadowRootOptions.registry instanceof CustomElementRegistry
+					? shadowRootOptions.registry
+					: shadowRootOptions.registry?.eject();
+
+			const tempContainer = document.createElement('div');
+			tempContainer.append(fragment.cloneNode(true));
+			const fragmentContent = tempContainer.innerHTML;
+			root.innerHTML = fragmentContent;
+
+			if (registry !== undefined && registry.__tagNames !== undefined) {
+				for (const tagName of registry.__tagNames) {
+					const upgradedElement = root.querySelector(tagName)!;
+					const nonUpgradedElement = fragment.querySelector(tagName)!;
+					nonUpgradedElement.replaceWith(upgradedElement);
+				}
+			}
+			// ------ end workaround ------
+
+			setInnerHTML(root, fragment);
 		}
 		static get formAssociated() {
 			return formAssociated;
