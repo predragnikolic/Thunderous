@@ -31,7 +31,6 @@ export default defineConfig({
 					if (existsSync(filePath)) {
 						res.statusCode = 200;
 						res.end(readFileSync(filePath));
-						console.log(filePath);
 					} else {
 						const notFoundPath = resolve(__dirname, 'src', '404.html');
 						if (existsSync(notFoundPath)) {
