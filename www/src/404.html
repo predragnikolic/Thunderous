@@ -2,12 +2,7 @@
 <html lang="en">
 	<head>
 		<script>
-			// If the page was not found, it might be a trailing slash issue. Try adding a slash first.
-			if (!location.pathname.endsWith('/')) {
-				location.pathname = location.pathname + '/';
-			} else {
-				history.replaceState({}, '', '/404/');
-			}
+			history.replaceState({}, '', '/404');
 		</script>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />

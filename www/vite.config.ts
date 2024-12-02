@@ -15,19 +15,23 @@ export default defineConfig({
 	},
 	plugins: [
 		ViteEjsPlugin(),
+
+		// This only applies to the dev server. This is just to mimic the behavior of Vercel's static server
 		{
 			name: 'custom-middleware',
 			configureServer(server) {
 				server.middlewares.use((req, res, next) => {
 					const url = req.url ?? '';
 
-					// Skip if the URL has an extension
-					if (url.includes('.') || url.includes('@')) return next();
+					// Skip assets and vite requests
+					if (/\.[a-z]{2,}/i.test(url) || url.includes('@vite')) return next();
 
 					const filePath = `${__dirname}/src${url.replace(/\/$/, '')}/index.html`;
 
-					if (existsSync(filePath) && url.endsWith('/')) {
-						next();
+					if (existsSync(filePath)) {
+						res.statusCode = 200;
+						res.end(readFileSync(filePath));
+						console.log(filePath);
 					} else {
 						const notFoundPath = resolve(__dirname, 'src', '404.html');
 						if (existsSync(notFoundPath)) {
