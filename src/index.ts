@@ -1,6 +1,10 @@
-export { customElement, createRegistry } from './custom-element.js';
-export { createEffect, createSignal, derived } from './signals.js';
-export { html, css } from './render.js';
+import '../vendor/@webcomponents/scoped-custom-element-registry';
+
+export { customElement } from './custom-element';
+export { createRegistry } from './registry';
+export { onServerDefine, insertTemplates, clientOnlyCallback } from './server-side';
+export { createEffect, createSignal, derived } from './signals';
+export { html, css } from './render';
 
 export type {
 	RenderFunction,
@@ -9,5 +13,7 @@ export type {
 	 * @deprecated Use `RenderArgs` instead.
 	 */
 	RenderArgs as RenderProps,
-} from './custom-element.js';
-export type { Signal, SignalGetter, SignalSetter } from './signals.js';
+	Signal,
+	SignalGetter,
+	SignalSetter,
+} from './types';

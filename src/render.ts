@@ -1,12 +1,31 @@
-import { parseFragment, ElementParent } from './html-helpers';
-import { createEffect, SignalGetter } from './signals';
-import DOMPurify from 'dompurify';
+import { isServer } from './server-side';
+import { createEffect } from './signals';
+import { ElementParent, Styles, SignalGetter } from './types';
 
-declare global {
-	interface Element {
-		__findHost: () => Element;
+export const clearHTML = (element: ElementParent) => {
+	while (element.childNodes.length > 0) {
+		element.childNodes[0].remove();
 	}
-}
+};
+
+export const parseFragment = (htmlStr: string): DocumentFragment => {
+	const range = document.createRange();
+	range.selectNode(document.body); // required in Safari
+	return range.createContextualFragment(htmlStr);
+};
+
+export const setInnerHTML = (element: ElementParent, html: string | DocumentFragment) => {
+	clearHTML(element);
+	const fragment = typeof html === 'string' ? parseFragment(html) : html;
+	element.append(fragment);
+};
+
+const logValueError = (value: unknown) => {
+	console.error(
+		'An invalid value was passed to a template function. Non-primitive values are not supported.\n\nValue:\n',
+		value,
+	);
+};
 
 export const html = (strings: TemplateStringsArray, ...values: unknown[]): DocumentFragment => {
 	let innerHTML = '';
@@ -16,11 +35,18 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 		if (typeof value === 'function') {
 			const uniqueKey = crypto.randomUUID();
 			signalMap.set(uniqueKey, value as SignalGetter<unknown>);
-			value = `{{signal:${uniqueKey}}}`;
+			value = isServer ? value() : `{{signal:${uniqueKey}}}`;
+		}
+		if (typeof value === 'object' && value !== null) {
+			logValueError(value);
+			value = '';
 		}
 		innerHTML += string + String(value);
 	});
-	DOMPurify.sanitize(innerHTML);
+	if (isServer) {
+		// @ts-expect-error // return a plain string for server-side rendering
+		return innerHTML;
+	}
 	const fragment = parseFragment(innerHTML);
 	const callbackBindingRegex = /(\{\{callback:.+\}\})/;
 	const signalBindingRegex = /(\{\{signal:.+\}\})/;
@@ -92,9 +118,6 @@ const adoptedStylesSupported: boolean =
 	window.ShadowRoot?.prototype.hasOwnProperty('adoptedStyleSheets') &&
 	window.CSSStyleSheet?.prototype.hasOwnProperty('replace');
 
-// This should be a string if constructible stylesheets are not supported
-export type Styles = CSSStyleSheet | HTMLStyleElement;
-
 export const isCSSStyleSheet = (stylesheet?: Styles): stylesheet is CSSStyleSheet => {
 	return typeof CSSStyleSheet !== 'undefined' && stylesheet instanceof CSSStyleSheet;
 };
@@ -108,10 +131,18 @@ export const css = (strings: TemplateStringsArray, ...values: unknown[]): Styles
 		if (typeof value === 'function') {
 			const uniqueKey = crypto.randomUUID();
 			signalMap.set(uniqueKey, value);
-			value = `{{signal:${uniqueKey}}}`;
+			value = isServer ? value() : `{{signal:${uniqueKey}}}`;
+		}
+		if (typeof value === 'object' && value !== null) {
+			logValueError(value);
+			value = '';
 		}
 		cssText += string + String(value);
 	});
+	if (isServer) {
+		// @ts-expect-error // return a plain string for server-side rendering
+		return cssText;
+	}
 	let stylesheet = adoptedStylesSupported ? new CSSStyleSheet() : document.createElement('style');
 	const textList = cssText.split(signalBindingRegex);
 	createEffect(() => {

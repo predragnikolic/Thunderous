@@ -76,6 +76,9 @@ export const DocPage = customElement(({ adoptStyleSheet, customCallback, connect
 									<li>
 										<th-link href="/docs/registries/" class="link">Registries</th-link>
 									</li>
+									<li>
+										<th-link href="/docs/server-side-rendering/" class="link">SSR</th-link>
+									</li>
 								</ul>
 							</li>
 							<li>
@@ -101,6 +104,17 @@ export const DocPage = customElement(({ adoptStyleSheet, customCallback, connect
 									</li>
 									<li>
 										<th-link href="/docs/debugging-signals/" class="link">Debugging Signals</th-link>
+									</li>
+								</ul>
+							</li>
+							<li>
+								<h3>Major Releases</h3>
+								<ul>
+									<li>
+										<th-link href="/docs/releases/1.0.0" class="link">1.0.0</th-link>
+									</li>
+									<li>
+										<th-link href="/docs/releases/" class="link">View All Releases</th-link>
 									</li>
 								</ul>
 							</li>
@@ -210,7 +224,7 @@ const styles = css`
 	}
 	ul {
 		display: grid;
-		gap: 1em;
+		gap: 0.5em;
 		padding: 1em 0;
 	}
 	li > ul {

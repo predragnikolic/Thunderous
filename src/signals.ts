@@ -1,7 +1,4 @@
-export type SignalOptions = { debugMode: boolean; label?: string };
-export type SignalGetter<T> = (options?: SignalOptions) => T;
-export type SignalSetter<T> = (newValue: T, options?: SignalOptions) => void;
-export type Signal<T = unknown> = [SignalGetter<T>, SignalSetter<T>];
+import { Signal, SignalGetter, SignalOptions, SignalSetter } from './types';
 
 let subscriber: (() => void) | null = null;
 const updateQueue: Set<() => void> = new Set();
@@ -24,7 +21,7 @@ export const createSignal = <T = undefined>(initVal?: T, options?: SignalOptions
 			subscribers.add(subscriber);
 		}
 		if (options?.debugMode || getterOptions?.debugMode) {
-			requestAnimationFrame(() => {
+			queueMicrotask(() => {
 				let label = 'anonymous signal';
 				if (options?.label !== undefined) {
 					label = `(${options.label})`;
@@ -49,7 +46,7 @@ export const createSignal = <T = undefined>(initVal?: T, options?: SignalOptions
 		}
 		if (!isBatchingUpdates) {
 			isBatchingUpdates = true;
-			requestAnimationFrame(() => {
+			queueMicrotask(() => {
 				for (const fn of updateQueue) {
 					try {
 						fn();

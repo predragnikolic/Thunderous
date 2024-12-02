@@ -1,17 +1,51 @@
-import '@webcomponents/scoped-custom-element-registry';
-import { derived, css, html, customElement, createRegistry } from 'thunderous';
+import {
+	derived,
+	css,
+	html,
+	customElement,
+	createRegistry,
+	onServerDefine,
+	insertTemplates,
+	clientOnlyCallback,
+} from 'thunderous';
+
+const mockHTML = /* html */ `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+	<my-element heading="title A"></my-element>
+	<button>toggle heading</button>
+</body>
+</html>
+`;
+
+onServerDefine((tagName, htmlString) => {
+	console.log('onServerDefine:', tagName);
+	console.log(insertTemplates(tagName, htmlString, mockHTML));
+});
 
 const globalRegistry = createRegistry();
 
+const NestedElement = customElement(
+	({ attrSignals }) => {
+		const [text] = attrSignals.text;
+		return html`<strong>${text}</strong>`;
+	},
+	{
+		shadowRootOptions: { mode: 'open' },
+	},
+);
+
 const registry = createRegistry({ scoped: true });
-customElement(() => {
-	return html`<strong>nested element</strong>`;
-})
-	.register(registry)
-	.define('nested-element');
+registry.define('nested-element', NestedElement);
 
 const MyElement = customElement<{ count: number }>(
-	({ attrSignals, propSignals, customCallback, internals, adoptStyleSheet }) => {
+	({ attrSignals, propSignals, customCallback, internals, clientOnlyCallback, adoptStyleSheet }) => {
 		const [count, setCount] = propSignals.count;
 		setCount(0);
 		const [heading] = attrSignals.heading;
@@ -21,7 +55,9 @@ const MyElement = customElement<{ count: number }>(
 			return value > 255 ? 255 : value;
 		});
 
-		internals.setFormValue(String(count()));
+		clientOnlyCallback(() => {
+			internals.setFormValue(String(count()));
+		});
 
 		const increment = customCallback(() => {
 			setCount(count() + 1);
@@ -56,7 +92,7 @@ const MyElement = customElement<{ count: number }>(
 				<slot></slot>
 			</div>
 			<span>this is a scoped element:</span>
-			<nested-element></nested-element>
+			<nested-element text="test"></nested-element>
 		`;
 	},
 	{
@@ -67,16 +103,19 @@ const MyElement = customElement<{ count: number }>(
 	},
 ).register(globalRegistry);
 
-requestAnimationFrame(() => {
-	const tagName = globalRegistry.getTagName(MyElement);
-	console.log(tagName);
-});
-
+console.log('defined:', MyElement);
 MyElement.define('my-element');
 
-const myElement = document.querySelector('my-element')!;
+clientOnlyCallback(() => {
+	requestAnimationFrame(() => {
+		const tagName = globalRegistry.getTagName(MyElement);
+		console.log(tagName);
+	});
 
-document.querySelector('button')!.addEventListener('click', () => {
-	const prev = myElement.getAttribute('heading');
-	myElement.setAttribute('heading', prev === 'title A' ? 'title B' : 'title A');
+	const myElement = document.querySelector('my-element')!;
+
+	document.querySelector('button')!.addEventListener('click', () => {
+		const prev = myElement.getAttribute('heading');
+		myElement.setAttribute('heading', prev === 'title A' ? 'title B' : 'title A');
+	});
 });
