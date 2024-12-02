@@ -50,34 +50,34 @@ export const DocPage = customElement(({ adoptStyleSheet, customCallback, connect
 					<nav>
 						<ul>
 							<li>
-								<th-link href="/docs/" class="link">Quick Start</th-link>
+								<th-link href="/docs" class="link">Quick Start</th-link>
 							</li>
 							<li>
 								<h3>Overview</h3>
 								<ul>
 									<li>
-										<th-link href="/docs/defining-custom-elements/" class="link">Defining Custom Elements</th-link>
+										<th-link href="/docs/defining-custom-elements" class="link">Defining Custom Elements</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/lifecycle-methods/" class="link">Lifecycle Methods</th-link>
+										<th-link href="/docs/lifecycle-methods" class="link">Lifecycle Methods</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/root-and-internals/" class="link">Root and Element Internals</th-link>
+										<th-link href="/docs/root-and-internals" class="link">Root and Element Internals</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/adopted-stylesheets/" class="link">Adopted Stylesheets</th-link>
+										<th-link href="/docs/adopted-stylesheets" class="link">Adopted Stylesheets</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/event-binding/" class="link">Event Binding</th-link>
+										<th-link href="/docs/event-binding" class="link">Event Binding</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/refs/" class="link">Refs</th-link>
+										<th-link href="/docs/refs" class="link">Refs</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/registries/" class="link">Registries</th-link>
+										<th-link href="/docs/registries" class="link">Registries</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/server-side-rendering/" class="link">SSR</th-link>
+										<th-link href="/docs/server-side-rendering" class="link">SSR</th-link>
 									</li>
 								</ul>
 							</li>
@@ -85,25 +85,25 @@ export const DocPage = customElement(({ adoptStyleSheet, customCallback, connect
 								<h3>Signals</h3>
 								<ul>
 									<li>
-										<th-link href="/docs/signals/" class="link">Signals Overview</th-link>
+										<th-link href="/docs/signals" class="link">Signals Overview</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/binding-signals/" class="link">Binding Signals</th-link>
+										<th-link href="/docs/binding-signals" class="link">Binding Signals</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/attribute-signals/" class="link">Attribute Signals</th-link>
+										<th-link href="/docs/attribute-signals" class="link">Attribute Signals</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/property-signals/" class="link">Property Signals</th-link>
+										<th-link href="/docs/property-signals" class="link">Property Signals</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/derived-signals/" class="link">Derived Signals</th-link>
+										<th-link href="/docs/derived-signals" class="link">Derived Signals</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/effects/" class="link">Effects</th-link>
+										<th-link href="/docs/effects" class="link">Effects</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/debugging-signals/" class="link">Debugging Signals</th-link>
+										<th-link href="/docs/debugging-signals" class="link">Debugging Signals</th-link>
 									</li>
 								</ul>
 							</li>
@@ -111,10 +111,10 @@ export const DocPage = customElement(({ adoptStyleSheet, customCallback, connect
 								<h3>Major Releases</h3>
 								<ul>
 									<li>
-										<th-link href="/docs/releases/1.0.0/" class="link">1.0.0</th-link>
+										<th-link href="/docs/releases/1.0.0" class="link">1.0.0</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/releases/" class="link">View All Releases</th-link>
+										<th-link href="/docs/releases" class="link">View All Releases</th-link>
 									</li>
 								</ul>
 							</li>

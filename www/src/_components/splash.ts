@@ -9,7 +9,7 @@ export const Splash = customElement(({ adoptStyleSheet }) => {
 				<h2>Building web components has never been easier.</h2>
 			</header>
 			<p>Thunderous is a functional-style web component authoring library, supercharged with signals!</p>
-			<th-link-button href="/docs/">Get Started</th-link-button>
+			<th-link-button href="/docs">Get Started</th-link-button>
 		</main>
 	`;
 });
