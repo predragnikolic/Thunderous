@@ -1,6 +1,6 @@
 {
 	"name": "thunderous-docs",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"description": "Documentation for the Thunderous NPM library.",
 	"type": "module",
 	"scripts": {
@@ -20,7 +20,7 @@
 		"ejs": "^3.1.10",
 		"glob": "^11.0.0",
 		"highlight.js": "^11.10.0",
-		"thunderous": "^1.0.0",
+		"thunderous": "^1.0.2",
 		"vite-plugin-ejs": "^1.7.0"
 	}
 }
