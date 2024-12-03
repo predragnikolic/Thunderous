@@ -1,6 +1,6 @@
 {
 	"name": "thunderous",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "",
 	"type": "module",
 	"main": "./dist/index.cjs",
@@ -32,13 +32,17 @@
 	"scripts": {
 		"demo": "cd demo && npm start",
 		"www": "cd www && npm run dev",
-		"build": "tsup src/index.ts --format cjs,esm --dts --no-clean"
+		"build": "tsup src/index.ts --format cjs,esm --dts --no-clean",
+		"test": "find src -name '*.test.ts' | xargs c8 node --import tsx --test",
+		"lint": "eslint ."
 	},
 	"devDependencies": {
 		"@types/dompurify": "^3.2.0",
 		"@types/eslint": "^8.56.10",
-		"@typescript-eslint/eslint-plugin": "^7.1.1",
-		"@typescript-eslint/parser": "^7.1.1",
+		"@types/node": "^22.10.1",
+		"@typescript-eslint/eslint-plugin": "^8.17.0",
+		"@typescript-eslint/parser": "^8.17.0",
+		"c8": "^10.1.2",
 		"eslint": "^8.57.0",
 		"eslint-plugin-import": "^2.31.0",
 		"eslint-plugin-node": "^11.1.0",
@@ -46,7 +50,7 @@
 		"express": "^4.17.1",
 		"prettier": "^3.3.3",
 		"tsup": "^8.3.0",
-		"typescript": "^5.6.3",
-		"tsx": "^4.19.2"
+		"tsx": "^4.19.2",
+		"typescript": "^5.7.2"
 	}
 }
