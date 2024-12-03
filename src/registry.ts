@@ -1,5 +1,5 @@
 import { isServer } from './server-side';
-import { type RegistryArgs, type RegistryResult } from './types';
+import type { TagName, ElementResult, RegistryArgs, RegistryResult } from './types';
 
 /**
  * Create a registry for custom elements.
@@ -18,8 +18,9 @@ import { type RegistryArgs, type RegistryResult } from './types';
  */
 export const createRegistry = (args?: RegistryArgs): RegistryResult => {
 	const { scoped = false } = args ?? {};
-	const customElementMap = new Map<CustomElementConstructor, string>();
-	const customElementTags = new Set<string>();
+	const customElementMap = new Map<CustomElementConstructor, TagName>();
+	const elementResultMap = new Map<ElementResult, TagName>();
+	const customElementTags = new Set<TagName>();
 	const nativeRegistry = (() => {
 		if (isServer) return;
 		if (scoped) return new CustomElementRegistry();
@@ -30,31 +31,49 @@ export const createRegistry = (args?: RegistryArgs): RegistryResult => {
 		__serverRenderOpts: new Map(),
 		define(tagName, ElementResult, options) {
 			const isResult = 'eject' in ElementResult;
+			const upperCaseTagName = tagName.toUpperCase() as TagName;
+
+			if (customElementTags.has(upperCaseTagName)) {
+				console.warn(`Custom element tag name "${upperCaseTagName}" was already defined. Skipping...`);
+				return this;
+			}
+			if (isResult) {
+				if (elementResultMap.has(ElementResult)) {
+					console.warn(`${upperCaseTagName} was already defined. Skipping...`);
+					return this;
+				}
+			}
+			if (!isServer) {
+				const CustomElement = isResult ? ElementResult.eject() : ElementResult;
+				if (customElementMap.has(CustomElement)) {
+					console.warn(`Custom element class "${CustomElement.constructor.name}" was already defined. Skipping...`);
+					return this;
+				}
+				customElementMap.set(CustomElement, upperCaseTagName);
+			}
+			if (isResult) elementResultMap.set(ElementResult, upperCaseTagName);
+			customElementTags.add(upperCaseTagName);
+
 			if (isServer) {
 				// offload the server definition to the element, as it's responsible for scoped registries and rendering.
 				if (isResult) ElementResult.register(this).define(tagName, options);
 				return this;
 			}
+
+			// define the custom element on the client
 			const CustomElement = isResult ? ElementResult.eject() : ElementResult;
-			if (customElementMap.has(CustomElement)) {
-				console.warn(`Custom element class "${CustomElement.constructor.name}" was already defined. Skipping...`);
-				return this;
-			}
-			if (customElementTags.has(tagName)) {
-				console.warn(`Custom element tag name "${tagName}" was already defined. Skipping...`);
-				return this;
-			}
-			customElementMap.set(CustomElement, tagName.toUpperCase());
-			customElementTags.add(tagName);
-			if (CustomElement === undefined) {
-				console.error(`Custom element class for tag name "${tagName}" was not found. You must register it first.`);
-				return this;
-			}
 			nativeRegistry?.define(tagName, CustomElement, options);
 			return this;
 		},
 		getTagName: (ElementResult) => {
-			const CustomElement = 'eject' in ElementResult ? ElementResult.eject() : ElementResult;
+			const isResult = 'eject' in ElementResult;
+
+			if (isServer) {
+				// only ElementResult types are supported on the server
+				if (isResult) return elementResultMap.get(ElementResult);
+				return;
+			}
+			const CustomElement = isResult ? ElementResult.eject() : ElementResult;
 			return customElementMap.get(CustomElement);
 		},
 		getAllTagNames: () => Array.from(customElementTags),
