@@ -30,18 +30,36 @@ const logValueError = (value: unknown) => {
 export const html = (strings: TemplateStringsArray, ...values: unknown[]): DocumentFragment => {
 	let innerHTML = '';
 	const signalMap = new Map<string, SignalGetter<unknown>>();
-	strings.forEach((string, i) => {
-		let value: unknown = values[i] ?? '';
+	const processValue = (value: unknown): string => {
+		if (value instanceof DocumentFragment) {
+			const tempDiv = document.createElement('div');
+			tempDiv.append(value.cloneNode(true));
+			return tempDiv.innerHTML;
+		}
 		if (typeof value === 'function') {
+			const getter = value as SignalGetter<unknown>;
 			const uniqueKey = crypto.randomUUID();
-			signalMap.set(uniqueKey, value as SignalGetter<unknown>);
-			value = isServer ? value() : `{{signal:${uniqueKey}}}`;
+			signalMap.set(uniqueKey, getter);
+			let result = getter();
+			if (Array.isArray(result)) {
+				result = result.map((item: unknown) => processValue(item)).join('');
+			}
+			return isServer ? String(result) : `{{signal:${uniqueKey}}}`;
 		}
 		if (typeof value === 'object' && value !== null) {
 			logValueError(value);
-			value = '';
+			return '';
 		}
-		innerHTML += string + String(value);
+		return String(value);
+	};
+	strings.forEach((string, i) => {
+		let value: unknown = values[i] ?? '';
+		if (Array.isArray(value)) {
+			value = value.map((item) => processValue(item)).join('');
+		} else {
+			value = processValue(value);
+		}
+		innerHTML += string + String(value === null ? '' : value);
 	});
 	if (isServer) {
 		// @ts-expect-error // return a plain string for server-side rendering
@@ -58,11 +76,20 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 					const uniqueKey = text.replace(/\{\{signal:(.+)\}\}/, '$1');
 					const signal = uniqueKey !== text ? signalMap.get(uniqueKey) : undefined;
 					const newValue = signal !== undefined ? signal() : text;
-					const newNode = (() => {
-						if (typeof newValue === 'string') return new Text(newValue);
-						if (newValue instanceof DocumentFragment) return newValue;
+					const arrayToDocumentFragment = (array: unknown[]) => {
+						const documentFragment = parseFragment('');
+						for (const item of array) {
+							documentFragment.append(getNewNode(item).cloneNode(true));
+						}
+						return documentFragment;
+					};
+					const getNewNode = (value: unknown) => {
+						if (typeof value === 'string') return new Text(value);
+						if (Array.isArray(value)) return arrayToDocumentFragment(value);
+						if (value instanceof DocumentFragment) return value;
 						return new Text('');
-					})();
+					};
+					const newNode = getNewNode(newValue);
 					if (i === 0) {
 						child.replaceWith(newNode);
 					} else {
