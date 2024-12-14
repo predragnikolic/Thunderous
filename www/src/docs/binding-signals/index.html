@@ -40,15 +40,15 @@
 						<th-text>
 							Binding also works in the
 							<th-link href="/docs/adopted-style-sheets"><th-code>css</th-code> tagged template function</th-link>, but
-							bear in mind that passing signals to a shared <th-code>CSSStyleSheet</th-code> may not have the effect you
-							expect. Signals bound to externally defined style sheets will reflect across all instances of the same
-							component, not just the current one.
+							doing so may have a limited use case. For best performance, the suggested approach is to create a
+							<th-code>CSSStyleSheet</th-code> outside the component, then adopt the style sheet inside the component
+							and toggle classes in the HTML. Signals bound to these style sheets will reflect across all instances of
+							the same component, not just the current one.
 						</th-text>
 						<th-text>
-							For best performance, the suggested alternative is to write static CSS and toggle classes in the HTML
-							instead. That said, you may also get around this limitation by creating a new
-							<th-code>CSSStyleSheet</th-code>
-							for each instance of the component.
+							That said, if you're not concerned with incurring performance overhead, you may create a new
+							<th-code>CSSStyleSheet</th-code> for each instance of the component. The difference is simply defining the
+							style sheet inside the component function, rather than outside.
 						</th-text>
 					</th-content-group>
 				</th-block-quote>
