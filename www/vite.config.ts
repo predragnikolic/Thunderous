@@ -21,24 +21,26 @@ export default defineConfig({
 			name: 'custom-middleware',
 			configureServer(server) {
 				server.middlewares.use((req, res, next) => {
-					const url = req.url ?? '';
+					const url = req.url?.replace(/\?.*$/, '') ?? '';
+					if (url.includes('.')) return next();
+					const potentialPath = resolve(__dirname, 'src', `.${url}/index.html`);
+					const exists = existsSync(potentialPath);
+					if (url.endsWith('/') && exists) return next();
 
-					// Skip assets and vite requests
-					if (/\.[a-z]{2,}/i.test(url) || url.includes('@vite')) return next();
-
-					const filePath = `${__dirname}/src${url.replace(/\/$/, '')}/index.html`;
-
-					if (existsSync(filePath)) {
-						res.statusCode = 200;
-						res.end(readFileSync(filePath));
+					// redirect to trailing slash if index.html exists
+					// otherwise redirect to 404
+					if (exists) {
+						res.writeHead(301, {
+							Location: `${url}/${req.url?.includes('?') ? '?' + req.url.split('?')[1] : ''}`,
+						});
+						res.end();
+						return;
 					} else {
-						const notFoundPath = resolve(__dirname, 'src', '404.html');
-						if (existsSync(notFoundPath)) {
-							res.statusCode = 404;
-							res.end(readFileSync(notFoundPath));
-						} else {
-							next();
-						}
+						res.writeHead(301, {
+							location: '/404',
+						});
+						res.end();
+						return;
 					}
 				});
 			},
