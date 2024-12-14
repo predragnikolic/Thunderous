@@ -59,6 +59,9 @@ export const DocPage = customElement(({ adoptStyleSheet, customCallback, connect
 										<th-link href="/docs/defining-custom-elements" class="link">Defining Custom Elements</th-link>
 									</li>
 									<li>
+										<th-link href="/docs/rendering" class="link">Rendering</th-link>
+									</li>
+									<li>
 										<th-link href="/docs/lifecycle-methods" class="link">Lifecycle Methods</th-link>
 									</li>
 									<li>

@@ -1,0 +1,6 @@
+html`
+  <h2>Render Loops</h2>
+  <ul>
+    ${list.map((item) => html`<li key="${item.id}">${item.text}</li>`)}
+  </ul>
+`;
