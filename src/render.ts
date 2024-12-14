@@ -76,7 +76,7 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 	let innerHTML = '';
 	const signalMap = new Map<string, SignalGetter<unknown>>();
 	const processValue = (value: unknown): string => {
-		if (value instanceof DocumentFragment) {
+		if (!isServer && value instanceof DocumentFragment) {
 			const tempDiv = document.createElement('div');
 			tempDiv.append(value.cloneNode(true));
 			return tempDiv.innerHTML;
