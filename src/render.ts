@@ -77,9 +77,39 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 					const signal = uniqueKey !== text ? signalMap.get(uniqueKey) : undefined;
 					const newValue = signal !== undefined ? signal() : text;
 					const arrayToDocumentFragment = (array: unknown[]) => {
-						const documentFragment = parseFragment('');
+						const documentFragment = new DocumentFragment();
+						let count = 0;
+						const keys = new Set<string>();
 						for (const item of array) {
-							documentFragment.append(getNewNode(item).cloneNode(true));
+							const node = getNewNode(item).cloneNode(true);
+							if (node instanceof DocumentFragment) {
+								const child = node.firstElementChild;
+								if (node.children.length > 1) {
+									console.error(
+										'When rendering arrays, fragments must contain only one top-level element at a time. Error occured in:',
+										element,
+									);
+								}
+								if (child === null) continue;
+								let key = child.getAttribute('key');
+								if (key === null) {
+									console.warn(
+										'When rendering arrays, a `key` attribute should be provided on each child element. An index was automatically applied, but this could result in unexpected behavior:',
+										child,
+									);
+									key = String(count);
+									child.setAttribute('key', key);
+								}
+								if (keys.has(key)) {
+									console.warn(
+										`When rendering arrays, each child should have a unique \`key\` attribute. Duplicate key "${key}" found on:`,
+										child,
+									);
+								}
+								keys.add(key);
+								count++;
+							}
+							documentFragment.append(node);
 						}
 						return documentFragment;
 					};
@@ -90,14 +120,34 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 						return new Text('');
 					};
 					const newNode = getNewNode(newValue);
+					const firstChild = newNode.firstChild ?? newNode;
+					const sibling = child.nextSibling;
 					if (i === 0) {
 						child.replaceWith(newNode);
 					} else {
-						element.insertBefore(newNode, child.nextSibling);
+						element.insertBefore(newNode, sibling);
 					}
+					const parent = firstChild.parentElement!;
 					if (signal !== undefined && newNode instanceof Text) {
 						createEffect(() => {
 							newNode.data = signal() as string;
+						});
+					} else if (signal !== undefined && newNode instanceof DocumentFragment) {
+						createEffect(() => {
+							const result = signal();
+							const nextNode = getNewNode(result);
+							if (nextNode instanceof Text) {
+								throw new TypeError(
+									'Signal mismatch: expected DocumentFragment or Array<DocumentFragment>, but got Text',
+								);
+							}
+							for (const child of nextNode.children) {
+								const key = child.getAttribute('key');
+								const matchingNode = parent.querySelector(`[key="${key}"]`);
+								if (matchingNode === null) continue;
+								child.replaceWith(matchingNode);
+							}
+							element.insertBefore(nextNode, sibling);
 						});
 					}
 				});
