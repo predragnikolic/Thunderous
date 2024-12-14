@@ -31,6 +31,11 @@
 					For conditionals, you can easily render nested templates with the <th-code>html``</th-code> function.
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/render-nested.ejs') %></th-code-block>
+				<th-block-quote>
+					Short-circuit evaluation is not recommended because <th-code>false</th-code> values may be rendered as text.
+					Ternaries are generally a better choice for conditionals, as they provide more explicit control over the
+					rendered output. That said, <th-code>null</th-code> or <th-code>undefined</th-code> will render nothing.
+				</th-block-quote>
 				<th-text>
 					For loops, you can map an array to a list of <th-code>DocumentFragment</th-code> objects. Each element should
 					have a unique <th-code>key</th-code> attribute to help Thunderous keep track of the items in the list.
@@ -38,7 +43,7 @@
 				<th-code-block lang="ts"><%= include('_code-snippets/render-loops.ejs') %></th-code-block>
 				<th-text>
 					To render a reactive template, you can use <th-code>derived()</th-code> signals. This will hand off the signal
-					to <th-code>html``</th-code>, which will then update the DOM when the signal changes.
+					to <th-code>html``</th-code>, which will then update the DOM when the signals change.
 				</th-text>
 				<th-block-quote>
 					For more information on signals, see the <th-link href="/docs/signals">signals overview</th-link> and

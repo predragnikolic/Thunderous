@@ -1,4 +1,4 @@
-import { customElement, html, derived } from 'thunderous';
+import { customElement, html, derived, createSignal } from 'thunderous';
 
 const MyElement = customElement(() => {
   const [cond, setCond] = createSignal(true);
