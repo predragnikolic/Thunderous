@@ -68,7 +68,7 @@ export const DocPage = customElement(({ adoptStyleSheet, customCallback, connect
 										<th-link href="/docs/root-and-internals" class="link">Root and Element Internals</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/adopted-stylesheets" class="link">Adopted Stylesheets</th-link>
+										<th-link href="/docs/adopted-style-sheets" class="link">Adopted Style Sheets</th-link>
 									</li>
 									<li>
 										<th-link href="/docs/event-binding" class="link">Event Binding</th-link>

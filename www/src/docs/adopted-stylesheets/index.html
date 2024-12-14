@@ -12,24 +12,32 @@
 	</head>
 	<body>
 		<th-doc-page>
-			<th-page-header>Adopted Style Sheets</th-page-header>
+			<th-page-header>Page Moved</th-page-header>
 			<th-content-group>
+				<th-text> You will be redirected in <output class="redirect-count">5</output> seconds. </th-text>
 				<th-text>
-					You can use the <th-code>adoptStyleSheet()</th-code> function to add a
-					<th-code>CSSStyleSheet</th-code> instance to a component's list of adopted style sheets.
+					If you are not redirected automatically, you can manually visit the page by clicking the link below.
 				</th-text>
-				<th-text>
-					The <th-code>css</th-code> tagged template function will construct a <th-code>CSSStyleSheet</th-code> object
-					that can be adopted by documents and shadow roots.
-				</th-text>
-				<th-code-block lang="ts"><%= include('_code-snippets/adopted-style-sheets.ejs') %></th-code-block>
-				<th-block-quote>
-					When opting out of shadow DOM, the <th-code>adoptStyleSheet()</th-code> will use the global document to adopt
-					the styles, and <th-code>:host</th-code> selectors will have no effect.
-					<th-link href="/docs/root-and-internals">Learn how to opt out of shadow DOM</th-link>.
-				</th-block-quote>
+				<th-link href="/docs/adopted-style-sheets">Adopted Style Sheets</th-link>
 			</th-content-group>
 		</th-doc-page>
 		<script type="module" src="/main.ts"></script>
+		<script>
+			let countdown = 5;
+			const countdownElement = document.querySelector('.redirect-count');
+
+			const doCountdown = () => {
+				setTimeout(() => {
+					countdown--;
+					countdownElement.textContent = countdown;
+					if (countdown === 0) {
+						window.location.href = '/docs/adopted-style-sheets';
+					} else {
+						doCountdown();
+					}
+				}, 1000);
+			};
+			doCountdown();
+		</script>
 	</body>
 </html>
