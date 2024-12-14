@@ -1,6 +1,11 @@
-html`
-  <h2>Conditional Rendering</h2>
-  <p>
-    ${cond ? html`<span>True</span>` : html`<span>False</span>`}
-  </p>
-`;
+import { customElement, html } from 'thunderous';
+
+const MyElement = customElement(() => {
+  const cond = true;
+
+  return html`
+    <p>
+      ${cond ? html`<span>True</span>` : html`<span>False</span>`}
+    </p>
+  `;
+});

@@ -15,14 +15,20 @@
 			<th-page-header>Rendering</th-page-header>
 			<th-content-group>
 				<th-text>
-					For rendering, Thunderous exports a tagged template literal function called <th-code>html</th-code>. This
+					For rendering, Thunderous exports a tagged template literal function called <th-code>html``</th-code>. This
 					doesn't create a virtual DOM, but instead it directly converts an HTML string into a native
 					<th-code>DocumentFragment</th-code> that can be appended to the DOM. Additionally, it enables template binding
 					with <th-link href="/docs/event-binding">event listeners</th-link> and
 					<th-link href="/docs/binding-signals">signals</th-link>.
 				</th-text>
 				<th-text>
-					For conditionals, you can easily render nested templates with the <th-code>html</th-code> function.
+					It's important to remember that Thunderous will only run the component function once, when the custom element
+					gets upgraded. This is different from other libraries that re-render the component on every state change.
+					Instead, Thunderous relies on signals to make fine-grained updates to the DOM when the state changes, but more
+					on that later.
+				</th-text>
+				<th-text>
+					For conditionals, you can easily render nested templates with the <th-code>html``</th-code> function.
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/render-nested.ejs') %></th-code-block>
 				<th-text>
@@ -31,14 +37,18 @@
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/render-loops.ejs') %></th-code-block>
 				<th-text>
-					To render a reactive template, you can use the <th-code>html</th-code> function with a derived signal. This
-					will hand off the signal to the function, which will then update the DOM when the signal changes.
+					To render a reactive template, you can use <th-code>derived()</th-code> signals. This will hand off the signal
+					to <th-code>html``</th-code>, which will then update the DOM when the signal changes.
 				</th-text>
-				<th-code-block lang="ts"><%= include('_code-snippets/render-reactive.ejs') %></th-code-block>
 				<th-block-quote>
 					For more information on signals, see the <th-link href="/docs/signals">signals overview</th-link> and
 					<th-link href="/docs/derived-signals">derived signals</th-link> documentation.
 				</th-block-quote>
+				<th-code-block lang="ts"><%= include('_code-snippets/render-reactive.ejs') %></th-code-block>
+				<th-text>
+					In the same way, you can use <th-code>derived()</th-code> to render reactive attribute values.
+				</th-text>
+				<th-code-block lang="ts"><%= include('_code-snippets/render-reactive-attr.ejs') %></th-code-block>
 			</th-content-group>
 		</th-doc-page>
 		<script type="module" src="/main.ts"></script>
