@@ -35,6 +35,14 @@
 				</th-text>
 
 				<th-code-block lang="ts"><%= include('_code-snippets/no-shadow.ejs') %></th-code-block>
+
+				<th-text>
+					Keep in mind that opting out of shadow DOM means that <th-code>&lt;slot&gt;</th-code> tags will no longer
+					work. For light DOM content, you can use the <th-code>innerHTML</th-code> property to reference the original
+					content of the element.
+				</th-text>
+
+				<th-code-block lang="ts"><%= include('_code-snippets/light-dom.ejs') %></th-code-block>
 			</th-content-group>
 		</th-doc-page>
 		<script type="module" src="/main.ts"></script>

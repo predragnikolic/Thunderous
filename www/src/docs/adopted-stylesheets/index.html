@@ -24,8 +24,9 @@
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/adopted-style-sheets.ejs') %></th-code-block>
 				<th-block-quote>
-					When <th-code>attachShadow</th-code> is set to <th-code>false</th-code>,
-					<th-code>adoptStyleSheet()</th-code> will use the global document to adopt the styles.
+					When opting out of shadow DOM, the <th-code>adoptStyleSheet()</th-code> will use the global document to adopt
+					the styles, and <th-code>:host</th-code> selectors will have no effect.
+					<th-link href="/docs/root-and-internals">Learn how to opt out of shadow DOM</th-link>.
 				</th-block-quote>
 			</th-content-group>
 		</th-doc-page>
