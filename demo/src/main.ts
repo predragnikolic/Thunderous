@@ -7,6 +7,7 @@ import {
 	onServerDefine,
 	insertTemplates,
 	clientOnlyCallback,
+	createSignal,
 } from 'thunderous';
 
 const mockHTML = /* html */ `
@@ -49,6 +50,7 @@ const MyElement = customElement<{ count: number }>(
 		const [count, setCount] = propSignals.count;
 		setCount(0);
 		const [heading] = attrSignals.heading;
+		const [list, setList] = createSignal(['a', 'b', 'c']);
 
 		const redValue = derived(() => {
 			const value = count() * 10;
@@ -82,7 +84,14 @@ const MyElement = customElement<{ count: number }>(
 				font: inherit;
 				padding: 0.5rem;
 			}
+			[onclick] {
+				cursor: pointer;
+			}
 		`);
+
+		const addListItem = customCallback(() => {
+			setList([...list(), 'new item']);
+		});
 
 		return html`
 			<div><h1>${heading}</h1></div>
@@ -93,6 +102,12 @@ const MyElement = customElement<{ count: number }>(
 			</div>
 			<span>this is a scoped element:</span>
 			<nested-element text="test"></nested-element>
+			<h2>nested templates and loops:</h2>
+			<ul>
+				${html`<li>item</li>`}
+				${derived(() => list().map((item, i) => html`<li key="${item}-${i}" onclick="${addListItem}">${item}</li>`))}
+				${list().map((item) => html`<li key="${item}">${item} after</li>`)}
+			</ul>
 		`;
 	},
 	{
@@ -103,7 +118,6 @@ const MyElement = customElement<{ count: number }>(
 	},
 ).register(globalRegistry);
 
-console.log('defined:', MyElement);
 MyElement.define('my-element');
 
 clientOnlyCallback(() => {
