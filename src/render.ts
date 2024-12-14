@@ -117,17 +117,18 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 		for (const child of element.childNodes) {
 			if (child instanceof Text && signalBindingRegex.test(child.data)) {
 				const textList = child.data.split(signalBindingRegex);
+				const sibling = child.nextSibling;
 				textList.forEach((text, i) => {
 					const uniqueKey = text.replace(/\{\{signal:(.+)\}\}/, '$1');
 					const signal = uniqueKey !== text ? signalMap.get(uniqueKey) : undefined;
 					const newValue = signal !== undefined ? signal() : text;
 					const newNode = getNewNode(newValue, element);
 
-					// the first child is likely signal binding text due to the way the textList is split
+					// the first child is either blank text or signal binding text due to the way the textList is split
 					if (i === 0) {
 						child.replaceWith(newNode);
 					} else {
-						element.insertBefore(newNode, child.nextSibling);
+						element.insertBefore(newNode, sibling);
 					}
 
 					// evaluate signals and subscribe to them
