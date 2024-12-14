@@ -124,7 +124,7 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 					const newValue = signal !== undefined ? signal() : text;
 					const newNode = getNewNode(newValue, element);
 
-					// the first child is either blank text or signal binding text due to the way the textList is split
+					// there is only one text node, originally, so we have to replace it before inserting additional nodes
 					if (i === 0) {
 						child.replaceWith(newNode);
 					} else {
