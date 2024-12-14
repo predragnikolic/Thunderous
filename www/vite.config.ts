@@ -22,7 +22,7 @@ export default defineConfig({
 			configureServer(server) {
 				server.middlewares.use((req, res, next) => {
 					const url = req.url?.replace(/\?.*$/, '') ?? '';
-					if (url.includes('.')) return next();
+					if (/\.[a-z]{2,}/.test(url)) return next();
 					const potentialPath = resolve(__dirname, 'src', `.${url}/index.html`);
 					const exists = existsSync(potentialPath);
 					if (url.endsWith('/') && exists) return next();
@@ -37,7 +37,7 @@ export default defineConfig({
 						return;
 					} else {
 						res.writeHead(301, {
-							location: '/404',
+							location: '/404.html',
 						});
 						res.end();
 						return;
