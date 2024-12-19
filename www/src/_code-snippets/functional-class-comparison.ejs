@@ -3,7 +3,7 @@ import { getCallback, BaseElement } from './utils';
 
 
 // Thunderous functional component:
-customElement(({ customCallback }) => {
+const FnElement = customElement(({ customCallback }) => {
   const [count, setCount] = createSignal(0);
   const increment = customCallback(() => setCount(count() + 1));
   return html`
@@ -14,7 +14,7 @@ customElement(({ customCallback }) => {
 
 
 // Traditional class component with Thunderous helpers:
-class MyElement extends BaseElement {
+class ClssElement extends BaseElement {
   #count = createSignal(0);
   increment() {
     const [count, setCount] = this.#count;
