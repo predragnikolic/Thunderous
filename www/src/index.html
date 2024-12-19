@@ -1,6 +1,20 @@
 <!doctype html>
 <html lang="en">
 	<head>
+		<script>
+			// dev-only scripts
+			(() => {
+				if (!location.host.startsWith('localhost')) return;
+				if (!location.pathname.endsWith('/')) {
+					location.href = location.href + '/';
+					return;
+				}
+				if (location.pathname !== '/' && !location.pathname !== '/404.html') {
+					location.href = '/404.html';
+					return;
+				}
+			})();
+		</script>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta
@@ -41,13 +55,13 @@
 				</th-marketing-content>
 				<th-marketing-content>
 					<h2>Why Functions?</h2>
-					<p>In short - the class syntax in JavaScript is verbose and error-prone.</p>
+					<p>In short - functions are more concise and easier to reason about than classes.</p>
 					<ul>
-						<li>There's a lot of boilerplate code to write</li>
-						<li>Methods are in danger of losing their binding context</li>
+						<li>There's less boilerplate code to write</li>
+						<li>Class methods are in danger of losing their binding context</li>
 						<li>Repetition is usually necessary for each method's scope</li>
-						<li>Encapsulation tends to be weaker in classes than in closures</li>
-						<li>Functions are more concise and easier to reason about</li>
+						<li>One scope is easier to manage than several smaller scopes</li>
+						<li>Encapsulation tends to be stronger in function closures than in classes</li>
 					</ul>
 				</th-marketing-content>
 				<th-code-block lang="ts"><%=include('_code-snippets/functional-class-comparison.ejs')%></th-code-block>
