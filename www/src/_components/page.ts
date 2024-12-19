@@ -6,7 +6,9 @@ export const Page = customElement(({ adoptStyleSheet }) => {
 	adoptStyleSheet(styles);
 	return html`
 		<div class="page">
-			<slot></slot>
+			<div><slot name="header"></slot></div>
+			<div><slot></slot></div>
+			<div><slot name="footer"></slot></div>
 		</div>
 	`;
 });
@@ -17,5 +19,7 @@ const styles = css`
 		background-color: var(--color-site-1);
 		color: var(--color-site-1-c);
 		overflow: auto;
+		display: grid;
+		grid-template-rows: auto 1fr auto;
 	}
 `;

@@ -125,10 +125,12 @@ export const DocPage = customElement(({ adoptStyleSheet, customCallback, connect
 					</nav>
 				</header>
 				<div class="backdrop ${navOpenClass}" onclick="${toggleNav}"></div>
-				<main>
-					<slot></slot>
-				</main>
-				<th-footer></th-footer>
+				<div class="main-container">
+					<main>
+						<slot></slot>
+					</main>
+					<th-footer></th-footer>
+				</div>
 			</div>
 		</th-page>
 	`;
@@ -191,6 +193,12 @@ const styles = css`
 		height: 100%;
 		background-color: rgba(0, 0, 0, 0.5);
 	}
+	.main-container {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-rows: minmax(0, 1fr) auto;
+		min-height: 100vh;
+	}
 	header,
 	main {
 		overflow: auto;
@@ -246,6 +254,7 @@ const styles = css`
 		}
 		header {
 			position: static;
+			border-right: 0.2em solid var(--color-site-1);
 		}
 		.nav-toggle {
 			display: none;
