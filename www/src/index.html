@@ -33,36 +33,34 @@
 			<th-marketing-content>
 				<th-code-block lang="ts"><%= include('_code-snippets/usage.ejs') %></th-code-block>
 				<th-marketing-content>
-					<h2>Why Thunderous?</h2>
+					<th-heading><h2>Why Thunderous?</h2></th-heading>
 					<th-text>
-						<p>
-							Unlike web component frameworks, the Thunderous library doesn't impose a particular approach to building
-							entire applications. Instead, it provides a set of tools to help you build interoperable web components
-							that can be used in any framework or vanilla JavaScript.
-						</p>
-						<p>
-							Thunderous works best for building component libraries as design systems. Components may be distributed
-							through standalone packages to be consumed by multiple projects. It's designed to be agnostic, even
-							offering a standard way to defer the tag name definitions until the components are used by the consumer,
-							with <th-link href="/docs/registries">registries</th-link>.
-						</p>
-						<p>
-							The biggest advantage Thunderous provides over similar libraries is its "render-once" approach and
-							fine-grained reactivity; <th-link href="/docs/binding-signals">signals bind to templates</th-link> and
-							apply changes directly where needed. Putting aside the performance benefits, this approach also avoids the
-							complexity and cognitive burden of additional lifecycle methods. It's a more natural way to write
-							JavaScript.
-						</p>
+						Unlike web component frameworks, the Thunderous library doesn't impose a particular approach to building
+						entire applications. Instead, it provides a set of tools to help you build interoperable web components that
+						can be used in any framework or vanilla JavaScript.
+					</th-text>
+					<th-text>
+						Thunderous works best for building component libraries as design systems. Components may be distributed
+						through standalone packages to be consumed by multiple projects. It's designed to be agnostic, even offering
+						a standard way to defer the tag name definitions until the components are used by the consumer, with
+						<th-link href="/docs/registries">registries</th-link>.
+					</th-text>
+					<th-text>
+						The biggest advantage Thunderous provides over similar libraries is its "render-once" approach and
+						fine-grained reactivity; <th-link href="/docs/binding-signals">signals bind to templates</th-link> and apply
+						changes directly where needed. Putting aside the performance benefits, this approach also avoids the
+						complexity and cognitive burden of additional lifecycle methods. It's a more natural way to write
+						JavaScript.
 					</th-text>
 				</th-marketing-content>
 				<th-marketing-content>
-					<h2>Why Functions?</h2>
-					<p>
+					<th-heading><h2>Why Functions?</h2></th-heading>
+					<th-text>
 						With the rising popularity of functional components in modern frameworks, Thunderous provides a familiar and
 						more approachable DX for web components - a common complaint among developers. This shared experience can
 						largely be attributed to the fact that functions are more concise and easier to reason about than classes.
 						For example:
-					</p>
+					</th-text>
 					<ul>
 						<li>There's less boilerplate code to write</li>
 						<li>One scope is easier to manage than several smaller scopes</li>
@@ -71,13 +69,15 @@
 						<li>Encapsulation tends to be stronger in function closures than in classes</li>
 						<li>Functions are more predictable and less prone to side effects</li>
 					</ul>
-					<p>
+					<th-text>
 						While functions may deviate from the native web component API, Thunderous is actually designed to keep the
 						developer closer to the web platform than other libraries. It avoids deep inheritance chains that introduce
-						extra behavior; each component only builds upon the native HTMLElement.
-					</p>
+						extra behavior; each component only builds upon the native HTMLElement. There's no build step required, so
+						you can integrate Thunderous into your existing projects without any hassle.
+					</th-text>
 				</th-marketing-content>
 				<th-code-block lang="ts"><%=include('_code-snippets/functional-class-comparison.ejs')%></th-code-block>
+				<th-marketing-content> </th-marketing-content>
 			</th-marketing-content>
 			<th-footer slot="footer"></th-footer>
 		</th-page>
