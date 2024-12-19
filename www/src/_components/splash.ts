@@ -23,7 +23,7 @@ const styles = css`
 		align-content: center;
 		place-items: center;
 		height: 100vh;
-		max-height: 40em;
+		max-height: 50em;
 		background-image: linear-gradient(135deg, var(--color-site-1-2), var(--color-site-1-1));
 		text-align: center;
 		box-sizing: border-box;
