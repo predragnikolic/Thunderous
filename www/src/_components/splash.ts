@@ -5,8 +5,10 @@ export const Splash = customElement(({ adoptStyleSheet }) => {
 	return html`
 		<main>
 			<header>
-				<h1><img src="/thunder-solutions-logo-light.svg" alt="Thunder Solutions Logo" /><span>Thunderous</span></h1>
-				<h2>Building web components has never been easier.</h2>
+				<hgroup>
+					<h1><img src="/thunder-solutions-logo-light.svg" alt="Thunder Solutions Logo" /><span>Thunderous</span></h1>
+					<h2>Building web components has never been easier.</h2>
+				</hgroup>
 			</header>
 			<p>Thunderous is a functional-style web component authoring library, supercharged with signals!</p>
 			<th-link-button href="/docs">Get Started</th-link-button>
@@ -21,9 +23,9 @@ const styles = css`
 		align-content: center;
 		place-items: center;
 		height: 100vh;
+		max-height: 40em;
 		background-image: linear-gradient(135deg, var(--color-site-1-2), var(--color-site-1-1));
 		text-align: center;
-		padding-bottom: 6em;
 		box-sizing: border-box;
 	}
 	img {
