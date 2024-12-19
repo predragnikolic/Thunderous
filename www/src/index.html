@@ -16,21 +16,42 @@
 	<body>
 		<th-page>
 			<th-splash></th-splash>
-			<th-content-group>
-				<h2>Why Thunderous?</h2>
-				<th-text>
-					<p>
-						Unlike similar packages, Thunderous doesn't impose a particular approach to building entire applications.
-						Instead, it provides a set of tools to help you build interoperable web components that can be used in any
-						framework or vanilla JavaScript.
-					</p>
-					<p>
-						Thunderous works best for building component libraries as design systems. Components may be distributed as
-						part of standalone packages to be consumed by multiple projects. It's designed to be agnostic, flexible, and
-						performant.
-					</p>
-				</th-text>
-			</th-content-group>
+			<th-marketing-content>
+				<th-code-block lang="ts"><%= include('_code-snippets/usage.ejs') %></th-code-block>
+				<th-marketing-content>
+					<h2>Why Thunderous?</h2>
+					<th-text>
+						<p>
+							Unlike web component frameworks, the Thunderous library doesn't impose a particular approach to building
+							entire applications. Instead, it provides a set of tools to help you build interoperable web components
+							that can be used in any framework or vanilla JavaScript.
+						</p>
+						<p>
+							Thunderous works best for building component libraries as design systems. Components may be distributed
+							through standalone packages to be consumed by multiple projects. It's designed to be agnostic, flexible,
+							and performant.
+						</p>
+						<p>
+							The biggest advantage Thunderous provides over similar libraries is its "render-once" approach and
+							fine-grained reactivity; signals bind to templates and apply changes directly where needed. Putting aside
+							the performance benefits, this approach also avoids the complexity and cognitive burden of additional
+							lifecycle methods. It's a more natural way to write JavaScript.
+						</p>
+					</th-text>
+				</th-marketing-content>
+				<th-marketing-content>
+					<h2>Why Functions?</h2>
+					<p>In short - the class syntax in JavaScript is verbose and error-prone.</p>
+					<ul>
+						<li>There's a lot of boilerplate code to write</li>
+						<li>Methods are in danger of losing their binding context</li>
+						<li>Repetition is usually necessary for each method's scope</li>
+						<li>Encapsulation tends to be weaker in classes than in closures</li>
+						<li>Functions are more concise and easier to reason about</li>
+					</ul>
+				</th-marketing-content>
+				<th-code-block lang="ts"><%=include('_code-snippets/functional-class-comparison.ejs')%></th-code-block>
+			</th-marketing-content>
 			<th-footer slot="footer"></th-footer>
 		</th-page>
 		<script type="module" src="/main.ts"></script>

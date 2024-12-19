@@ -1,0 +1,31 @@
+import { customElement, html, createSignal } from 'thunderous';
+import { getCallback, BaseElement } from './utils';
+
+
+// Thunderous functional component:
+customElement(({ customCallback }) => {
+  const [count, setCount] = createSignal(0);
+  const increment = customCallback(() => setCount(count() + 1));
+  return html`
+    <button onclick="${increment}">Increment</button>
+    <output>${count}</output>
+  `;
+});
+
+
+// Traditional class component with Thunderous helpers:
+class MyElement extends BaseElement {
+  #count = createSignal(0);
+  increment() {
+    const [count, setCount] = this.#count;
+    setCount(count() + 1);
+  }
+  render() {
+    const [count] = this.#count;
+    const increment = getCallback('increment');
+    return html`
+      <button onclick="${increment}">Increment</button>
+      <output>${count}</output>
+    `;
+  }
+}
