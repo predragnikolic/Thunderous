@@ -55,14 +55,25 @@
 				</th-marketing-content>
 				<th-marketing-content>
 					<h2>Why Functions?</h2>
-					<p>In short - functions are more concise and easier to reason about than classes.</p>
+					<p>
+						With the rising popularity of functional components in modern frameworks, Thunderous provides a familiar and
+						more approachable DX for web components - a common complaint among developers. This shared experience can
+						largely be attributed to the fact that functions are more concise and easier to reason about than classes.
+						For example:
+					</p>
 					<ul>
 						<li>There's less boilerplate code to write</li>
+						<li>One scope is easier to manage than several smaller scopes</li>
 						<li>Class methods are in danger of losing their binding context</li>
 						<li>Repetition is usually necessary for each method's scope</li>
-						<li>One scope is easier to manage than several smaller scopes</li>
 						<li>Encapsulation tends to be stronger in function closures than in classes</li>
+						<li>Functions are more predictable and less prone to side effects</li>
 					</ul>
+					<p>
+						While functions may deviate from the native web component API, Thunderous is actually designed to keep the
+						developer closer to the web platform than other libraries. It avoids deep inheritance chains that introduce
+						extra behavior; each component only builds upon the native HTMLElement.
+					</p>
 				</th-marketing-content>
 				<th-code-block lang="ts"><%=include('_code-snippets/functional-class-comparison.ejs')%></th-code-block>
 			</th-marketing-content>
