@@ -37,7 +37,8 @@
 					client-side APIs on the server. To avoid these errors, you can use the
 					<th-code>clientOnlyCallback()</th-code> function to conditionally run code only on the client. This is
 					provided in the arguments of the render callback passed to <th-code>customElement()</th-code>, but can also be
-					imported directly from the library.
+					imported directly from the library. These two methods have distinct use cases - pay close attention to the
+					comments in the code snippet below.
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/client-only.ejs') %></th-code-block>
 			</th-content-group>

@@ -28,8 +28,8 @@
 		<link rel="favicon" href="/favicon.ico" />
 	</head>
 	<body>
-		<th-page>
-			<th-splash></th-splash>
+		<th-page splash>
+			<th-splash slot="header"></th-splash>
 			<th-marketing-content>
 				<th-code-block lang="ts"><%= include('_code-snippets/usage.ejs') %></th-code-block>
 				<th-marketing-content>
@@ -77,7 +77,33 @@
 					</th-text>
 				</th-marketing-content>
 				<th-code-block lang="ts"><%=include('_code-snippets/functional-class-comparison.ejs')%></th-code-block>
-				<th-marketing-content> </th-marketing-content>
+			</th-marketing-content>
+			<th-marketing-content standalone>
+				<th-heading><h2>What about SSR?</h2></th-heading>
+				<th-text>
+					A common concern with web components is server-side rendering (SSR). While Thunderous doesn't provide its own
+					server, it does offer a way to transform response text before it's sent back to the client. When a Thunderous
+					component is defined on the server, its function runs once to return a plain HTML string using
+					<th-link
+						href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM#declaratively_with_html"
+						>declarative shadow DOM</th-link
+					>
+					if necessary. With the
+					<th-link href="/docs/server-side-rendering">
+						<th-code>onServerDefine()</th-code> and <th-code>insertTemplates()</th-code>
+					</th-link>
+					functions, you can inject that content into the server rendered HTML.
+				</th-text>
+			</th-marketing-content>
+			<th-marketing-content standalone>
+				<th-heading><h2>Contributing</h2></th-heading>
+				<th-text>
+					Thunderous is still in its early stages, but it's already being used in production. The library is being
+					actively developed and maintained, with new features and improvements being added regularly. If you're
+					interested in contributing, please check out the
+					<th-link href="https://github.com/Thunder-Solutions/Thunderous">GitHub repository</th-link> and feel free to
+					open an issue or submit a pull request.
+				</th-text>
 			</th-marketing-content>
 			<th-footer slot="footer"></th-footer>
 		</th-page>

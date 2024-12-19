@@ -1,13 +1,15 @@
 import { css, customElement, html } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const Page = customElement(({ adoptStyleSheet }) => {
+export const Page = customElement(({ adoptStyleSheet, attrSignals }) => {
+	const [_splash] = attrSignals['splash'];
+	const splash = _splash() !== null;
 	adoptStyleSheet(theme);
 	adoptStyleSheet(styles);
 	return html`
-		<div class="page">
+		<div class="page ${splash ? 'splash' : ''}">
 			<div><slot name="header"></slot></div>
-			<div><slot></slot></div>
+			<div class="page__content"><slot></slot></div>
 			<div><slot name="footer"></slot></div>
 		</div>
 	`;
@@ -21,5 +23,10 @@ const styles = css`
 		overflow: auto;
 		display: grid;
 		grid-template-rows: auto 1fr auto;
+	}
+	.splash .page__content {
+		display: grid;
+		padding: 4em 0;
+		gap: 2em;
 	}
 `;
