@@ -439,9 +439,6 @@ if (typeof window !== 'undefined') {
     installScopedCreationMethod(ShadowRoot, 'createElement', document);
     installScopedCreationMethod(ShadowRoot, 'importNode', document);
     installScopedCreationMethod(Element, 'insertAdjacentHTML');
-    installScopedCreationMethod(Node, 'appendChild');
-    installScopedCreationMethod(Element, 'append');
-
 
     // Install scoped innerHTML on Element & ShadowRoot
     const installScopedCreationSetter = (ctor, name) => {

@@ -1,5 +1,5 @@
 import { DEFAULT_RENDER_OPTIONS } from './constants';
-import { isCSSStyleSheet, setInnerHTML } from './render';
+import { clearHTML, isCSSStyleSheet, renderState } from './render';
 import { isServer, serverDefine } from './server-side';
 import { createSignal } from './signals';
 import type {
@@ -147,6 +147,7 @@ export const customElement = <Props extends CustomElementProps>(
 					});
 		#render() {
 			const root = this.#shadowRoot ?? this;
+			renderState.currentShadowRoot = this.#shadowRoot;
 			const fragment = render({
 				elementRef: this,
 				root,
@@ -240,35 +241,12 @@ export const customElement = <Props extends CustomElementProps>(
 			});
 			fragment.host = this;
 
-			// The polyfill only supports upgrading scoped elements when using innerHTML.
-			// The following code is a workaround to upgrade elements when appending a DocumentFragment.
-			const registry =
-				shadowRootOptions.registry instanceof CustomElementRegistry
-					? shadowRootOptions.registry
-					: shadowRootOptions.registry?.eject();
-
-			const tempContainer = document.createElement('div');
-			tempContainer.append(fragment.cloneNode(true));
-			const fragmentContent = tempContainer.innerHTML;
-			root.innerHTML = fragmentContent;
-
-			if (registry?.__tagNames !== undefined) {
-				for (const tagName of registry.__tagNames) {
-					const upgradedElements = root.querySelectorAll(tagName);
-					const nonUpgradedElements = fragment.querySelectorAll(tagName);
-					upgradedElements.forEach((upgradedElement, index) => {
-						const nonUpgradedElement = nonUpgradedElements[index];
-						nonUpgradedElement.replaceWith(upgradedElement);
-					});
-				}
-			}
-			// ------ end workaround ------
-
 			for (const fn of this.#clientOnlyCallbackFns) {
 				fn();
 			}
 
-			setInnerHTML(root, fragment);
+			clearHTML(root);
+			root.append(fragment);
 		}
 		static get formAssociated() {
 			return formAssociated;

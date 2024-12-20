@@ -8,6 +8,10 @@ declare global {
 	interface CustomElementRegistry {
 		__tagNames: Set<string>;
 	}
+	interface ShadowRoot {
+		// missing from typescript but present in the spec
+		importNode: <T = Node>(node: T, deep: boolean) => T;
+	}
 }
 
 export type TagName = `${string}-${string}`;

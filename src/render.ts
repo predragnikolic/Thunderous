@@ -2,6 +2,10 @@ import { isServer } from './server-side';
 import { createEffect } from './signals';
 import type { ElementParent, Styles, SignalGetter } from './types';
 
+export const renderState = {
+	currentShadowRoot: null as ShadowRoot | null,
+};
+
 export const clearHTML = (element: ElementParent) => {
 	while (element.childNodes.length > 0) {
 		element.childNodes[0].remove();
@@ -9,15 +13,13 @@ export const clearHTML = (element: ElementParent) => {
 };
 
 export const parseFragment = (htmlStr: string): DocumentFragment => {
-	const range = document.createRange();
-	range.selectNode(document.body); // required in Safari
-	return range.createContextualFragment(htmlStr);
-};
-
-export const setInnerHTML = (element: ElementParent, html: string | DocumentFragment) => {
-	clearHTML(element);
-	const fragment = typeof html === 'string' ? parseFragment(html) : html;
-	element.append(fragment);
+	const template = document.createElement('template');
+	template.innerHTML = htmlStr;
+	const fragment =
+		renderState.currentShadowRoot === null
+			? template.content
+			: renderState.currentShadowRoot.importNode(template.content, true);
+	return fragment;
 };
 
 const logValueError = (value: unknown) => {
