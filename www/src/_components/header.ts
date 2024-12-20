@@ -9,7 +9,7 @@ export const PageHeader = customElement(({ adoptStyleSheet }) => {
 			<h2>
 				<slot></slot>
 			</h2>
-			<a href="https://github.com/Thunder-Solutions/Thunderous">
+			<a href="https://github.com/Thunder-Solutions/Thunderous" class="github-link">
 				<th-icon icon-name="github"></th-icon>
 			</a>
 		</header>
@@ -20,7 +20,7 @@ const pageHeaderStyles = css`
 	header {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
-		align-items: center;
+		align-items: start;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		padding-bottom: 0.8em;
 		margin: 1em;
@@ -44,7 +44,10 @@ const pageHeaderStyles = css`
 		display: flex;
 		place-items: center;
 		place-content: center;
-		padding-right: 2.4em;
+		padding: 0.3em;
+	}
+	.github-link {
+		margin-right: 2.4em;
 	}
 	a:hover {
 		color: var(--color-site-2);
