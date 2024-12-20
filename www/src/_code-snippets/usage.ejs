@@ -1,6 +1,6 @@
 import { customElement, html, css, createSignal } from 'thunderous';
 
-const MyElement = customElement(({ customCallback, refs, adoptStyleSheet }) => {
+const MyElement = customElement(({ customCallback, adoptStyleSheet }) => {
   const [count, setCount] = createSignal(0);
   const increment = customCallback(() => setCount(count() + 1));
   adoptStyleSheet(myStyleSheet);
