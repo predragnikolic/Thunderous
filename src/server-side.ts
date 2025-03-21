@@ -4,6 +4,7 @@ import type {
 	RenderArgs,
 	ServerDefineArgs,
 	ServerDefineFn,
+	SignalGetter,
 	WrapTemplateArgs,
 } from './types';
 import { createSignal } from './signals';
@@ -88,7 +89,12 @@ export const getServerRenderArgs = (tagName: string, registry?: RegistryResult):
 	formStateRestoreCallback: NOOP,
 	formAssociatedCallback: NOOP,
 	clientOnlyCallback: NOOP,
-	customCallback: () => `{{callback:unavailable-on-server}}`,
+	customCallback: () => '',
+	getter: (fn) => {
+		const _fn: SignalGetter<ReturnType<typeof fn>> = () => fn();
+		_fn.getter = true;
+		return _fn;
+	},
 	attrSignals: new Proxy({}, { get: (_, attr) => createSignal(`{{attr:${String(attr)}}}`) }),
 	propSignals: new Proxy({}, { get: () => createSignal(null) }),
 	refs: {},
