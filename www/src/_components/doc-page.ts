@@ -1,14 +1,14 @@
 import { createSignal, css, customElement, derived, html } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const DocPage = customElement(({ adoptStyleSheet, customCallback, connectedCallback, disconnectedCallback }) => {
+export const DocPage = customElement(({ adoptStyleSheet, connectedCallback, disconnectedCallback }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(styles);
 	const [navOpen, setNavOpen] = createSignal(false);
 	const navOpenClass = derived(() => (navOpen() ? 'open' : ''));
-	const toggleNav = customCallback(() => {
+	const toggleNav = () => {
 		setNavOpen(!navOpen());
-	});
+	};
 	const openIfDesktop = () => {
 		if (window.innerWidth >= 50 * 16) {
 			setNavOpen(true);

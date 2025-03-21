@@ -1,11 +1,10 @@
 import { customElement, html, createSignal } from 'thunderous';
-import { getCallback, BaseElement } from './utils';
 
 
 // Thunderous functional component:
-const FnElement = customElement(({ customCallback }) => {
+const FnElement = customElement(() => {
   const [count, setCount] = createSignal(0);
-  const increment = customCallback(() => setCount(count() + 1));
+  const increment = () => setCount(count() + 1);
   return html`
     <button onclick="${increment}">Increment</button>
     <output>${count}</output>
@@ -14,18 +13,19 @@ const FnElement = customElement(({ customCallback }) => {
 
 
 // Traditional class component with Thunderous helpers:
-class ClssElement extends BaseElement {
+class ClssElement extends HTMLElement {
+  #shadowRoot = this.attachShadow({ mode: 'closed' });
   #count = createSignal(0);
   increment() {
     const [count, setCount] = this.#count;
     setCount(count() + 1);
   }
-  render() {
+  constructor() {
+    super();
     const [count] = this.#count;
-    const increment = getCallback('increment');
-    return html`
-      <button onclick="${increment}">Increment</button>
+    this.#shadowRoot.append(html`
+      <button onclick="${this.increment}">Increment</button>
       <output>${count}</output>
-    `;
+    `);
   }
 }

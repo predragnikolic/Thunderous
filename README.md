@@ -35,9 +35,9 @@ const myStyleSheet = css`
   }
 `;
 
-const MyElement = customElement(({ customCallback, refs, adoptStyleSheet }) => {
+const MyElement = customElement(({ refs, adoptStyleSheet }) => {
   const [count, setCount] = createSignal(0);
-  const increment = customCallback(() => setCount(count() + 1));
+  const increment = () => setCount(count() + 1);
   adoptStyleSheet(myStyleSheet);
   return html`
     <button onclick="${increment}">Increment</button>
