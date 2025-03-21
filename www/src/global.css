@@ -17,3 +17,7 @@ ul {
 li:not(:first-child) {
 	margin-top: 1em;
 }
+
+:not(:defined) {
+	display: none;
+}
