@@ -18,7 +18,7 @@ export const parseFragment = (htmlStr: string): DocumentFragment => {
 	const fragment =
 		renderState.currentShadowRoot === null
 			? template.content
-			: renderState.currentShadowRoot.importNode(template.content, true);
+			: (renderState.currentShadowRoot.importNode?.(template.content, true) ?? template.content);
 	return fragment;
 };
 

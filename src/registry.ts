@@ -23,7 +23,15 @@ export const createRegistry = (args?: RegistryArgs): RegistryResult => {
 	const customElementTags = new Set<TagName>();
 	const nativeRegistry = (() => {
 		if (isServer) return;
-		if (scoped) return new CustomElementRegistry();
+		if (scoped) {
+			try {
+				return new CustomElementRegistry();
+			} catch {
+				console.error(
+					'The scoped custom elements polyfill was not found. Falling back to global registry.\n\nCheck `RegistryResult.scoped` at https://thunderous.dev/docs/registries for more information.',
+				);
+			}
+		}
 		return customElements;
 	})();
 	return {
