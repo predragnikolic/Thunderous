@@ -27,7 +27,7 @@ const arrayToDocumentFragment = (array: unknown[], parent: ElementParent) => {
 	let count = 0;
 	const keys = new Set<string>();
 	for (const item of array) {
-		const node = createNewNode(item, parent).cloneNode(true);
+		const node = createNewNode(item, parent);
 		if (node instanceof DocumentFragment) {
 			const child = node.firstElementChild;
 			if (node.children.length > 1) {
