@@ -46,7 +46,7 @@ const registry = createRegistry({ scoped: true });
 registry.define('nested-element', NestedElement);
 
 const MyElement = customElement<{ count: number }>(
-	({ attrSignals, propSignals, customCallback, getter, internals, clientOnlyCallback, adoptStyleSheet }) => {
+	({ attrSignals, propSignals, getter, internals, clientOnlyCallback, adoptStyleSheet }) => {
 		const [count, setCount] = propSignals.count;
 		setCount(0);
 		const [heading] = attrSignals.heading;
@@ -91,9 +91,9 @@ const MyElement = customElement<{ count: number }>(
 			}
 		`);
 
-		const addListItem = customCallback(() => {
+		const addListItem = () => {
 			setList([...list(), 'new item']);
-		});
+		};
 
 		return html`
 			<div><h1>${heading}</h1></div>
