@@ -1,5 +1,5 @@
 import { DEFAULT_RENDER_OPTIONS } from './constants';
-import { clearHTML, isCSSStyleSheet, renderState } from './render';
+import { isCSSStyleSheet, renderState } from './render';
 import { isServer, serverDefine } from './server-side';
 import { createSignal } from './signals';
 import type {
@@ -251,8 +251,7 @@ export const customElement = <Props extends CustomElementProps>(
 				fn();
 			}
 
-			clearHTML(root);
-			root.append(fragment);
+			root.replaceChildren(fragment);
 		}
 		static get formAssociated() {
 			return formAssociated;

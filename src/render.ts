@@ -6,22 +6,6 @@ export const renderState = {
 	currentShadowRoot: null as ShadowRoot | null,
 };
 
-export const clearHTML = (element: ElementParent) => {
-	while (element.childNodes.length > 0) {
-		element.childNodes[0].remove();
-	}
-};
-
-export const parseFragment = (htmlStr: string): DocumentFragment => {
-	const template = document.createElement('template');
-	template.innerHTML = htmlStr;
-	const fragment =
-		renderState.currentShadowRoot === null
-			? template.content
-			: (renderState.currentShadowRoot.importNode?.(template.content, true) ?? template.content);
-	return fragment;
-};
-
 const logValueError = (value: unknown) => {
 	console.error(
 		'An invalid value was passed to a template function. Non-primitive values are not supported.\n\nValue:\n',
@@ -118,7 +102,15 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 		// @ts-expect-error // return a plain string for server-side rendering
 		return innerHTML;
 	}
-	const fragment = parseFragment(innerHTML);
+
+	// Parse the HTML string into a DocumentFragment
+	const template = document.createElement('template');
+	template.innerHTML = innerHTML;
+	const fragment =
+		renderState.currentShadowRoot === null
+			? template.content
+			: (renderState.currentShadowRoot.importNode?.(template.content, true) ?? template.content);
+
 	const callbackBindingRegex = /(\{\{callback:.+\}\})/;
 	const legacyCallbackBindingRegex = /(this.getRootNode\(\).host.__customCallbackFns.get\('.+'\)\(event\))/;
 	const signalBindingRegex = /(\{\{signal:.+\}\})/;
