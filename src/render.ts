@@ -13,12 +13,13 @@ const logValueError = (value: unknown) => {
 	);
 };
 
+// For nested loops in templating logic...
 const arrayToDocumentFragment = (array: unknown[], parent: ElementParent) => {
 	const documentFragment = new DocumentFragment();
 	let count = 0;
 	const keys = new Set<string>();
 	for (const item of array) {
-		const node = getNewNode(item, parent).cloneNode(true);
+		const node = createNewNode(item, parent).cloneNode(true);
 		if (node instanceof DocumentFragment) {
 			const child = node.firstElementChild;
 			if (node.children.length > 1) {
@@ -51,17 +52,22 @@ const arrayToDocumentFragment = (array: unknown[], parent: ElementParent) => {
 	return documentFragment;
 };
 
-const getNewNode = (value: unknown, parent: ElementParent) => {
+const createNewNode = (value: unknown, parent: ElementParent) => {
 	if (typeof value === 'string') return new Text(value);
 	if (Array.isArray(value)) return arrayToDocumentFragment(value, parent);
 	if (value instanceof DocumentFragment) return value;
 	return new Text('');
 };
 
+/**
+ * A tagged template function for creating DocumentFragment instances.
+ */
 export const html = (strings: TemplateStringsArray, ...values: unknown[]): DocumentFragment => {
-	let innerHTML = '';
 	const signalMap = new Map<string, SignalGetter<unknown>>();
 	const callbackMap = new Map<string, AnyFn>();
+
+	// Handle each interpolated value and convert it to a string.
+	// Binding is done only after the combined HTML string is parsed into a DocumentFragment.
 	const processValue = (value: unknown): string => {
 		if (!isServer && value instanceof DocumentFragment) {
 			const tempDiv = document.createElement('div');
@@ -89,15 +95,18 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 		}
 		return String(value);
 	};
-	strings.forEach((string, i) => {
+
+	// Combine the strings and values into a single HTML string
+	const innerHTML = strings.reduce((innerHTML, str, i) => {
 		let value: unknown = values[i] ?? '';
 		if (Array.isArray(value)) {
 			value = value.map((item) => processValue(item)).join('');
 		} else {
 			value = processValue(value);
 		}
-		innerHTML += string + String(value === null ? '' : value);
-	});
+		innerHTML += str + String(value === null ? '' : value);
+		return innerHTML;
+	}, '');
 	if (isServer) {
 		// @ts-expect-error // return a plain string for server-side rendering
 		return innerHTML;
@@ -123,7 +132,7 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 					const uniqueKey = text.replace(/\{\{signal:(.+)\}\}/, '$1');
 					const signal = uniqueKey !== text ? signalMap.get(uniqueKey) : undefined;
 					const newValue = signal !== undefined ? signal() : text;
-					const newNode = getNewNode(newValue, element);
+					const newNode = createNewNode(newValue, element);
 
 					// there is only one text node, originally, so we have to replace it before inserting additional nodes
 					if (i === 0) {
@@ -140,7 +149,7 @@ export const html = (strings: TemplateStringsArray, ...values: unknown[]): Docum
 					} else if (signal !== undefined && newNode instanceof DocumentFragment) {
 						createEffect(() => {
 							const result = signal();
-							const nextNode = getNewNode(result, element);
+							const nextNode = createNewNode(result, element);
 							if (nextNode instanceof Text) {
 								throw new TypeError(
 									'Signal mismatch: expected DocumentFragment or Array<DocumentFragment>, but got Text',
