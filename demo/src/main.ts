@@ -106,7 +106,7 @@ const MyElement = customElement<{ count: number }>(
 			<nested-element text="test"></nested-element>
 			<h2>nested templates and loops:</h2>
 			<ul>
-				${html`<li>item</li>`}
+				${html`<li onclick="${addListItem}">item</li>`}
 				${derived(() => list().map((item, i) => html`<li key="${item}-${i}" onclick="${addListItem}">${item}</li>`))}
 				${list().map((item) => html`<li key="${item}">${item} after</li>`)}
 			</ul>
