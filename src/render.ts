@@ -2,10 +2,16 @@ import { isServer } from './server-side';
 import { createEffect } from './signals';
 import type { ElementParent, Styles, SignalGetter, AnyFn } from './types';
 
+const CALLBACK_BINDING_REGEX = /(\{\{callback:.+\}\})/;
+const LEGACY_CALLBACK_BINDING_REGEX = /(this.getRootNode\(\).host.__customCallbackFns.get\('.+'\)\(event\))/;
+const SIGNAL_BINDING_REGEX = /(\{\{signal:.+\}\})/;
+const FRAGMENT_ATTRIBUTE = '___thunderous-fragment';
+
 export const renderState = {
 	currentShadowRoot: null as ShadowRoot | null,
 	signalMap: new Map<string, SignalGetter<unknown>>(),
 	callbackMap: new Map<string, AnyFn>(),
+	fragmentMap: new Map<string, DocumentFragment>(),
 };
 
 const logValueError = (value: unknown) => {
@@ -65,9 +71,9 @@ const createNewNode = (value: unknown, parent: ElementParent) => {
 // Binding is done only after the combined HTML string is parsed into a DocumentFragment.
 const processValue = (value: unknown): string => {
 	if (!isServer && value instanceof DocumentFragment) {
-		const tempDiv = document.createElement('div');
-		tempDiv.append(value.cloneNode(true));
-		return tempDiv.innerHTML;
+		const uniqueKey = crypto.randomUUID();
+		renderState.fragmentMap.set(uniqueKey, value);
+		return `<div ${FRAGMENT_ATTRIBUTE}="${uniqueKey}"></div>`;
 	}
 	if (typeof value === 'function' && 'getter' in value && value.getter === true) {
 		const getter = value as SignalGetter<unknown>;
@@ -90,10 +96,6 @@ const processValue = (value: unknown): string => {
 	}
 	return String(value);
 };
-
-const CALLBACK_BINDING_REGEX = /(\{\{callback:.+\}\})/;
-const LEGACY_CALLBACK_BINDING_REGEX = /(this.getRootNode\(\).host.__customCallbackFns.get\('.+'\)\(event\))/;
-const SIGNAL_BINDING_REGEX = /(\{\{signal:.+\}\})/;
 
 // Bind signals and callbacks to DOM nodes in a DocumentFragment.
 const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) => {
@@ -141,7 +143,13 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 				}
 			});
 		}
-		if (child instanceof Element) {
+		if (child instanceof Element && child.hasAttribute(FRAGMENT_ATTRIBUTE)) {
+			const uniqueKey = child.getAttribute(FRAGMENT_ATTRIBUTE)!;
+			const childFragment = renderState.fragmentMap.get(uniqueKey);
+			if (childFragment !== undefined) {
+				child.replaceWith(childFragment);
+			}
+		} else if (child instanceof Element) {
 			for (const attr of child.attributes) {
 				if (SIGNAL_BINDING_REGEX.test(attr.value)) {
 					const textList = attr.value.split(SIGNAL_BINDING_REGEX);
