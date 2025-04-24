@@ -122,6 +122,7 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 						newNode.data = signal() as string;
 					});
 				} else if (signal !== undefined && newNode instanceof DocumentFragment) {
+					let init = false;
 					createEffect(() => {
 						const result = signal();
 						const nextNode = createNewNode(result, element);
@@ -131,14 +132,28 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 							);
 						}
 						let lastSibling = element.lastChild;
+						for (const child of element.children) {
+							const key = child.getAttribute('key');
+							if (key === null) continue;
+							const matchingNode = nextNode.querySelector(`[key="${key}"]`);
+							if (init && matchingNode === null) {
+								child.remove();
+							}
+						}
 						for (const child of nextNode.children) {
 							const key = child.getAttribute('key');
 							const matchingNode = element.querySelector(`[key="${key}"]`);
 							if (matchingNode === null) continue;
+							matchingNode.__customCallbackFns = child.__customCallbackFns;
+							for (const attr of child.attributes) {
+								matchingNode.setAttribute(attr.name, attr.value);
+							}
+							matchingNode.replaceChildren(...child.childNodes);
 							lastSibling = matchingNode.nextSibling;
 							child.replaceWith(matchingNode);
 						}
 						element.insertBefore(nextNode, lastSibling);
+						if (!init) init = true;
 					});
 				}
 			});
