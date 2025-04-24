@@ -125,7 +125,7 @@ const MyElement = customElement<{ count: number }>(
 				${derived(() =>
 					list().map((item) => html`<li key="${item.id}" onclick="${() => removeListItem(item.id)}">${item.name}</li>`),
 				)}
-				${list().map((item) => html`<li key="${item}">${item} after</li>`)}
+				${list().map((item) => html`<li key="${item.id}">${item.name} after</li>`)}
 			</ul>
 			<button onclick="${addListItem}">Add List Item</button>
 			<h2>Test</h2>
