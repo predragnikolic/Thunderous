@@ -8,6 +8,7 @@ import {
 	insertTemplates,
 	clientOnlyCallback,
 	createSignal,
+	createEffect,
 } from 'thunderous';
 
 const mockHTML = /* html */ `
@@ -49,6 +50,9 @@ const MyElement = customElement<{ count: number }>(
 	({ attrSignals, propSignals, getter, internals, clientOnlyCallback, adoptStyleSheet }) => {
 		const [count, setCount] = propSignals.count;
 		setCount(0);
+		createEffect(() => {
+			console.log('count changed:', count());
+		});
 		const [heading] = attrSignals.heading;
 		const [list, setList] = createSignal([
 			{ id: 1, name: 'item 1' },
@@ -135,7 +139,6 @@ const MyElement = customElement<{ count: number }>(
 	{
 		formAssociated: true,
 		observedAttributes: ['heading'],
-		attributesAsProperties: [['count', Number]],
 		shadowRootOptions: { registry },
 	},
 ).register(globalRegistry);
@@ -153,5 +156,10 @@ clientOnlyCallback(() => {
 	document.querySelector('button')!.addEventListener('click', () => {
 		const prev = myElement.getAttribute('heading');
 		myElement.setAttribute('heading', prev === 'title A' ? 'title B' : 'title A');
+	});
+	document.querySelector('#outer-count')!.addEventListener('click', () => {
+		// @ts-expect-error // ts doesn't know about the count property
+		myElement.count = myElement.count + 1;
+		// myElement.setAttribute('count', String(myElement.count + 1));
 	});
 });

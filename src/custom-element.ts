@@ -190,9 +190,10 @@ export const customElement = <Props extends CustomElementProps>(
 					get: (_, prop: Extract<keyof Props, string>) => {
 						if (!(prop in this.#propSignals)) this.#propSignals[prop] = createSignal<Props[typeof prop] | undefined>();
 						const [_getter, _setter] = this.#propSignals[prop];
+						let setFromProp = false;
 						const setter: SignalSetter<Props[typeof prop]> = (newValue: Props[typeof prop]) => {
 							// @ts-expect-error // TODO: look into this
-							this[prop] = newValue;
+							if (!setFromProp) this[prop] = newValue;
 							_setter(newValue);
 						};
 						const getter: SignalGetter<Props[typeof prop]> = () => {
@@ -204,6 +205,14 @@ export const customElement = <Props extends CustomElementProps>(
 							return value;
 						};
 						getter.getter = true;
+						Object.defineProperty(this, prop, {
+							get: getter,
+							set: (newValue: Props[typeof prop]) => {
+								setFromProp = true;
+								_setter(newValue);
+								setFromProp = false;
+							},
+						});
 						return [getter, setter];
 					},
 					set: () => {
