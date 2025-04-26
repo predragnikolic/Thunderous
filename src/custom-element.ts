@@ -125,7 +125,6 @@ export const customElement = <Props extends CustomElementProps>(
 		#formResetCallbackFns = new Set<() => void>();
 		#formStateRestoreCallbackFns = new Set<() => void>();
 		#clientOnlyCallbackFns = new Set<() => void>();
-		__customCallbackFns = new Map<string, () => void>();
 		#shadowRoot = attachShadow ? this.attachShadow(shadowRootOptions as ShadowRootInit) : null;
 		#internals = this.attachInternals();
 		#observer =
@@ -168,7 +167,7 @@ export const customElement = <Props extends CustomElementProps>(
 				},
 				customCallback: (fn) => {
 					const key = crypto.randomUUID();
-					this.__customCallbackFns.set(key, fn);
+					this.__customCallbackFns?.set(key, fn);
 					return `this.getRootNode().host.__customCallbackFns.get('${key}')(event)`;
 				},
 				attrSignals: new Proxy(
@@ -270,6 +269,9 @@ export const customElement = <Props extends CustomElementProps>(
 		}
 		constructor() {
 			super();
+			if (Object.prototype.hasOwnProperty.call(this, '__customCallbackFns')) {
+				this.__customCallbackFns = new Map<string, () => void>();
+			}
 			for (const [attrName, attr] of this.#attributesAsPropertiesMap) {
 				this.#attrSignals[attrName] = createSignal<string | null>(null);
 				Object.defineProperty(this, attr.prop, {
