@@ -269,7 +269,7 @@ export const customElement = <Props extends CustomElementProps>(
 		}
 		constructor() {
 			super();
-			if (Object.prototype.hasOwnProperty.call(this, '__customCallbackFns')) {
+			if (!Object.prototype.hasOwnProperty.call(this, '__customCallbackFns')) {
 				this.__customCallbackFns = new Map<string, () => void>();
 			}
 			for (const [attrName, attr] of this.#attributesAsPropertiesMap) {
