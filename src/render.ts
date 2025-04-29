@@ -1,6 +1,7 @@
 import { isServer } from './server-side';
 import { createEffect } from './signals';
 import type { ElementParent, Styles, SignalGetter, AnyFn } from './types';
+import { queryComment } from './utilities';
 
 const CALLBACK_BINDING_REGEX = /(\{\{callback:.+\}\})/;
 const LEGACY_CALLBACK_BINDING_REGEX = /(this.getRootNode\(\).host.__customCallbackFns.get\('.+'\)\(event\))/;
@@ -22,12 +23,12 @@ const logValueError = (value: unknown) => {
 };
 
 // For nested loops in templating logic...
-const arrayToDocumentFragment = (array: unknown[], parent: ElementParent) => {
+const arrayToDocumentFragment = (array: unknown[], parent: ElementParent, uniqueKey: string) => {
 	const documentFragment = new DocumentFragment();
 	let count = 0;
 	const keys = new Set<string>();
 	for (const item of array) {
-		const node = createNewNode(item, parent);
+		const node = createNewNode(item, parent, uniqueKey);
 		if (node instanceof DocumentFragment) {
 			const child = node.firstElementChild;
 			if (node.children.length > 1) {
@@ -57,12 +58,14 @@ const arrayToDocumentFragment = (array: unknown[], parent: ElementParent) => {
 		}
 		documentFragment.append(node);
 	}
+	const comment = document.createComment(uniqueKey);
+	documentFragment.append(comment);
 	return documentFragment;
 };
 
-const createNewNode = (value: unknown, parent: ElementParent) => {
+const createNewNode = (value: unknown, parent: ElementParent, uniqueKey: string) => {
 	if (typeof value === 'string') return new Text(value);
-	if (Array.isArray(value)) return arrayToDocumentFragment(value, parent);
+	if (Array.isArray(value)) return arrayToDocumentFragment(value, parent, uniqueKey);
 	if (value instanceof DocumentFragment) return value;
 	return new Text('');
 };
@@ -107,7 +110,7 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 				const uniqueKey = text.replace(/\{\{signal:(.+)\}\}/, '$1');
 				const signal = uniqueKey !== text ? renderState.signalMap.get(uniqueKey) : undefined;
 				const newValue = signal !== undefined ? signal() : text;
-				const newNode = createNewNode(newValue, element);
+				const newNode = createNewNode(newValue, element, uniqueKey);
 
 				// there is only one text node, originally, so we have to replace it before inserting additional nodes
 				if (i === 0) {
@@ -125,13 +128,14 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 					let init = false;
 					createEffect(() => {
 						const result = signal();
-						const nextNode = createNewNode(result, element);
+						const nextNode = createNewNode(result, element, uniqueKey);
 						if (nextNode instanceof Text) {
 							throw new TypeError(
 								'Signal mismatch: expected DocumentFragment or Array<DocumentFragment>, but got Text',
 							);
 						}
-						let lastSibling = element.lastChild;
+
+						// remove elements that are not in the updated array (fragment)
 						for (const child of element.children) {
 							const key = child.getAttribute('key');
 							if (key === null) continue;
@@ -140,6 +144,9 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 								child.remove();
 							}
 						}
+
+						// persist elements using the same key
+						let anchor = queryComment(element, uniqueKey);
 						for (const child of nextNode.children) {
 							const key = child.getAttribute('key');
 							const matchingNode = element.querySelector(`[key="${key}"]`);
@@ -149,10 +156,12 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 								matchingNode.setAttribute(attr.name, attr.value);
 							}
 							matchingNode.replaceChildren(...child.childNodes);
-							lastSibling = matchingNode.nextSibling;
+							anchor = matchingNode.nextSibling;
 							child.replaceWith(matchingNode);
 						}
-						element.insertBefore(nextNode, lastSibling);
+						const nextAnchor = queryComment(nextNode, uniqueKey);
+						nextAnchor?.remove();
+						element.insertBefore(nextNode, anchor);
 						if (!init) init = true;
 					});
 				}
