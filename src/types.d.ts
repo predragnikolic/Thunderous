@@ -2,7 +2,7 @@ declare global {
 	interface DocumentFragment {
 		host: HTMLElement;
 	}
-	interface Element {
+	interface Node {
 		__customCallbackFns?: Map<string, AnyFn>;
 	}
 	interface CustomElementRegistry {

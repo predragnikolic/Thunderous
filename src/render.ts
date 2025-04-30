@@ -22,6 +22,14 @@ const logValueError = (value: unknown) => {
 	);
 };
 
+const logPropertyWarning = (propName: string, element: Element) => {
+	console.warn(
+		`Property "${propName}" does not exist on element:`,
+		element,
+		'\n\nThunderous will attempt to set the property anyway, but this may result in unexpected behavior. Please make sure the property exists on the element prior to setting it.',
+	);
+};
+
 // For nested loops in templating logic...
 const arrayToDocumentFragment = (array: unknown[], parent: ElementParent, uniqueKey: string) => {
 	const documentFragment = new DocumentFragment();
@@ -175,22 +183,32 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 			}
 		} else if (child instanceof Element) {
 			for (const attr of child.attributes) {
+				const attrName = attr.name;
 				if (SIGNAL_BINDING_REGEX.test(attr.value)) {
 					const textList = attr.value.split(SIGNAL_BINDING_REGEX);
 					createEffect(() => {
 						let newText = '';
 						let hasNull = false;
+						let signal: SignalGetter<unknown> | undefined;
 						for (const text of textList) {
 							const uniqueKey = text.replace(/\{\{signal:(.+)\}\}/, '$1');
-							const signal = uniqueKey !== text ? renderState.signalMap.get(uniqueKey) : undefined;
+							signal = uniqueKey !== text ? renderState.signalMap.get(uniqueKey) : undefined;
 							const value = signal !== undefined ? signal() : text;
 							if (value === null) hasNull = true;
 							newText += String(value);
 						}
-						if (hasNull && newText === 'null') {
-							child.removeAttribute(attr.name);
+						if ((hasNull && newText === 'null') || attrName.startsWith('prop:')) {
+							child.removeAttribute(attrName);
 						} else {
-							child.setAttribute(attr.name, newText);
+							child.setAttribute(attrName, newText);
+						}
+						if (attrName.startsWith('prop:')) {
+							child.removeAttribute(attrName);
+							const propName = attrName.replace('prop:', '');
+							if (!(propName in child)) logPropertyWarning(propName, child);
+							const newValue = hasNull && newText === 'null' ? null : newText;
+							// @ts-expect-error // the above warning should suffice for developers
+							child[propName] = signal !== undefined ? signal() : newValue;
 						}
 					});
 				} else if (LEGACY_CALLBACK_BINDING_REGEX.test(attr.value)) {
@@ -212,10 +230,22 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 								child.__customCallbackFns.set(uniqueKey, callback);
 							}
 						}
-						if (uniqueKey !== '') {
-							child.setAttribute(attr.name, `this.__customCallbackFns.get('${uniqueKey}')(event)`);
+						if (uniqueKey !== '' && !attrName.startsWith('prop:')) {
+							child.setAttribute(attrName, `this.__customCallbackFns.get('${uniqueKey}')(event)`);
+						} else if (attrName.startsWith('prop:')) {
+							child.removeAttribute(attrName);
+							const propName = attrName.replace('prop:', '');
+							if (!(propName in child)) logPropertyWarning(propName, child);
+							// @ts-expect-error // the above warning should suffice for developers
+							child[propName] = child.__customCallbackFns.get(uniqueKey);
 						}
 					});
+				} else if (attrName.startsWith('prop:')) {
+					child.removeAttribute(attrName);
+					const propName = attrName.replace('prop:', '');
+					if (!(propName in child)) logPropertyWarning(propName, child);
+					// @ts-expect-error // the above warning should suffice for developers
+					child[propName] = attr.value;
 				}
 			}
 			evaluateBindings(child, fragment);
