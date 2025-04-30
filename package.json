@@ -36,9 +36,9 @@
 		"build": "tsup src/index.ts --format cjs,esm --dts --no-clean",
 		"test": "find src -name '*.test.ts' | xargs c8 node --import tsx --test",
 		"lint": "tsc && eslint .",
-		"version:patch": "npm version patch && cd demo && npm version patch && cd ../www && npm version patch && git add -A && git commit -m 'bump version'",
-		"version:minor": "npm version minor && cd demo && npm version minor && cd ../www && npm version minor && git add -A && git commit -m 'bump version'",
-		"version:major": "npm version major && cd demo && npm version major && cd ../www && npm version major && git add -A && git commit -m 'bump version'"
+		"version:patch": "npm run build && npm version patch && cd demo && npm version patch && cd ../www && npm version patch && git add -A && git commit -m 'bump version'",
+		"version:minor": "npm run build && npm version minor && cd demo && npm version minor && cd ../www && npm version minor && git add -A && git commit -m 'bump version'",
+		"version:major": "npm run build && npm version major && cd demo && npm version major && cd ../www && npm version major && git add -A && git commit -m 'bump version'"
 	},
 	"devDependencies": {
 		"@types/dompurify": "^3.2.0",
