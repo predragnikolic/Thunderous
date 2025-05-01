@@ -197,10 +197,11 @@ export const customElement = <Props extends CustomElementProps>(
 						};
 						const getter: SignalGetter<Props[typeof prop]> = () => {
 							const value = _getter();
-							if (value === undefined)
-								throw new Error(
-									`\n\nProperty: ${prop}\n\nYou must set an initial value before calling a property signal's getter.\n`,
-								);
+							if (value === undefined) {
+								const msg = `Error accessing property: "${prop}"\nYou must set an initial value before calling a property signal's getter.\n`;
+								console.error(msg);
+								throw new Error(msg);
+							}
 							return value;
 						};
 						getter.getter = true;
@@ -268,7 +269,14 @@ export const customElement = <Props extends CustomElementProps>(
 			return observedAttributes;
 		}
 		constructor() {
-			super();
+			try {
+				super();
+			} catch (error) {
+				throw new Error(
+					'Error instantiating element:\nThis usually occurs if you have errors in the function body of your component. Check prior logs for possible causes.\n',
+					{ cause: error },
+				);
+			}
 			if (!Object.prototype.hasOwnProperty.call(this, '__customCallbackFns')) {
 				this.__customCallbackFns = new Map<string, () => void>();
 			}
