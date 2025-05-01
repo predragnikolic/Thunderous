@@ -46,7 +46,7 @@ export type RenderArgs<Props extends CustomElementProps> = {
 	customCallback: (fn: () => void) => `this.getRootNode().host.__customCallbackFns.get('${string}')(event)` | '';
 	attrSignals: Record<string, Signal<string | null>>;
 	propSignals: {
-		[K in keyof Props]: Signal<Props[K]>;
+		[K in keyof Props]: SignalWithInit<Props[K]>;
 	};
 	refs: Record<string, HTMLElement | null>;
 	adoptStyleSheet: (stylesheet: Styles) => void;
@@ -124,6 +124,10 @@ export type SignalGetter<T> = {
 };
 export type SignalSetter<T> = (newValue: T, options?: SignalOptions) => void;
 export type Signal<T = unknown> = [SignalGetter<T>, SignalSetter<T>];
+
+// TODO: add `| undefined` to the uninitialized signal.
+// The reason I didn't do it yet is that it's a breaking change. I'll wait for the next major version.
+export type SignalWithInit<T = unknown> = Signal<T> & { init: (value: T) => Signal<T> };
 
 // Flexible typing is necessary to support generic functions
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

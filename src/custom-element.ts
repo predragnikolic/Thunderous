@@ -15,6 +15,7 @@ import type {
 	Signal,
 	SignalGetter,
 	SignalSetter,
+	SignalWithInit,
 } from './types';
 
 /**
@@ -217,7 +218,12 @@ export const customElement = <Props extends CustomElementProps>(
 								setFromProp = false;
 							},
 						});
-						return [getter, setter];
+						const publicSignal = [getter, setter] as SignalWithInit<Props[typeof prop]>;
+						publicSignal.init = (value) => {
+							_setter(value);
+							return [getter, setter] as Signal<Props[typeof prop]>;
+						};
+						return publicSignal;
 					},
 					set: () => {
 						console.error('Signals must be assigned via setters.');

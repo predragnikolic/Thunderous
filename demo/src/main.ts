@@ -33,10 +33,11 @@ onServerDefine((tagName, htmlString) => {
 
 const globalRegistry = createRegistry();
 
-const NestedElement = customElement(
-	({ attrSignals }) => {
+const NestedElement = customElement<{ count: number }>(
+	({ attrSignals, propSignals }) => {
+		const [count] = propSignals.count.init(0);
 		const [text] = attrSignals.text;
-		return html`<strong>${text}</strong>`;
+		return html`<strong>${text}</strong> <span>count: ${count}</span>`;
 	},
 	{
 		shadowRootOptions: { mode: 'open' },
@@ -48,8 +49,7 @@ registry.define('nested-element', NestedElement);
 
 const MyElement = customElement<{ count: number }>(
 	({ attrSignals, propSignals, getter, internals, clientOnlyCallback, adoptStyleSheet }) => {
-		const [count, setCount] = propSignals.count;
-		setCount(0);
+		const [count, setCount] = propSignals.count.init(0);
 		createEffect(() => {
 			console.log('count changed:', count());
 		});
@@ -122,7 +122,7 @@ const MyElement = customElement<{ count: number }>(
 				<slot></slot>
 			</div>
 			<span>this is a scoped element:</span>
-			<nested-element text="test"></nested-element>
+			<nested-element text="test" prop:count="${count}"></nested-element>
 			<h2>nested templates and loops:</h2>
 			<ul>
 				${html`<li onclick="${addListItem}">item</li>`}
