@@ -87,7 +87,9 @@ export const createRegistry = (args?: RegistryArgs): RegistryResult => {
 		getAllTagNames: () => Array.from(customElementTags),
 		eject: () => {
 			if (nativeRegistry === undefined) {
-				throw new Error('Cannot eject a registry on the server.');
+				const error = new Error('Cannot eject a registry on the server.');
+				console.error(error);
+				throw error;
 			}
 			return nativeRegistry;
 		},

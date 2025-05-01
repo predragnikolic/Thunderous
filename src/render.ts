@@ -138,9 +138,11 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 						const result = signal();
 						const nextNode = createNewNode(result, element, uniqueKey);
 						if (nextNode instanceof Text) {
-							throw new TypeError(
+							const error = new TypeError(
 								'Signal mismatch: expected DocumentFragment or Array<DocumentFragment>, but got Text',
 							);
+							console.error(error);
+							throw error;
 						}
 
 						// remove elements that are not in the updated array (fragment)

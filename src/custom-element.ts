@@ -84,7 +84,9 @@ export const customElement = <Props extends CustomElementProps>(
 				return this;
 			},
 			eject() {
-				throw new Error('Cannot eject a custom element on the server.');
+				const error = new Error('Cannot eject a custom element on the server.');
+				console.error(error);
+				throw error;
 			},
 		};
 	}
@@ -198,9 +200,11 @@ export const customElement = <Props extends CustomElementProps>(
 						const getter: SignalGetter<Props[typeof prop]> = () => {
 							const value = _getter();
 							if (value === undefined) {
-								const msg = `Error accessing property: "${prop}"\nYou must set an initial value before calling a property signal's getter.\n`;
-								console.error(msg);
-								throw new Error(msg);
+								const error = new Error(
+									`Error accessing property: "${prop}"\nYou must set an initial value before calling a property signal's getter.\n`,
+								);
+								console.error(error);
+								throw error;
 							}
 							return value;
 						};
@@ -272,10 +276,12 @@ export const customElement = <Props extends CustomElementProps>(
 			try {
 				super();
 			} catch (error) {
-				throw new Error(
+				const _error = new Error(
 					'Error instantiating element:\nThis usually occurs if you have errors in the function body of your component. Check prior logs for possible causes.\n',
 					{ cause: error },
 				);
+				console.error(_error);
+				throw _error;
 			}
 			if (!Object.prototype.hasOwnProperty.call(this, '__customCallbackFns')) {
 				this.__customCallbackFns = new Map<string, () => void>();

@@ -2,7 +2,9 @@ export const NOOP = () => void 0;
 
 export const assumeObj = (obj: unknown): Record<PropertyKey, unknown> => {
 	if (typeof obj !== 'object' || obj === null) {
-		throw new Error('Expected an object.');
+		const error = new Error('Expected an object.');
+		console.error(error);
+		throw error;
 	}
 	return obj as Record<PropertyKey, unknown>;
 };

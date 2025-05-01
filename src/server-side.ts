@@ -62,21 +62,27 @@ export const getServerRenderArgs = (tagName: string, registry?: RegistryResult):
 	get elementRef() {
 		return new Proxy({} as RenderArgs<CustomElementProps>['elementRef'], {
 			get: () => {
-				throw new Error('The `elementRef` property is not available on the server.');
+				const error = new Error('The `elementRef` property is not available on the server.');
+				console.error(error);
+				throw error;
 			},
 		});
 	},
 	get root() {
 		return new Proxy({} as RenderArgs<CustomElementProps>['root'], {
 			get: () => {
-				throw new Error('The `root` property is not available on the server.');
+				const error = new Error('The `root` property is not available on the server.');
+				console.error(error);
+				throw error;
 			},
 		});
 	},
 	get internals() {
 		return new Proxy({} as RenderArgs<CustomElementProps>['internals'], {
 			get: () => {
-				throw new Error('The `internals` property is not available on the server.');
+				const error = new Error('The `internals` property is not available on the server.');
+				console.error(error);
+				throw error;
 			},
 		});
 	},
