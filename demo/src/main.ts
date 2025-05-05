@@ -9,7 +9,22 @@ import {
 	clientOnlyCallback,
 	createSignal,
 	createEffect,
+	HTMLCustomElement,
 } from 'thunderous';
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'my-element': HTMLCustomElement<MyElementProps>;
+	}
+}
+
+type MyElementProps = {
+	count: number;
+};
+
+type NestedElementProps = {
+	count: number;
+};
 
 const mockHTML = /* html */ `
 <!DOCTYPE html>
@@ -33,7 +48,7 @@ onServerDefine((tagName, htmlString) => {
 
 const globalRegistry = createRegistry();
 
-const NestedElement = customElement<{ count: number }>(
+const NestedElement = customElement<NestedElementProps>(
 	({ attrSignals, propSignals }) => {
 		const [count] = propSignals.count.init(0);
 		const [text] = attrSignals.text;
@@ -47,7 +62,7 @@ const NestedElement = customElement<{ count: number }>(
 const registry = createRegistry({ scoped: true });
 registry.define('nested-element', NestedElement);
 
-const MyElement = customElement<{ count: number }>(
+const MyElement = customElement<MyElementProps>(
 	({ attrSignals, propSignals, getter, internals, clientOnlyCallback, adoptStyleSheet }) => {
 		const [count, setCount] = propSignals.count.init(0);
 		createEffect(() => {
@@ -158,7 +173,6 @@ clientOnlyCallback(() => {
 		myElement.setAttribute('heading', prev === 'title A' ? 'title B' : 'title A');
 	});
 	document.querySelector('#outer-count')!.addEventListener('click', () => {
-		// @ts-expect-error // ts doesn't know about the count property
 		myElement.count = myElement.count + 1;
 		// myElement.setAttribute('count', String(myElement.count + 1));
 	});
