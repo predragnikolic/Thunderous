@@ -48,8 +48,9 @@
 				</th-text>
 
 				<th-block-quote>
-					NOTICE: <th-code>setCount(0)</th-code> is immediately invoked. The signal's getter will throw an error at
-					runtime if the property is accessed before its value is initialized.
+					NOTICE: The signal's getter will throw an error at runtime if the property is accessed before its value is
+					initialized. You must either set the property before the signal is accessed or call
+					<th-code>init()</th-code> on the signal.
 				</th-block-quote>
 
 				<th-content-header>Syncing Attributes With Properties</th-content-header>
