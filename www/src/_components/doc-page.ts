@@ -82,6 +82,9 @@ export const DocPage = customElement(({ adoptStyleSheet, connectedCallback, disc
 									<li>
 										<th-link href="/docs/server-side-rendering" class="link">SSR</th-link>
 									</li>
+									<li>
+										<th-link href="/docs/types" class="link">Types</th-link>
+									</li>
 								</ul>
 							</li>
 							<li>
