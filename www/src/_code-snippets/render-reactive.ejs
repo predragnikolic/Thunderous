@@ -1,8 +1,8 @@
 import { customElement, html, derived, signal } from 'thunderous';
 
 const MyElement = customElement(() => {
-  const [cond, setCond] = signal(true);
-  const [list, setList] = signal([{ id: 1, text: 'Item 1' }, { id: 2, text: 'Item 2' }]);
+  const cond = signal(true);
+  const list = signal([{ id: 1, text: 'Item 1' }, { id: 2, text: 'Item 2' }]);
 
   return html`
     <p>
