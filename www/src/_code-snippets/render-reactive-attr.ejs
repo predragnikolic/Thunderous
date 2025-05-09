@@ -1,7 +1,7 @@
-import { customElement, html, derived, createSignal } from 'thunderous';
+import { customElement, html, derived, signal } from 'thunderous';
 
 const MyElement = customElement(() => {
-  const [cond, setCond] = createSignal(true);
+  const [cond, setCond] = signal(true);
 
   return html`
     <button class="primary ${derived(() => cond() ? 'primary--active' : '')}">
@@ -13,7 +13,7 @@ const MyElement = customElement(() => {
 // alternatively, for a cleaner template...
 
 const MyElement2 = customElement(() => {
-  const [cond, setCond] = createSignal(true);
+  const [cond, setCond] = signal(true);
   const activeClass = derived(() => cond() ? 'primary--active' : '');
 
   return html`

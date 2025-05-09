@@ -1,5 +1,5 @@
 const MyElement = customElement(() => {
-  const [count, setCount] = createSignal(0);
+  const [count, setCount] = signal(0);
 
   const increment = () => setCount(count() + 1);
 

@@ -1,4 +1,4 @@
-import { html, css, customElement, createEffect } from 'thunderous';
+import { html, css, customElement, effect } from 'thunderous';
 import { theme } from '../_styles/theme';
 import hljs from 'highlight.js';
 import { highlight } from '../_styles/highlight';
@@ -27,7 +27,7 @@ export const CodeBlock = customElement(({ adoptStyleSheet, attrSignals, connecte
 		const code = refs.code;
 		if (code === null) return;
 		code.innerHTML = content;
-		createEffect(() => {
+		effect(() => {
 			if (lang() === null) {
 				code.className = 'no-highlight hljs';
 			} else {

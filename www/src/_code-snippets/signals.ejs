@@ -1,6 +1,6 @@
-import { createSignal } from 'thunderous';
+import { signal } from 'thunderous';
 
-const [count, setCount] = createSignal(0);
+const [count, setCount] = signal(0);
 
 console.log(count()); // 0
 

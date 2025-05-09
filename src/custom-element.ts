@@ -1,7 +1,7 @@
 import { DEFAULT_RENDER_OPTIONS } from './constants';
 import { isCSSStyleSheet, renderState } from './render';
 import { isServer, serverDefine } from './server-side';
-import { createSignal } from './signals';
+import { signal } from './signals';
 import type {
 	AttributeChangedCallback,
 	AttrProp,
@@ -137,7 +137,7 @@ export const customElement = <Props extends CustomElementProps>(
 						for (const mutation of mutations) {
 							const attrName = mutation.attributeName;
 							if (mutation.type !== 'attributes' || attrName === null) continue;
-							if (!(attrName in this.#attrSignals)) this.#attrSignals[attrName] = createSignal<string | null>(null);
+							if (!(attrName in this.#attrSignals)) this.#attrSignals[attrName] = signal<string | null>(null);
 							const [getter, setter] = this.#attrSignals[attrName]!;
 							const oldValue = getter();
 							const newValue = this.getAttribute(attrName);
@@ -177,7 +177,7 @@ export const customElement = <Props extends CustomElementProps>(
 					{},
 					{
 						get: (_, prop: string) => {
-							if (!(prop in this.#attrSignals)) this.#attrSignals[prop] = createSignal<string | null>(null);
+							if (!(prop in this.#attrSignals)) this.#attrSignals[prop] = signal<string | null>(null);
 							const [getter] = this.#attrSignals[prop]!;
 							const setter = (newValue: string) => this.setAttribute(prop, newValue);
 							return [getter, setter];
@@ -190,7 +190,7 @@ export const customElement = <Props extends CustomElementProps>(
 				),
 				propSignals: new Proxy({} as RenderArgs<Props>['propSignals'], {
 					get: (_, prop: Extract<keyof Props, string>) => {
-						if (!(prop in this.#propSignals)) this.#propSignals[prop] = createSignal<Props[typeof prop] | undefined>();
+						if (!(prop in this.#propSignals)) this.#propSignals[prop] = signal<Props[typeof prop] | undefined>();
 						const [_getter, _setter] = this.#propSignals[prop];
 						let setFromProp = false;
 						const setter: SignalSetter<Props[typeof prop]> = (newValue: Props[typeof prop]) => {
@@ -293,10 +293,10 @@ export const customElement = <Props extends CustomElementProps>(
 				this.__customCallbackFns = new Map<string, () => void>();
 			}
 			for (const [attrName, attr] of this.#attributesAsPropertiesMap) {
-				this.#attrSignals[attrName] = createSignal<string | null>(null);
+				this.#attrSignals[attrName] = signal<string | null>(null);
 				Object.defineProperty(this, attr.prop, {
 					get: () => {
-						if (!(attrName in this.#attrSignals)) this.#attrSignals[attrName] = createSignal<string | null>(null);
+						if (!(attrName in this.#attrSignals)) this.#attrSignals[attrName] = signal<string | null>(null);
 						const [getter] = this.#attrSignals[attrName]!;
 						const raw = getter();
 						const rawOnly = raw !== null && attr.value === null;
@@ -306,7 +306,7 @@ export const customElement = <Props extends CustomElementProps>(
 					set: (newValue) => {
 						const oldValue = attr.value;
 						attr.value = newValue;
-						if (!(attrName in this.#attrSignals)) this.#attrSignals[attrName] = createSignal<string | null>(null);
+						if (!(attrName in this.#attrSignals)) this.#attrSignals[attrName] = signal<string | null>(null);
 						const [, attrSetter] = this.#attrSignals[attrName]!;
 						const [, propSetter] = this.#propSignals[attrName] as Signal;
 						const attrValue = newValue === null ? null : String(newValue);
@@ -321,7 +321,7 @@ export const customElement = <Props extends CustomElementProps>(
 				});
 			}
 			for (const attr of this.attributes) {
-				this.#attrSignals[attr.name] = createSignal<string | null>(attr.value);
+				this.#attrSignals[attr.name] = signal<string | null>(attr.value);
 			}
 			this.#render();
 		}

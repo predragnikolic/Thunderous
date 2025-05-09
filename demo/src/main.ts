@@ -7,8 +7,8 @@ import {
 	onServerDefine,
 	insertTemplates,
 	clientOnlyCallback,
-	createSignal,
-	createEffect,
+	signal,
+	effect,
 	HTMLCustomElement,
 } from 'thunderous';
 
@@ -65,11 +65,11 @@ registry.define('nested-element', NestedElement);
 const MyElement = customElement<MyElementProps>(
 	({ attrSignals, propSignals, getter, internals, clientOnlyCallback, adoptStyleSheet }) => {
 		const [count, setCount] = propSignals.count.init(0);
-		createEffect(() => {
+		effect(() => {
 			console.log('count changed:', count());
 		});
 		const [heading] = attrSignals.heading;
-		const [list, setList] = createSignal([
+		const [list, setList] = signal([
 			{ id: 1, name: 'item 1' },
 			{ id: 2, name: 'item 2' },
 			{ id: 3, name: 'item 3' },

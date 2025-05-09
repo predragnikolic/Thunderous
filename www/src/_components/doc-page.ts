@@ -1,10 +1,10 @@
-import { createSignal, css, customElement, derived, html } from 'thunderous';
+import { signal, css, customElement, derived, html } from 'thunderous';
 import { theme } from '../_styles/theme';
 
 export const DocPage = customElement(({ adoptStyleSheet, connectedCallback, disconnectedCallback }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(styles);
-	const [navOpen, setNavOpen] = createSignal(false);
+	const [navOpen, setNavOpen] = signal(false);
 	const navOpenClass = derived(() => (navOpen() ? 'open' : ''));
 	const toggleNav = () => {
 		setNavOpen(!navOpen());

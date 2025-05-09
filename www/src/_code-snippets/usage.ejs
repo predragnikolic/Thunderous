@@ -1,7 +1,7 @@
-import { customElement, html, css, createSignal } from 'thunderous';
+import { customElement, html, css, signal } from 'thunderous';
 
 const MyElement = customElement(({ adoptStyleSheet }) => {
-  const [count, setCount] = createSignal(0);
+  const [count, setCount] = signal(0);
   const increment = () => setCount(count() + 1);
   adoptStyleSheet(myStyleSheet);
   return html`

@@ -1,4 +1,4 @@
-import { createEffect, createSignal, derived } from '../signals';
+import { effect, signal, derived } from '../signals';
 import { test } from 'node:test';
 import assert from 'assert';
 import { assumeObj } from '../utilities';
@@ -6,19 +6,19 @@ import { getErrorMock, getLogMock, nextMicrotask } from './_test-utils';
 
 await test('createSignal', async () => {
 	await test('initial value', () => {
-		const [count] = createSignal(0);
+		const [count] = signal(0);
 		assert.strictEqual(count(), 0);
 	});
 	await test('set value', () => {
-		const [count, setCount] = createSignal(0);
+		const [count, setCount] = signal(0);
 		setCount(1);
 		assert.strictEqual(count(), 1);
 	});
 	await test('batch updates', async () => {
-		const [count, setCount] = createSignal(0);
+		const [count, setCount] = signal(0);
 		let result: number | undefined;
 		let runCount = 0;
-		createEffect(() => {
+		effect(() => {
 			result = count();
 			runCount++;
 		});
@@ -34,9 +34,9 @@ await test('createSignal', async () => {
 		assert.strictEqual(runCount, 2);
 	});
 	await test('does not recalculate for equal primitives', async () => {
-		const [count, setCount] = createSignal(0);
+		const [count, setCount] = signal(0);
 		let runCount = 0;
-		createEffect(() => {
+		effect(() => {
 			count();
 			runCount++;
 		});
@@ -48,9 +48,9 @@ await test('createSignal', async () => {
 		assert.strictEqual(runCount, 1);
 	});
 	await test('recalculates for complex data', async () => {
-		const [count, setCount] = createSignal({ value: 0 });
+		const [count, setCount] = signal({ value: 0 });
 		let runCount = 0;
-		createEffect(() => {
+		effect(() => {
 			count();
 			runCount++;
 		});
@@ -65,7 +65,7 @@ await test('createSignal', async () => {
 		await test('Adds the label when the signal is created with one', async () => {
 			const logMock = getLogMock(t);
 
-			const [count, setCount] = createSignal(0, { debugMode: true, label: 'count' });
+			const [count, setCount] = signal(0, { debugMode: true, label: 'count' });
 
 			await test('does not log when the signal is initially created', () => {
 				assert.strictEqual(logMock.callCount(), 0);
@@ -98,7 +98,7 @@ await test('createSignal', async () => {
 
 		await test('Uses "anonymous signal" when the signal is created without a label', async () => {
 			const logMock = getLogMock(t);
-			const [count, setCount] = createSignal(0, { debugMode: true });
+			const [count, setCount] = signal(0, { debugMode: true });
 
 			await test('does not log when the signal is initially created', () => {
 				assert.strictEqual(logMock.callCount(), 0);
@@ -131,7 +131,7 @@ await test('createSignal', async () => {
 
 		await test('Does not log if debugMode is false', async () => {
 			const logMock = getLogMock(t);
-			const [count, setCount] = createSignal(0, { debugMode: false, label: 'count' });
+			const [count, setCount] = signal(0, { debugMode: false, label: 'count' });
 
 			await test('does not log when the signal is initially created', () => {
 				assert.strictEqual(logMock.callCount(), 0);
@@ -156,7 +156,7 @@ await test('createSignal', async () => {
 
 		await test('Adds getter and setter labels in addition to the overall signal label', async () => {
 			const logMock = getLogMock(t);
-			const [count, setCount] = createSignal(0, { debugMode: true, label: 'count' });
+			const [count, setCount] = signal(0, { debugMode: true, label: 'count' });
 
 			await test('does not log when the signal is initially created', () => {
 				assert.strictEqual(logMock.callCount(), 0);
@@ -189,7 +189,7 @@ await test('createSignal', async () => {
 
 		await test('Adds getter and setter labels instead of the overall signal label', async () => {
 			const logMock = getLogMock(t);
-			const [count, setCount] = createSignal(0);
+			const [count, setCount] = signal(0);
 
 			await test('does not log when the signal is initially created', () => {
 				assert.strictEqual(logMock.callCount(), 0);
@@ -222,9 +222,9 @@ await test('createSignal', async () => {
 
 		await test('handles errors in subscribers', async (t) => {
 			const errorMock = getErrorMock(t);
-			const [count, setCount] = createSignal(0);
+			const [count, setCount] = signal(0);
 			const error = new Error('Test error');
-			createEffect(() => {
+			effect(() => {
 				if (count() === 1) {
 					throw error;
 				}
@@ -242,19 +242,19 @@ await test('createSignal', async () => {
 	});
 });
 
-await test('createEffect', async () => {
+await test('effect', async () => {
 	await test('runs immediately', () => {
-		const [count] = createSignal(0);
+		const [count] = signal(0);
 		let result: number | undefined;
-		createEffect(() => {
+		effect(() => {
 			result = count();
 		});
 		assert.strictEqual(result, 0);
 	});
 	await test('runs when signals change', async () => {
-		const [count, setCount] = createSignal(0);
+		const [count, setCount] = signal(0);
 		let result: number | undefined;
-		createEffect(() => {
+		effect(() => {
 			result = count();
 		});
 		setCount(1);
@@ -265,13 +265,13 @@ await test('createEffect', async () => {
 		assert.strictEqual(result, 1);
 	});
 	await test('multiple subscribers', async () => {
-		const [count, setCount] = createSignal(0);
+		const [count, setCount] = signal(0);
 		let result1: number | undefined;
 		let result2: number | undefined;
-		createEffect(() => {
+		effect(() => {
 			result1 = count();
 		});
-		createEffect(() => {
+		effect(() => {
 			result2 = count();
 		});
 		setCount(1);
@@ -285,7 +285,7 @@ await test('createEffect', async () => {
 	await test('handles errors in effects', async (t) => {
 		const errorMock = getErrorMock(t);
 		const error = new Error('Test error');
-		createEffect(() => {
+		effect(() => {
 			throw error;
 		});
 
@@ -301,12 +301,12 @@ await test('createEffect', async () => {
 
 await test('derived', async () => {
 	await test('calculates the value immediately', () => {
-		const [count] = createSignal(1);
+		const [count] = signal(1);
 		const doubled = derived(() => count() * 2);
 		assert.strictEqual(doubled(), 2);
 	});
 	await test('recalculates the value upon updating', async () => {
-		const [count, setCount] = createSignal(1);
+		const [count, setCount] = signal(1);
 		const doubled = derived(() => count() * 2);
 		setCount(2);
 
@@ -318,7 +318,7 @@ await test('derived', async () => {
 	await test('handles errors in derived signals', async (t) => {
 		const errorMock = getErrorMock(t);
 		const error = new Error('Test error');
-		const [count, setCount] = createSignal(1);
+		const [count, setCount] = signal(1);
 		derived(() => {
 			if (count() === 2) {
 				throw error;

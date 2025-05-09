@@ -7,7 +7,7 @@ import type {
 	SignalGetter,
 	WrapTemplateArgs,
 } from './types';
-import { createSignal } from './signals';
+import { signal } from './signals';
 import { NOOP } from './utilities';
 
 export const isServer = typeof window === 'undefined';
@@ -101,8 +101,8 @@ export const getServerRenderArgs = (tagName: string, registry?: RegistryResult):
 		_fn.getter = true;
 		return _fn;
 	},
-	attrSignals: new Proxy({}, { get: (_, attr) => createSignal(`{{attr:${String(attr)}}}`) }),
-	propSignals: new Proxy({}, { get: () => createSignal(null) }),
+	attrSignals: new Proxy({}, { get: (_, attr) => signal(`{{attr:${String(attr)}}}`) }),
+	propSignals: new Proxy({}, { get: () => signal(null) }),
 	refs: {},
 	// @ts-expect-error // this will be a string for SSR, but this is true for internal cases only.
 	// The end user will see the public type, which is either a CSSStyleSheet or HTMLStyleElement.

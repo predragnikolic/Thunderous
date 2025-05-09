@@ -1,6 +1,6 @@
-import { derived, createSignal } from 'thunderous';
+import { derived, signal } from 'thunderous';
 
-const [count, setCount] = createSignal(0);
+const [count, setCount] = signal(0);
 
 const timesTen = derived(() => count() * 10);
 

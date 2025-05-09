@@ -1,6 +1,6 @@
-import { Signal, SignalGetter, SignalSetter, createSignal } from 'thunderous';
+import { Signal, SignalGetter, SignalSetter, signal } from 'thunderous';
 
-const signal: Signal<string> = createSignal('');
+const signal: Signal<string> = signal('');
 
 const foo: SignalGetter<string> = signal[0];
 const setFoo: SignalSetter<string> = signal[1];

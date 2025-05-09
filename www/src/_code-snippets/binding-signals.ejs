@@ -1,7 +1,7 @@
-import { createSignal, customElement, html } from 'thunderous';
+import { signal, customElement, html } from 'thunderous';
 
 const MyElement = customElement(() => {
-  const [count, setCount] = createSignal(0);
+  const [count, setCount] = signal(0);
 
   // ...
 

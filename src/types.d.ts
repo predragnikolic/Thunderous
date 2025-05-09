@@ -123,6 +123,11 @@ export type SignalGetter<T> = {
 	getter: true;
 };
 export type SignalSetter<T> = (newValue: T, options?: SignalOptions) => void;
+export type SignalNew<T> = {
+	(options?: SignalOptions): T;
+	set: (newValue: T, options?: SignalOptions) => void;
+	getter: true;
+};
 export type Signal<T = unknown> = [SignalGetter<T>, SignalSetter<T>];
 
 // TODO: add `| undefined` to the uninitialized signal.

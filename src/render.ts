@@ -1,5 +1,5 @@
 import { isServer } from './server-side';
-import { createEffect } from './signals';
+import { effect } from './signals';
 import type { ElementParent, Styles, SignalGetter, AnyFn } from './types';
 import { queryComment } from './utilities';
 
@@ -129,12 +129,12 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 
 				// evaluate signals and subscribe to them
 				if (signal !== undefined && newNode instanceof Text) {
-					createEffect(() => {
+					effect(() => {
 						newNode.data = signal() as string;
 					});
 				} else if (signal !== undefined && newNode instanceof DocumentFragment) {
 					let init = false;
-					createEffect(() => {
+					effect(() => {
 						const result = signal();
 						const nextNode = createNewNode(result, element, uniqueKey);
 						if (nextNode instanceof Text) {
@@ -188,7 +188,7 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 				const attrName = attr.name;
 				if (SIGNAL_BINDING_REGEX.test(attr.value)) {
 					const textList = attr.value.split(SIGNAL_BINDING_REGEX);
-					createEffect(() => {
+					effect(() => {
 						let newText = '';
 						let hasNull = false;
 						let signal: SignalGetter<unknown> | undefined;
@@ -221,7 +221,7 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 					};
 				} else if (CALLBACK_BINDING_REGEX.test(attr.value)) {
 					const textList = attr.value.split(CALLBACK_BINDING_REGEX);
-					createEffect(() => {
+					effect(() => {
 						child.__customCallbackFns = child.__customCallbackFns ?? new Map();
 						let uniqueKey = '';
 						for (const text of textList) {
@@ -320,7 +320,7 @@ export const css = (strings: TemplateStringsArray, ...values: unknown[]): Styles
 	}
 	const stylesheet = adoptedStylesSupported ? new CSSStyleSheet() : document.createElement('style');
 	const textList = cssText.split(signalBindingRegex);
-	createEffect(() => {
+	effect(() => {
 		const newCSSTextList: string[] = [];
 		for (const text of textList) {
 			const uniqueKey = text.replace(/\{\{signal:(.+)\}\}/, '$1');
