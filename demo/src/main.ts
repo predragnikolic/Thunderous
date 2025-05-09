@@ -49,7 +49,7 @@ onServerDefine((tagName, htmlString) => {
 const globalRegistry = createRegistry();
 
 const NestedElement = customElement<NestedElementProps>(
-	({ attrs: { text }, props: { count} }) => {
+	({ attrs: { text }, props: { count } }) => {
 		count.init(0);
 		return html`<strong>${text}</strong> <span>count: ${count}</span>`;
 	},
