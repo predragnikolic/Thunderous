@@ -94,7 +94,7 @@ export const getServerRenderArgs = (tagName: string, registry?: RegistryResult):
 	formResetCallback: NOOP,
 	formStateRestoreCallback: NOOP,
 	formAssociatedCallback: NOOP,
-	clientOnlyCallback: NOOP,
+	clientCallback: NOOP,
 	customCallback: () => '',
 	getter: (fn) => {
 		const _fn: SignalGetter<ReturnType<typeof fn>> = () => fn();
@@ -154,6 +154,6 @@ export const insertTemplates = (tagName: string, template: string, inputString: 
 	});
 };
 
-export const clientOnlyCallback = (fn: (() => void) | (() => Promise<void>)) => {
+export const clientCallback = (fn: (() => void) | (() => Promise<void>)) => {
 	if (!isServer) return fn();
 };

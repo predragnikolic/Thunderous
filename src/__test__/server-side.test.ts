@@ -1,5 +1,5 @@
 import {
-	clientOnlyCallback,
+	clientCallback,
 	getServerRenderArgs,
 	insertTemplates,
 	onServerDefine,
@@ -235,10 +235,10 @@ await test('serverDefine', async () => {
 	});
 });
 
-await test('clientOnlyCallback', async () => {
+await test('clientCallback', async () => {
 	await test('direct function call does nothing on the server', () => {
 		let runCount = 0;
-		clientOnlyCallback(() => {
+		clientCallback(() => {
 			runCount++;
 		});
 		assert.strictEqual(runCount, 0);

@@ -127,7 +127,7 @@ export const customElement = <Props extends CustomElementProps>(
 		#formDisabledCallbackFns = new Set<() => void>();
 		#formResetCallbackFns = new Set<() => void>();
 		#formStateRestoreCallbackFns = new Set<() => void>();
-		#clientOnlyCallbackFns = new Set<() => void>();
+		#clientCallbackFns = new Set<() => void>();
 		#shadowRoot = attachShadow ? this.attachShadow(shadowRootOptions as ShadowRootInit) : null;
 		#internals = this.attachInternals();
 		#observer =
@@ -162,7 +162,7 @@ export const customElement = <Props extends CustomElementProps>(
 				formDisabledCallback: (fn) => this.#formDisabledCallbackFns.add(fn),
 				formResetCallback: (fn) => this.#formResetCallbackFns.add(fn),
 				formStateRestoreCallback: (fn) => this.#formStateRestoreCallbackFns.add(fn),
-				clientOnlyCallback: (fn) => this.#clientOnlyCallbackFns.add(fn),
+				clientCallback: (fn) => this.#clientCallbackFns.add(fn),
 				getter: (fn) => {
 					const _fn: SignalGetter<ReturnType<typeof fn>> = () => fn();
 					_fn.getter = true;
@@ -269,7 +269,7 @@ export const customElement = <Props extends CustomElementProps>(
 			});
 			fragment.host = this;
 
-			for (const fn of this.#clientOnlyCallbackFns) {
+			for (const fn of this.#clientCallbackFns) {
 				fn();
 			}
 

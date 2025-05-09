@@ -6,7 +6,7 @@ import {
 	createRegistry,
 	onServerDefine,
 	insertTemplates,
-	clientOnlyCallback,
+	clientCallback,
 	signal,
 	effect,
 	HTMLCustomElement,
@@ -62,7 +62,7 @@ const registry = createRegistry({ scoped: true });
 registry.define('nested-element', NestedElement);
 
 const MyElement = customElement<MyElementProps>(
-	({ attrs, props: {count}, getter, internals, clientOnlyCallback, adoptStyleSheet }) => {
+	({ attrs, props: {count}, getter, internals, clientCallback, adoptStyleSheet }) => {
 		count.init(0);
 		effect(() => {
 			console.log('count changed:', count());
@@ -79,13 +79,13 @@ const MyElement = customElement<MyElementProps>(
 			return value > 255 ? 255 : value;
 		});
 
-		clientOnlyCallback(() => {
+		clientCallback(() => {
 			internals.setFormValue(String(count()));
 		});
 
 		const increment = () => {
 			count.set(count() + 1);
-			clientOnlyCallback(() => {
+			clientCallback(() => {
 				internals.setFormValue(String(count()));
 			});
 		};
@@ -159,7 +159,7 @@ const MyElement = customElement<MyElementProps>(
 
 MyElement.define('my-element');
 
-clientOnlyCallback(() => {
+clientCallback(() => {
 	requestAnimationFrame(() => {
 		const tagName = globalRegistry.getTagName(MyElement);
 		console.log(tagName);

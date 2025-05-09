@@ -1,9 +1,9 @@
 import { customElement, html } from 'thunderous';
 
-const MyElement = customElement(({ clientOnlyCallback }) => {
+const MyElement = customElement(({ clientCallback }) => {
 
   // This will be run in the constructor of the custom element.
-  clientOnlyCallback(() => {
+  clientCallback(() => {
     console.log('This will only run on the client.');
   });
 
@@ -14,9 +14,9 @@ const MyElement = customElement(({ clientOnlyCallback }) => {
 // ------ OR ------
 
 
-import { clientOnlyCallback } from 'thunderous';
+import { clientCallback } from 'thunderous';
 
 // This will run immediately, and may be awaited if necessary.
-clientOnlyCallback(() => {
+clientCallback(() => {
   console.log('This will only run on the client.');
 });

@@ -38,7 +38,7 @@ export type RenderArgs<Props extends CustomElementProps> = {
 	formResetCallback: (fn: () => void) => void;
 	formStateRestoreCallback: (fn: () => void) => void;
 	formAssociatedCallback: (fn: () => void) => void;
-	clientOnlyCallback: (fn: () => void) => void;
+	clientCallback: (fn: () => void) => void;
 	getter: <T>(fn: () => T) => SignalGetter<T>;
 	/**
 	 * @deprecated You can now pass callback functions directly to templates.

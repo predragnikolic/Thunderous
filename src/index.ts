@@ -1,6 +1,6 @@
 export { customElement } from './custom-element';
 export { createRegistry } from './registry';
-export { onServerDefine, insertTemplates, clientOnlyCallback } from './server-side';
+export { onServerDefine, insertTemplates, clientCallback } from './server-side';
 export { effect, signal, derived } from './signals';
 export { html, css } from './render';
 
