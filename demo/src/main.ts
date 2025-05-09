@@ -50,7 +50,7 @@ const globalRegistry = createRegistry();
 
 const NestedElement = customElement<NestedElementProps>(
 	({ attrs: { text }, props: { count } }) => {
-		count.init(0);
+		count.set(0);
 		return html`<strong>${text}</strong> <span>count: ${count}</span>`;
 	},
 	{
@@ -63,7 +63,7 @@ registry.define('nested-element', NestedElement);
 
 const MyElement = customElement<MyElementProps>(
 	({ attrs, props: {count}, getter, internals, clientCallback, adoptStyleSheet }) => {
-		count.init(0);
+		count.set(0);
 		effect(() => {
 			console.log('count changed:', count());
 		});

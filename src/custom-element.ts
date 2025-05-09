@@ -15,7 +15,6 @@ import type {
 	Signal,
 	SignalGetter,
 	SignalSetter,
-	SignalWithInit,
 } from './types';
 
 /**
@@ -193,40 +192,12 @@ export const customElement = <Props extends CustomElementProps>(
 				props: new Proxy({} as RenderArgs<Props>['props'], {
 					get: (_, prop: Extract<keyof Props, string>) => {
 						if (!(prop in this.#props)) this.#props[prop] = signal<Props[typeof prop] | undefined>();
-						const _sig = this.#props[prop];
-						let setFromProp = false;
-						const setter: SignalSetter<Props[typeof prop]> = (newValue: Props[typeof prop]) => {
-							// @ts-expect-error // TODO: look into this
-							if (!setFromProp) this[prop] = newValue;
-							_sig.set(newValue);
-						};
-						const getter: SignalGetter<Props[typeof prop]> = () => {
-							const value = _sig();
-							if (value === undefined) {
-								const error = new Error(
-									`Error accessing property: "${prop}"\nYou must set an initial value before calling a property signal's getter.\n`,
-								);
-								console.error(error);
-								throw error;
-							}
-							return value;
-						};
-						getter.getter = true;
-						Object.defineProperty(this, prop, {
-							get: getter,
-							set: (newValue: Props[typeof prop]) => {
-								setFromProp = true;
-								_sig.set(newValue);
-								setFromProp = false;
-							},
-						});
-						const init = (value: Props[typeof prop]) => {
-							_sig.set(value);
-							return _sig
-						};
-						return Object.assign(_sig, {
-							init,
-						});
+						const sig = this.#props[prop];
+						effect(()=> {
+							// @ts-expect-error 
+							this[prop] = sig();
+						})
+						return sig;
 					},
 					set: () => {
 						console.error('Signals must be assigned via setters.');
