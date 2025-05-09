@@ -49,9 +49,8 @@ onServerDefine((tagName, htmlString) => {
 const globalRegistry = createRegistry();
 
 const NestedElement = customElement<NestedElementProps>(
-	({ attrs, props }) => {
-		const count = props.count.init(0);
-		const text = attrs.text;
+	({ attrs: { text }, props: { count} }) => {
+		count.init(0);
 		return html`<strong>${text}</strong> <span>count: ${count}</span>`;
 	},
 	{
@@ -63,8 +62,8 @@ const registry = createRegistry({ scoped: true });
 registry.define('nested-element', NestedElement);
 
 const MyElement = customElement<MyElementProps>(
-	({ attrs, props, getter, internals, clientOnlyCallback, adoptStyleSheet }) => {
-		const count = props.count.init(0);
+	({ attrs, props: {count}, getter, internals, clientOnlyCallback, adoptStyleSheet }) => {
+		count.init(0);
 		effect(() => {
 			console.log('count changed:', count());
 		});
