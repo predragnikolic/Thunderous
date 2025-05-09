@@ -15,9 +15,9 @@ declare global {
   }
 }
 
-const MyElement = customElement<MyElementProps>(({ propSignals }) => {
-  const [foo] = propSignals.prop.init('');
-  const [bar] = propSignals.prop.init(0);
+const MyElement = customElement<MyElementProps>(({ props }) => {
+  const [foo] = props.prop.init('');
+  const [bar] = props.prop.init(0);
   return html`
     <p>Foo: ${foo}</p>
     <p>Bar: ${bar}</p>

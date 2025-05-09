@@ -1,7 +1,7 @@
 import { css, customElement, html } from 'thunderous';
 
-export const ErrorMessage = customElement(({ attrSignals, adoptStyleSheet }) => {
-	const [heading] = attrSignals['heading'];
+export const ErrorMessage = customElement(({ attrs, adoptStyleSheet }) => {
+	const heading = attrs['heading'];
 	adoptStyleSheet(styles);
 	return html`
 		<div>

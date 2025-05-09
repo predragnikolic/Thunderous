@@ -10,22 +10,22 @@ await test('createSignal', async () => {
 		assert.strictEqual(count(), 0);
 	});
 	await test('set value', () => {
-		const [count, setCount] = signal(0);
-		setCount(1);
+		const count = signal(0);
+		count.set(1);
 		assert.strictEqual(count(), 1);
 	});
 	await test('batch updates', async () => {
-		const [count, setCount] = signal(0);
+		const count = signal(0);
 		let result: number | undefined;
 		let runCount = 0;
 		effect(() => {
 			result = count();
 			runCount++;
 		});
-		setCount(1);
-		setCount(2);
-		setCount(3);
-		setCount(4);
+		count.set(1);
+		count.set(2);
+		count.set(3);
+		count.set(4);
 
 		// Wait for the effect to run
 		await nextMicrotask();
@@ -34,13 +34,13 @@ await test('createSignal', async () => {
 		assert.strictEqual(runCount, 2);
 	});
 	await test('does not recalculate for equal primitives', async () => {
-		const [count, setCount] = signal(0);
+		const count = signal(0);
 		let runCount = 0;
 		effect(() => {
 			count();
 			runCount++;
 		});
-		setCount(0);
+		count.set(0);
 
 		// Wait for the effect to run
 		await nextMicrotask();
@@ -48,13 +48,13 @@ await test('createSignal', async () => {
 		assert.strictEqual(runCount, 1);
 	});
 	await test('recalculates for complex data', async () => {
-		const [count, setCount] = signal({ value: 0 });
+		const count = signal({ value: 0 });
 		let runCount = 0;
 		effect(() => {
 			count();
 			runCount++;
 		});
-		setCount({ value: 0 });
+		count.set({ value: 0 });
 
 		// Wait for the effect to run
 		await nextMicrotask();
@@ -65,7 +65,7 @@ await test('createSignal', async () => {
 		await test('Adds the label when the signal is created with one', async () => {
 			const logMock = getLogMock(t);
 
-			const [count, setCount] = signal(0, { debugMode: true, label: 'count' });
+			const count = signal(0, { debugMode: true, label: 'count' });
 
 			await test('does not log when the signal is initially created', () => {
 				assert.strictEqual(logMock.callCount(), 0);
@@ -84,7 +84,7 @@ await test('createSignal', async () => {
 			});
 
 			await test('logs when the signal setter is run', async () => {
-				setCount(1);
+				count.set(1);
 
 				// Wait for the debug log to run
 				await nextMicrotask();
@@ -98,7 +98,7 @@ await test('createSignal', async () => {
 
 		await test('Uses "anonymous signal" when the signal is created without a label', async () => {
 			const logMock = getLogMock(t);
-			const [count, setCount] = signal(0, { debugMode: true });
+			const count = signal(0, { debugMode: true });
 
 			await test('does not log when the signal is initially created', () => {
 				assert.strictEqual(logMock.callCount(), 0);
@@ -117,7 +117,7 @@ await test('createSignal', async () => {
 			});
 
 			await test('logs when the signal setter is run', async () => {
-				setCount(1);
+				count.set(1);
 
 				// Wait for the debug log to run
 				await nextMicrotask();
@@ -131,7 +131,7 @@ await test('createSignal', async () => {
 
 		await test('Does not log if debugMode is false', async () => {
 			const logMock = getLogMock(t);
-			const [count, setCount] = signal(0, { debugMode: false, label: 'count' });
+			const count = signal(0, { debugMode: false, label: 'count' });
 
 			await test('does not log when the signal is initially created', () => {
 				assert.strictEqual(logMock.callCount(), 0);
@@ -146,7 +146,7 @@ await test('createSignal', async () => {
 			});
 
 			await test('does not log when the signal setter is run', async () => {
-				setCount(1);
+				count.set(1);
 
 				// Wait for the debug log to run
 				await nextMicrotask();
@@ -156,7 +156,7 @@ await test('createSignal', async () => {
 
 		await test('Adds getter and setter labels in addition to the overall signal label', async () => {
 			const logMock = getLogMock(t);
-			const [count, setCount] = signal(0, { debugMode: true, label: 'count' });
+			const count = signal(0, { debugMode: true, label: 'count' });
 
 			await test('does not log when the signal is initially created', () => {
 				assert.strictEqual(logMock.callCount(), 0);
@@ -175,7 +175,7 @@ await test('createSignal', async () => {
 			});
 
 			await test('logs when the signal setter is run with a label', async () => {
-				setCount(1, { debugMode: true, label: 'setter' });
+				count.set(1, { debugMode: true, label: 'setter' });
 
 				// Wait for the debug log to run
 				await nextMicrotask();
@@ -189,7 +189,7 @@ await test('createSignal', async () => {
 
 		await test('Adds getter and setter labels instead of the overall signal label', async () => {
 			const logMock = getLogMock(t);
-			const [count, setCount] = signal(0);
+			const count = signal(0);
 
 			await test('does not log when the signal is initially created', () => {
 				assert.strictEqual(logMock.callCount(), 0);
@@ -208,7 +208,7 @@ await test('createSignal', async () => {
 			});
 
 			await test('logs when the signal setter is run with a label', async () => {
-				setCount(1, { debugMode: true, label: 'setter' });
+				count.set(1, { debugMode: true, label: 'setter' });
 
 				// Wait for the debug log to run
 				await nextMicrotask();
@@ -222,14 +222,14 @@ await test('createSignal', async () => {
 
 		await test('handles errors in subscribers', async (t) => {
 			const errorMock = getErrorMock(t);
-			const [count, setCount] = signal(0);
+			const count = signal(0);
 			const error = new Error('Test error');
 			effect(() => {
 				if (count() === 1) {
 					throw error;
 				}
 			});
-			setCount(1);
+			count.set(1);
 
 			// Wait for the effect to run
 			await nextMicrotask();
@@ -252,12 +252,12 @@ await test('effect', async () => {
 		assert.strictEqual(result, 0);
 	});
 	await test('runs when signals change', async () => {
-		const [count, setCount] = signal(0);
+		const count = signal(0);
 		let result: number | undefined;
 		effect(() => {
 			result = count();
 		});
-		setCount(1);
+		count.set(1);
 
 		// Wait for the effect to run
 		await nextMicrotask();
@@ -265,7 +265,7 @@ await test('effect', async () => {
 		assert.strictEqual(result, 1);
 	});
 	await test('multiple subscribers', async () => {
-		const [count, setCount] = signal(0);
+		const count = signal(0);
 		let result1: number | undefined;
 		let result2: number | undefined;
 		effect(() => {
@@ -274,7 +274,7 @@ await test('effect', async () => {
 		effect(() => {
 			result2 = count();
 		});
-		setCount(1);
+		count.set(1);
 
 		// Wait for the effect to run
 		await nextMicrotask();
@@ -306,9 +306,9 @@ await test('derived', async () => {
 		assert.strictEqual(doubled(), 2);
 	});
 	await test('recalculates the value upon updating', async () => {
-		const [count, setCount] = signal(1);
+		const count = signal(1);
 		const doubled = derived(() => count() * 2);
-		setCount(2);
+		count.set(2);
 
 		// Wait for the effect to run
 		await nextMicrotask();
@@ -318,13 +318,13 @@ await test('derived', async () => {
 	await test('handles errors in derived signals', async (t) => {
 		const errorMock = getErrorMock(t);
 		const error = new Error('Test error');
-		const [count, setCount] = signal(1);
+		const count = signal(1);
 		derived(() => {
 			if (count() === 2) {
 				throw error;
 			}
 		});
-		setCount(2);
+		count.set(2);
 
 		// Wait for the effect to run
 		await nextMicrotask();

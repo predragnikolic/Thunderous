@@ -1,7 +1,7 @@
 import { css, customElement, derived, html } from 'thunderous';
 
-export const Icon = customElement(({ attrSignals, adoptStyleSheet }) => {
-	const [iconName] = attrSignals['icon-name'];
+export const Icon = customElement(({ attrs, adoptStyleSheet }) => {
+	const iconName = attrs['icon-name'];
 	adoptStyleSheet(styles);
 	const iconMap = {
 		github: html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512">

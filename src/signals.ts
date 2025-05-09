@@ -1,4 +1,4 @@
-import type { Signal, SignalGetter, SignalOptions, SignalSetter } from './types';
+import type { SignalGetter, SignalNew, SignalOptions, SignalSetter } from './types';
 
 let subscriber: (() => void) | null = null;
 const updateQueue = new Set<() => void>();
@@ -8,12 +8,12 @@ let isBatchingUpdates = false;
  * Create a signal with an initial value.
  * @example
  * ```ts
- * const [getCount, setCount] = signal(0);
- * const increment = () => setCount(getCount() + 1);
- * const decrement = () => setCount(getCount() - 1);
+ * const count = signal(0);
+ * const increment = () => count.set(count() + 1);
+ * const decrement = () => count.set(count() - 1);
  * ```
  */
-export const signal = <T = undefined>(initVal?: T, options?: SignalOptions): Signal<T> => {
+export const signal = <T = undefined>(initVal?: T, options?: SignalOptions): SignalNew<T> => {
 	const subscribers = new Set<() => void>();
 	let value = initVal as T;
 	const getter: SignalGetter<T> = (getterOptions) => {
@@ -72,22 +72,22 @@ export const signal = <T = undefined>(initVal?: T, options?: SignalOptions): Sig
 			});
 		}
 	};
-	return [getter, setter];
+	return Object.assign(getter, {set: setter});
 };
 
 /**
  * Create a derived signal that depends on other signals.
  * @example
  * ```ts
- * const [getCount, setCount] = signal(0);
- * const doubleCount = derived(() => getCount() * 2);
+ * const count = signal(0);
+ * const doubleCount = derived(() => count() * 2);
  * ```
  */
 export const derived = <T>(fn: () => T): SignalGetter<T> => {
-	const [getter, setter] = signal<T>();
+	const getter = signal<T>();
 	effect(() => {
 		try {
-			setter(fn());
+			getter.set(fn());
 		} catch (error) {
 			console.error('Error in derived signal:', { error, fn });
 		}
@@ -99,9 +99,9 @@ export const derived = <T>(fn: () => T): SignalGetter<T> => {
  * Create an effect that runs when signals change.
  * @example
  * ```ts
- * const [getCount, setCount] = signal(0);
+ * const count = signal(0);
  * effect(() => {
- *  console.log('Count:', getCount());
+ *  console.log('Count:', count());
  * });
  * ```
  */

@@ -1,7 +1,7 @@
 import { DEFAULT_RENDER_OPTIONS } from './constants';
 import { isCSSStyleSheet, renderState } from './render';
 import { isServer, serverDefine } from './server-side';
-import { signal } from './signals';
+import { signal, effect } from './signals';
 import type {
 	AttributeChangedCallback,
 	AttrProp,
@@ -115,8 +115,8 @@ export const customElement = <Props extends CustomElementProps>(
 
 	class CustomElement extends HTMLElement {
 		#attributesAsPropertiesMap = new Map(attributesAsPropertiesMap);
-		#attrSignals: Record<string, Signal<string | null> | undefined> = {};
-		#propSignals = {} as {
+		#attrs: Record<string, Signal<string | null> | undefined> = {};
+		#props = {} as {
 			[K in keyof Props]: Signal<Props[K] | undefined>;
 		};
 		#attributeChangedFns = new Set<AttributeChangedCallback>();
@@ -137,11 +137,11 @@ export const customElement = <Props extends CustomElementProps>(
 						for (const mutation of mutations) {
 							const attrName = mutation.attributeName;
 							if (mutation.type !== 'attributes' || attrName === null) continue;
-							if (!(attrName in this.#attrSignals)) this.#attrSignals[attrName] = signal<string | null>(null);
-							const [getter, setter] = this.#attrSignals[attrName]!;
-							const oldValue = getter();
+							if (!(attrName in this.#attrs)) this.#attrs[attrName] = signal<string | null>(null);
+							const sig = this.#attrs[attrName]!;
+							const oldValue = sig();
 							const newValue = this.getAttribute(attrName);
-							setter(newValue);
+							sig.set(newValue);
 							for (const fn of this.#attributeChangedFns) {
 								fn(attrName, oldValue, newValue);
 							}
@@ -173,14 +173,16 @@ export const customElement = <Props extends CustomElementProps>(
 					this.__customCallbackFns?.set(key, fn);
 					return `this.getRootNode().host.__customCallbackFns.get('${key}')(event)`;
 				},
-				attrSignals: new Proxy(
+				attrs: new Proxy(
 					{},
 					{
 						get: (_, prop: string) => {
-							if (!(prop in this.#attrSignals)) this.#attrSignals[prop] = signal<string | null>(null);
-							const [getter] = this.#attrSignals[prop]!;
-							const setter = (newValue: string) => this.setAttribute(prop, newValue);
-							return [getter, setter];
+							if (!(prop in this.#attrs)) this.#attrs[prop] = signal<string | null>(null);
+							const sig = this.#attrs[prop]!;
+							effect(() => {
+								this.setAttribute(prop, sig() ?? '');
+							})
+							return sig;
 						},
 						set: () => {
 							console.error('Signals must be assigned via setters.');
@@ -188,42 +190,17 @@ export const customElement = <Props extends CustomElementProps>(
 						},
 					},
 				),
-				propSignals: new Proxy({} as RenderArgs<Props>['propSignals'], {
+				props: new Proxy({} as RenderArgs<Props>['props'], {
 					get: (_, prop: Extract<keyof Props, string>) => {
-						if (!(prop in this.#propSignals)) this.#propSignals[prop] = signal<Props[typeof prop] | undefined>();
-						const [_getter, _setter] = this.#propSignals[prop];
-						let setFromProp = false;
-						const setter: SignalSetter<Props[typeof prop]> = (newValue: Props[typeof prop]) => {
-							// @ts-expect-error // TODO: look into this
-							if (!setFromProp) this[prop] = newValue;
-							_setter(newValue);
+						if (!(prop in this.#props)) this.#props[prop] = signal<Props[typeof prop] | undefined>();
+						const _sig = this.#props[prop];
+						let init = (value: Props[typeof prop]) => {
+							_sig.set(value);
+							return _sig
 						};
-						const getter: SignalGetter<Props[typeof prop]> = () => {
-							const value = _getter();
-							if (value === undefined) {
-								const error = new Error(
-									`Error accessing property: "${prop}"\nYou must set an initial value before calling a property signal's getter.\n`,
-								);
-								console.error(error);
-								throw error;
-							}
-							return value;
-						};
-						getter.getter = true;
-						Object.defineProperty(this, prop, {
-							get: getter,
-							set: (newValue: Props[typeof prop]) => {
-								setFromProp = true;
-								_setter(newValue);
-								setFromProp = false;
-							},
+						return Object.assign(_sig, {
+							init,
 						});
-						const publicSignal = [getter, setter] as SignalWithInit<Props[typeof prop]>;
-						publicSignal.init = (value) => {
-							_setter(value);
-							return [getter, setter] as Signal<Props[typeof prop]>;
-						};
-						return publicSignal;
 					},
 					set: () => {
 						console.error('Signals must be assigned via setters.');
@@ -293,12 +270,12 @@ export const customElement = <Props extends CustomElementProps>(
 				this.__customCallbackFns = new Map<string, () => void>();
 			}
 			for (const [attrName, attr] of this.#attributesAsPropertiesMap) {
-				this.#attrSignals[attrName] = signal<string | null>(null);
+				this.#attrs[attrName] = signal<string | null>(null);
 				Object.defineProperty(this, attr.prop, {
 					get: () => {
-						if (!(attrName in this.#attrSignals)) this.#attrSignals[attrName] = signal<string | null>(null);
-						const [getter] = this.#attrSignals[attrName]!;
-						const raw = getter();
+						if (!(attrName in this.#attrs)) this.#attrs[attrName] = signal<string | null>(null);
+						const sig = this.#attrs[attrName]!;
+						const raw = sig();
 						const rawOnly = raw !== null && attr.value === null;
 						const value = rawOnly ? attr.coerce(raw) : attr.value; // avoid coercion when possible
 						return value === null ? null : value;
@@ -306,13 +283,13 @@ export const customElement = <Props extends CustomElementProps>(
 					set: (newValue) => {
 						const oldValue = attr.value;
 						attr.value = newValue;
-						if (!(attrName in this.#attrSignals)) this.#attrSignals[attrName] = signal<string | null>(null);
-						const [, attrSetter] = this.#attrSignals[attrName]!;
-						const [, propSetter] = this.#propSignals[attrName] as Signal;
+						if (!(attrName in this.#attrs)) this.#attrs[attrName] = signal<string | null>(null);
+						const attrSignal = this.#attrs[attrName]!;
+						const propSignal = this.#props[attrName] as Signal;
 						const attrValue = newValue === null ? null : String(newValue);
 						if (String(oldValue) === attrValue) return;
-						attrSetter(attrValue);
-						propSetter(newValue);
+						attrSignal.set(attrValue);
+						propSignal.set(newValue);
 						if (attrValue === null) this.removeAttribute(attrName);
 						else this.setAttribute(attrName, attrValue);
 					},
@@ -321,7 +298,7 @@ export const customElement = <Props extends CustomElementProps>(
 				});
 			}
 			for (const attr of this.attributes) {
-				this.#attrSignals[attr.name] = signal<string | null>(attr.value);
+				this.#attrs[attr.name] = signal<string | null>(attr.value);
 			}
 			this.#render();
 		}
@@ -342,7 +319,8 @@ export const customElement = <Props extends CustomElementProps>(
 			}
 		}
 		attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
-			const [, attrSetter] = this.#attrSignals[name] ?? [];
+			// @ts-expect-error 
+			const {set: attrSetter} = this.#attrs[name] ?? [];
 			attrSetter?.(newValue);
 			const prop = this.#attributesAsPropertiesMap.get(name);
 			if (prop !== undefined) {

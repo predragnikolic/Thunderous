@@ -49,9 +49,9 @@ onServerDefine((tagName, htmlString) => {
 const globalRegistry = createRegistry();
 
 const NestedElement = customElement<NestedElementProps>(
-	({ attrSignals, propSignals }) => {
-		const [count] = propSignals.count.init(0);
-		const [text] = attrSignals.text;
+	({ attrs, props }) => {
+		const count = props.count.init(0);
+		const text = attrs.text;
 		return html`<strong>${text}</strong> <span>count: ${count}</span>`;
 	},
 	{
@@ -63,13 +63,13 @@ const registry = createRegistry({ scoped: true });
 registry.define('nested-element', NestedElement);
 
 const MyElement = customElement<MyElementProps>(
-	({ attrSignals, propSignals, getter, internals, clientOnlyCallback, adoptStyleSheet }) => {
-		const [count, setCount] = propSignals.count.init(0);
+	({ attrs, props, getter, internals, clientOnlyCallback, adoptStyleSheet }) => {
+		const count = props.count.init(0);
 		effect(() => {
 			console.log('count changed:', count());
 		});
-		const [heading] = attrSignals.heading;
-		const [list, setList] = signal([
+		const heading = attrs.heading;
+		const list = signal([
 			{ id: 1, name: 'item 1' },
 			{ id: 2, name: 'item 2' },
 			{ id: 3, name: 'item 3' },
@@ -85,7 +85,7 @@ const MyElement = customElement<MyElementProps>(
 		});
 
 		const increment = () => {
-			setCount(count() + 1);
+			count.set(count() + 1);
 			clientOnlyCallback(() => {
 				internals.setFormValue(String(count()));
 			});
@@ -117,7 +117,7 @@ const MyElement = customElement<MyElementProps>(
 		let i = 1;
 		const addListItem = () => {
 			const _list = list().map((item) => ({ id: item.id, name: `updated: ${item.name.replace('updated: ', '')}` }));
-			setList([..._list, { id: i + 3, name: 'new item ' + i++ }]);
+			list.set([..._list, { id: i + 3, name: 'new item ' + i++ }]);
 		};
 
 		const removeListItem = (id: number) => {
@@ -126,7 +126,7 @@ const MyElement = customElement<MyElementProps>(
 				_list.findIndex((item) => item.id === id),
 				1,
 			);
-			setList(_list);
+			list.set(_list);
 		};
 
 		return html`

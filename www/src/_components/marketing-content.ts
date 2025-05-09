@@ -2,8 +2,8 @@ import { html, css, customElement } from 'thunderous';
 import { theme } from '../_styles/theme';
 
 export const MarketingContent = customElement(
-	({ adoptStyleSheet, connectedCallback, elementRef, refs, attrSignals }) => {
-		const [_standalone] = attrSignals['standalone'];
+	({ adoptStyleSheet, connectedCallback, elementRef, refs, attrs }) => {
+		const _standalone = attrs['standalone'];
 		const standalone = _standalone() !== null;
 		adoptStyleSheet(theme);
 		adoptStyleSheet(styles);

@@ -17,11 +17,11 @@ const codeStyles = css`
 	}
 `;
 
-export const CodeBlock = customElement(({ adoptStyleSheet, attrSignals, connectedCallback, elementRef, refs }) => {
+export const CodeBlock = customElement(({ adoptStyleSheet, attrs, connectedCallback, elementRef, refs }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(highlight);
 	adoptStyleSheet(codeBlockStyles);
-	const [lang] = attrSignals.lang;
+	const lang = attrs.lang;
 	connectedCallback(() => {
 		const content = elementRef.innerHTML;
 		const code = refs.code;

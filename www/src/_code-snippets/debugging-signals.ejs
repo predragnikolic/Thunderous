@@ -1,9 +1,9 @@
-const [count, setCount] = signal(0, {
+const count = signal(0, {
   debugMode: true,
   label: 'count signal',
 });
 
-setCount(1, {
+count.set(1, {
   debugMode: true,
   label: 'start count',
 });

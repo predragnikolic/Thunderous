@@ -3,8 +3,8 @@ import { customElement, html, signal } from 'thunderous';
 
 // Thunderous functional component:
 const FnElement = customElement(() => {
-  const [count, setCount] = signal(0);
-  const increment = () => setCount(count() + 1);
+  const count = signal(0);
+  const increment = () => count.set(count() + 1);
   return html`
     <button onclick="${increment}">Increment</button>
     <output>${count}</output>
@@ -17,8 +17,8 @@ class ClssElement extends HTMLElement {
   #shadowRoot = this.attachShadow({ mode: 'closed' });
   #count = signal(0);
   increment() {
-    const [count, setCount] = this.#count;
-    setCount(count() + 1);
+    const count = this.#count;
+    count.set(count() + 1);
   }
   constructor() {
     super();

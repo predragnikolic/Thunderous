@@ -101,8 +101,8 @@ export const getServerRenderArgs = (tagName: string, registry?: RegistryResult):
 		_fn.getter = true;
 		return _fn;
 	},
-	attrSignals: new Proxy({}, { get: (_, attr) => signal(`{{attr:${String(attr)}}}`) }),
-	propSignals: new Proxy({}, { get: () => signal(null) }),
+	attrs: new Proxy({}, { get: (_, attr) => signal(`{{attr:${String(attr)}}}`) }),
+	props: new Proxy({}, { get: () => signal(null) }),
 	refs: {},
 	// @ts-expect-error // this will be a string for SSR, but this is true for internal cases only.
 	// The end user will see the public type, which is either a CSSStyleSheet or HTMLStyleElement.

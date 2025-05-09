@@ -44,8 +44,8 @@ export type RenderArgs<Props extends CustomElementProps> = {
 	 * @deprecated You can now pass callback functions directly to templates.
 	 */
 	customCallback: (fn: () => void) => `this.getRootNode().host.__customCallbackFns.get('${string}')(event)` | '';
-	attrSignals: Record<string, Signal<string | null>>;
-	propSignals: {
+	attrs: Record<string, Signal<string | null>>;
+	props: {
 		[K in keyof Props]: SignalWithInit<Props[K]>;
 	};
 	refs: Record<string, HTMLElement | null>;
@@ -125,14 +125,14 @@ export type SignalGetter<T> = {
 export type SignalSetter<T> = (newValue: T, options?: SignalOptions) => void;
 export type SignalNew<T> = {
 	(options?: SignalOptions): T;
-	set: (newValue: T, options?: SignalOptions) => void;
+	set(newValue: T, options?: SignalOptions) : void;
 	getter: true;
 };
-export type Signal<T = unknown> = [SignalGetter<T>, SignalSetter<T>];
+export type Signal<T = unknown> = SignalNew<T>;
 
 // TODO: add `| undefined` to the uninitialized signal.
 // The reason I didn't do it yet is that it's a breaking change. I'll wait for the next major version.
-export type SignalWithInit<T = unknown> = Signal<T> & { init: (value: T) => Signal<T> };
+export type SignalWithInit<T = unknown> = Signal<T> & { init: (value: T) => SignalNew<T> };
 
 // Flexible typing is necessary to support generic functions
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

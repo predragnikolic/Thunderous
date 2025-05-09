@@ -1,10 +1,10 @@
 import { css, customElement, html } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const Link = customElement(({ attrSignals, adoptStyleSheet }) => {
+export const Link = customElement(({ attrs, adoptStyleSheet }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(linkStyles);
-	const [href] = attrSignals.href;
+	const href = attrs.href;
 	return html`<a href="${href}" part="a"><slot></slot></a>`;
 });
 
@@ -21,9 +21,9 @@ const linkStyles = css`
 	}
 `;
 
-export const InvisibleLink = customElement(({ attrSignals, adoptStyleSheet }) => {
+export const InvisibleLink = customElement(({ attrs, adoptStyleSheet }) => {
 	adoptStyleSheet(invisibleLinkStyles);
-	const [href] = attrSignals.href;
+	const href = attrs.href;
 	return html`<a href="${href}"><slot></slot></a>`;
 });
 
@@ -41,9 +41,9 @@ const invisibleLinkStyles = css`
 	}
 `;
 
-export const LinkButton = customElement(({ attrSignals, adoptStyleSheet }) => {
+export const LinkButton = customElement(({ attrs, adoptStyleSheet }) => {
 	adoptStyleSheet(linkButtonStyles);
-	const [href] = attrSignals.href;
+	const href = attrs.href;
 	return html`<a href="${href}" part="a"><slot></slot></a>`;
 });
 
