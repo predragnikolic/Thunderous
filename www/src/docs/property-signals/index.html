@@ -46,13 +46,6 @@
 					To strongly type the property, pass the property types as a generic to <th-code>customElement</th-code>.
 					Without this, the signal's type will default to <th-code>Signal&lt;unknown&gt;</th-code>.
 				</th-text>
-
-				<th-block-quote>
-					NOTICE: The signal's getter will throw an error at runtime if the property is accessed before its value is
-					initialized. You must either set the property before the signal is accessed or call
-					<th-code>init()</th-code> on the signal.
-				</th-block-quote>
-
 				<th-content-header>Syncing Attributes With Properties</th-content-header>
 				<th-text>
 					There is also a way to sync attributes with properties by coercing the strings into the desired type, though

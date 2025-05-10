@@ -96,11 +96,6 @@ export const getServerRenderArgs = (tagName: string, registry?: RegistryResult):
 	formAssociatedCallback: NOOP,
 	clientCallback: NOOP,
 	customCallback: () => '',
-	getter: (fn) => {
-		const _fn: SignalGetter<ReturnType<typeof fn>> = () => fn();
-		_fn.getter = true;
-		return _fn;
-	},
 	attrs: new Proxy({}, { get: (_, attr) => signal(`{{attr:${String(attr)}}}`) }),
 	props: new Proxy({}, { get: () => signal(null) }),
 	refs: {},

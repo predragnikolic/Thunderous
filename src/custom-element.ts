@@ -13,8 +13,6 @@ import type {
 	RenderOptions,
 	ServerRenderFunction,
 	Signal,
-	SignalGetter,
-	SignalSetter,
 } from './types';
 
 /**
@@ -162,11 +160,6 @@ export const customElement = <Props extends CustomElementProps>(
 				formResetCallback: (fn) => this.#formResetCallbackFns.add(fn),
 				formStateRestoreCallback: (fn) => this.#formStateRestoreCallbackFns.add(fn),
 				clientCallback: (fn) => this.#clientCallbackFns.add(fn),
-				getter: (fn) => {
-					const _fn: SignalGetter<ReturnType<typeof fn>> = () => fn();
-					_fn.getter = true;
-					return _fn;
-				},
 				customCallback: (fn) => {
 					const key = crypto.randomUUID();
 					this.__customCallbackFns?.set(key, fn);

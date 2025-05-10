@@ -62,7 +62,7 @@ const registry = createRegistry({ scoped: true });
 registry.define('nested-element', NestedElement);
 
 const MyElement = customElement<MyElementProps>(
-	({ attrs, props: {count}, getter, internals, clientCallback, adoptStyleSheet }) => {
+	({ attrs, props: {count}, internals, clientCallback, adoptStyleSheet }) => {
 		count.set(0);
 		effect(() => {
 			console.log('count changed:', count());
@@ -147,7 +147,6 @@ const MyElement = customElement<MyElementProps>(
 			</ul>
 			<button onclick="${addListItem}">Add List Item</button>
 			<h2>Test</h2>
-			<div><span>test custom getter: </span>${getter(() => 'TESTING CUSTOM GETTER')}</div>
 		`;
 	},
 	{
