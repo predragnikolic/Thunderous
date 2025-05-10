@@ -193,6 +193,13 @@ export const customElement = <Props extends CustomElementProps>(
 					get: (_, prop: Extract<keyof Props, string>) => {
 						if (!(prop in this.#props)) this.#props[prop] = signal<Props[typeof prop] | undefined>();
 						const sig = this.#props[prop];
+						Object.defineProperty(this, prop, {
+							get: sig,
+							set: (newValue: Props[typeof prop]) => {
+								sig.set(newValue);
+							},
+						});
+
 						effect(()=> {
 							// @ts-expect-error 
 							this[prop] = sig();
