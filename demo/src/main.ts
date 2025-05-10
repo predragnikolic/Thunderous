@@ -1,5 +1,5 @@
 import {
-	derived,
+	computed,
 	css,
 	html,
 	customElement,
@@ -62,19 +62,18 @@ const registry = createRegistry({ scoped: true });
 registry.define('nested-element', NestedElement);
 
 const MyElement = customElement<MyElementProps>(
-	({ attrs, props: {count}, internals, clientCallback, adoptStyleSheet }) => {
+	({ attrs: {heading}, props: {count}, internals, clientCallback, adoptStyleSheet }) => {
 		count.set(0);
 		effect(() => {
 			console.log('count changed:', count());
 		});
-		const heading = attrs.heading;
 		const list = signal([
 			{ id: 1, name: 'item 1' },
 			{ id: 2, name: 'item 2' },
 			{ id: 3, name: 'item 3' },
 		]);
 
-		const redValue = derived(() => {
+		const redValue = computed(() => {
 			const value = count() * 10;
 			return value > 255 ? 255 : value;
 		});
@@ -140,7 +139,7 @@ const MyElement = customElement<MyElementProps>(
 			<h2>nested templates and loops:</h2>
 			<ul>
 				${html`<li onclick="${addListItem}">item</li>`}
-				${derived(() =>
+				${computed(() =>
 					list().map((item) => html`<li key="${item.id}" onclick="${() => removeListItem(item.id)}">${item.name}</li>`),
 				)}
 				${list().map((item) => html`<li key="${item.id}">${item.name} after</li>`)}

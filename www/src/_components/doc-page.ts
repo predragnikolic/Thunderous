@@ -1,19 +1,19 @@
-import { signal, css, customElement, derived, html } from 'thunderous';
+import { signal, css, customElement, computed, html } from 'thunderous';
 import { theme } from '../_styles/theme';
 
 export const DocPage = customElement(({ adoptStyleSheet, connectedCallback, disconnectedCallback }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(styles);
-	const [navOpen, setNavOpen] = signal(false);
-	const navOpenClass = derived(() => (navOpen() ? 'open' : ''));
+	const navOpen = signal(false);
+	const navOpenClass = computed(() => (navOpen() ? 'open' : ''));
 	const toggleNav = () => {
-		setNavOpen(!navOpen());
+		navOpen.set(!navOpen());
 	};
 	const openIfDesktop = () => {
 		if (window.innerWidth >= 50 * 16) {
-			setNavOpen(true);
+			navOpen.set(true);
 		} else {
-			setNavOpen(false);
+			navOpen.set(false);
 		}
 	};
 	connectedCallback(() => {
@@ -40,7 +40,7 @@ export const DocPage = customElement(({ adoptStyleSheet, connectedCallback, disc
 						/>
 					</svg>
 				</button>
-				<header inert="${derived(() => (navOpen() ? null : ''))}">
+				<header inert="${computed(() => (navOpen() ? null : ''))}">
 					<h1 class="site-heading">
 						<th-invisible-link href="/">
 							<img class="logo" src="/thunder-solutions-logo-light.svg" alt="Thunder Solutions Logo" />
@@ -103,7 +103,7 @@ export const DocPage = customElement(({ adoptStyleSheet, connectedCallback, disc
 										<th-link href="/docs/property-signals" class="link">Property Signals</th-link>
 									</li>
 									<li>
-										<th-link href="/docs/derived-signals" class="link">Derived Signals</th-link>
+										<th-link href="/docs/computed-signals" class="link">computed Signals</th-link>
 									</li>
 									<li>
 										<th-link href="/docs/effects" class="link">Effects</th-link>

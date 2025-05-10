@@ -1,8 +1,8 @@
-import { derived, signal } from 'thunderous';
+import { computed, signal } from 'thunderous';
 
 const count = signal(0);
 
-const timesTen = derived(() => count() * 10);
+const timesTen = computed(() => count() * 10);
 
 console.log(timesTen()); // 0
 

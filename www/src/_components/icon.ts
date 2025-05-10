@@ -1,4 +1,4 @@
-import { css, customElement, derived, html } from 'thunderous';
+import { css, customElement, computed, html } from 'thunderous';
 
 export const Icon = customElement(({ attrs, adoptStyleSheet }) => {
 	const iconName = attrs['icon-name'];
@@ -12,7 +12,7 @@ export const Icon = customElement(({ attrs, adoptStyleSheet }) => {
 		</svg>`,
 		none: '(invalid icon)',
 	};
-	const icon = derived(() => iconMap[iconName() ?? 'none'] ?? iconMap.none);
+	const icon = computed(() => iconMap[iconName() ?? 'none'] ?? iconMap.none);
 	return html`${icon}`;
 });
 

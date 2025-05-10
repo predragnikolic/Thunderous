@@ -76,20 +76,20 @@ export const signal = <T = undefined>(initVal?: T, options?: SignalOptions): Sig
 };
 
 /**
- * Create a derived signal that depends on other signals.
+ * Create a computed signal that depends on other signals.
  * @example
  * ```ts
  * const count = signal(0);
- * const doubleCount = derived(() => count() * 2);
+ * const doubleCount = computed(() => count() * 2);
  * ```
  */
-export const derived = <T>(fn: () => T): SignalGetter<T> => {
+export const computed = <T>(fn: () => T): SignalGetter<T> => {
 	const getter = signal<T>();
 	effect(() => {
 		try {
 			getter.set(fn());
 		} catch (error) {
-			console.error('Error in derived signal:', { error, fn });
+			console.error('Error in computed signal:', { error, fn });
 		}
 	});
 	return getter;

@@ -1,4 +1,4 @@
-import { effect, signal, derived } from '../signals';
+import { effect, signal, computed } from '../signals';
 import { test } from 'node:test';
 import assert from 'assert';
 import { assumeObj } from '../utilities';
@@ -6,7 +6,7 @@ import { getErrorMock, getLogMock, nextMicrotask } from './_test-utils';
 
 await test('createSignal', async () => {
 	await test('initial value', () => {
-		const [count] = signal(0);
+		const count = signal(0);
 		assert.strictEqual(count(), 0);
 	});
 	await test('set value', () => {
@@ -299,15 +299,15 @@ await test('effect', async () => {
 	});
 });
 
-await test('derived', async () => {
+await test('computed', async () => {
 	await test('calculates the value immediately', () => {
 		const [count] = signal(1);
-		const doubled = derived(() => count() * 2);
+		const doubled = computed(() => count() * 2);
 		assert.strictEqual(doubled(), 2);
 	});
 	await test('recalculates the value upon updating', async () => {
 		const count = signal(1);
-		const doubled = derived(() => count() * 2);
+		const doubled = computed(() => count() * 2);
 		count.set(2);
 
 		// Wait for the effect to run
@@ -315,11 +315,11 @@ await test('derived', async () => {
 
 		assert.strictEqual(doubled(), 4);
 	});
-	await test('handles errors in derived signals', async (t) => {
+	await test('handles errors in computed signals', async (t) => {
 		const errorMock = getErrorMock(t);
 		const error = new Error('Test error');
 		const count = signal(1);
-		derived(() => {
+		computed(() => {
 			if (count() === 2) {
 				throw error;
 			}
@@ -330,7 +330,7 @@ await test('derived', async () => {
 		await nextMicrotask();
 		assert.strictEqual(errorMock.callCount(), 1);
 		assert.deepStrictEqual(errorMock.calls[0].arguments, [
-			'Error in derived signal:',
+			'Error in computed signal:',
 			{ error, fn: assumeObj(errorMock.calls[0].arguments[1]).fn },
 		]);
 	});

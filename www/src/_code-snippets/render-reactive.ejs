@@ -1,4 +1,4 @@
-import { customElement, html, derived, signal } from 'thunderous';
+import { customElement, html, computed, signal } from 'thunderous';
 
 const MyElement = customElement(() => {
   const cond = signal(true);
@@ -6,10 +6,10 @@ const MyElement = customElement(() => {
 
   return html`
     <p>
-      ${derived(() => cond() ? html`<span>True</span>` : html`<span>False</span>`)}
+      ${computed(() => cond() ? html`<span>True</span>` : html`<span>False</span>`)}
     </p>
     <ul>
-      ${derived(() => list().map((item) => html`<li key="${item.id}">${item.text}</li>`))}
+      ${computed(() => list().map((item) => html`<li key="${item.id}">${item.text}</li>`))}
     </ul>
   `;
 });

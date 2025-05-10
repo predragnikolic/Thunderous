@@ -48,16 +48,16 @@
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/render-loops.ejs') %></th-code-block>
 				<th-text>
-					To render a reactive template, you can use <th-code>derived()</th-code> signals. This will hand off the signal
+					To render a reactive template, you can use <th-code>computed()</th-code> signals. This will hand off the signal
 					to <th-code>html``</th-code>, which will then update the DOM when the signals change.
 				</th-text>
 				<th-block-quote>
 					For more information on signals, see the <th-link href="/docs/signals">signals overview</th-link> and
-					<th-link href="/docs/derived-signals">derived signals</th-link> documentation.
+					<th-link href="/docs/computed-signals">computed signals</th-link> documentation.
 				</th-block-quote>
 				<th-code-block lang="ts"><%= include('_code-snippets/render-reactive.ejs') %></th-code-block>
 				<th-text>
-					In the same way, you can use <th-code>derived()</th-code> to render reactive attribute values.
+					In the same way, you can use <th-code>computed()</th-code> to render reactive attribute values.
 				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/render-reactive-attr.ejs') %></th-code-block>
 			</th-content-group>
