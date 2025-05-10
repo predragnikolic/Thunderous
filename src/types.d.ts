@@ -114,9 +114,9 @@ export type SignalGetter<T> = {
 };
 export type SignalSetter<T> = (newValue: T, options?: SignalOptions) => void;
 export type Signal<T = unknown> = {
-	(options?: SignalOptions): T;
-	set(newValue: T, options?: SignalOptions) : void;
-	getter: true;
+	(options?: SignalOptions): T
+	set(newValue: T, options?: SignalOptions) : void
+	getter: true
 };
 
 // Flexible typing is necessary to support generic functions

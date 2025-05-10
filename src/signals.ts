@@ -72,7 +72,10 @@ export const signal = <T = undefined>(initVal?: T, options?: SignalOptions): Sig
 			});
 		}
 	};
-	return Object.assign(getter, {set: setter});
+	return Object.assign(getter, {
+		set: setter,
+		valueOf: () => getter()
+	});
 };
 
 /**

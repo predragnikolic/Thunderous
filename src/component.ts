@@ -150,7 +150,8 @@ export const component = <Props extends CustomElementProps>(
 				clientCallback: (fn) => this.#clientCallbackFns.add(fn),
 				props: new Proxy({} as RenderArgs<Props>['props'], {
 					get: (_, prop: Extract<keyof Props, string>) => {
-						if (!(prop in this.#props)) this.#props[prop] = signal<Props[typeof prop] | undefined>();
+						// @ts-expect-error
+						if (!(prop in this.#props)) this.#props[prop] = signal<Props[typeof prop] | undefined>(this.getAttribute(prop));
 						const sig = this.#props[prop];
 						Object.defineProperty(this, prop, {
 							get: sig,

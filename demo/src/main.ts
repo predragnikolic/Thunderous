@@ -20,6 +20,7 @@ declare global {
 
 type MyElementProps = {
 	count: number;
+	heading: string
 };
 
 const mockHTML = /* html */ `
@@ -86,7 +87,7 @@ const MyElement = component<MyElementProps>(
 		});
 
 		const increment = () => {
-			count.set(count() + 1);
+			count.set(count + 1);
 			clientCallback(() => {
 				internals.setFormValue(String(count()));
 			});
