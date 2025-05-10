@@ -40,10 +40,6 @@ export type RenderArgs<Props extends CustomElementProps> = {
 	formStateRestoreCallback: (fn: () => void) => void;
 	formAssociatedCallback: (fn: () => void) => void;
 	clientCallback: (fn: () => void) => void;
-	/**
-	 * @deprecated You can now pass callback functions directly to templates.
-	 */
-	customCallback: (fn: () => void) => `this.getRootNode().host.__customCallbackFns.get('${string}')(event)` | '';
 	attrs: Record<string, Signal<string | null>>;
 	props: {
 		[K in keyof Props]: Signal<Props[K]>;

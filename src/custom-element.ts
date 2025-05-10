@@ -161,11 +161,6 @@ export const customElement = <Props extends CustomElementProps>(
 				formResetCallback: (fn) => this.#formResetCallbackFns.add(fn),
 				formStateRestoreCallback: (fn) => this.#formStateRestoreCallbackFns.add(fn),
 				clientCallback: (fn) => this.#clientCallbackFns.add(fn),
-				customCallback: (fn) => {
-					const key = crypto.randomUUID();
-					this.__customCallbackFns?.set(key, fn);
-					return `this.getRootNode().host.__customCallbackFns.get('${key}')(event)`;
-				},
 				attrs: new Proxy(
 					{},
 					{

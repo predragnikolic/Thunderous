@@ -30,10 +30,6 @@ await test('getServerRenderArgs', async () => {
 			message: 'The `internals` property is not available on the server.',
 		});
 	});
-	await test('customCallback returns nothing on the server', () => {
-		const args = getServerRenderArgs('my-element-2');
-		assert.strictEqual(args.customCallback(NOOP), '');
-	});
 	await test('adoptStyleSheet tracks CSS strings on the server', () => {
 		const args = getServerRenderArgs('my-element-3');
 
