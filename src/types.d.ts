@@ -45,7 +45,7 @@ export type RenderArgs<Props extends CustomElementProps> = {
 	customCallback: (fn: () => void) => `this.getRootNode().host.__customCallbackFns.get('${string}')(event)` | '';
 	attrs: Record<string, Signal<string | null>>;
 	props: {
-		[K in keyof Props]: SignalNew<Props[K]>;
+		[K in keyof Props]: Signal<Props[K]>;
 	};
 	refs: Record<string, HTMLElement | null>;
 	adoptStyleSheet: (stylesheet: Styles) => void;
@@ -122,12 +122,11 @@ export type SignalGetter<T> = {
 	getter: true;
 };
 export type SignalSetter<T> = (newValue: T, options?: SignalOptions) => void;
-export type SignalNew<T> = {
+export type Signal<T = unknown> = {
 	(options?: SignalOptions): T;
 	set(newValue: T, options?: SignalOptions) : void;
 	getter: true;
 };
-export type Signal<T = unknown> = SignalNew<T>;
 
 // Flexible typing is necessary to support generic functions
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

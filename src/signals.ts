@@ -1,4 +1,4 @@
-import type { SignalGetter, SignalNew, SignalOptions, SignalSetter } from './types';
+import type { SignalGetter, Signal, SignalOptions, SignalSetter } from './types';
 
 let subscriber: (() => void) | null = null;
 const updateQueue = new Set<() => void>();
@@ -13,7 +13,7 @@ let isBatchingUpdates = false;
  * const decrement = () => count.set(count() - 1);
  * ```
  */
-export const signal = <T = undefined>(initVal?: T, options?: SignalOptions): SignalNew<T> => {
+export const signal = <T = undefined>(initVal?: T, options?: SignalOptions): Signal<T> => {
 	const subscribers = new Set<() => void>();
 	let value = initVal as T;
 	const getter: SignalGetter<T> = (getterOptions) => {
