@@ -1,4 +1,4 @@
-import { customElement, css } from 'thunderous';
+import { component, css } from 'thunderous';
 
 const myStyleSheet = css`
   :host {
@@ -7,7 +7,7 @@ const myStyleSheet = css`
   }
 `;
 
-const MyElement = customElement(({ adoptStyleSheet }) => {
+const MyElement = component(({ adoptStyleSheet }) => {
 
   adoptStyleSheet(myStyleSheet);
 

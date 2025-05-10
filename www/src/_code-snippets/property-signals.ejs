@@ -1,4 +1,4 @@
-const MyElement = customElement<{ count: number }>(({ props }) => {
+const MyElement = component<{ count: number }>(({ props }) => {
 
   // The signal and property are defined automatically when the proxy is accessed
   const count = props.count;

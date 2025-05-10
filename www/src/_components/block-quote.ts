@@ -1,7 +1,7 @@
-import { customElement, html, css } from 'thunderous';
+import { component, html, css } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const BlockQuote = customElement(({ adoptStyleSheet }) => {
+export const BlockQuote = component(({ adoptStyleSheet }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(styles);
 	return html`

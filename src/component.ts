@@ -20,13 +20,13 @@ import type {
  * Create a custom element that can be defined for use in the DOM.
  * @example
  * ```ts
- * const MyElement = customElement(() => {
+ * const MyElement = component(() => {
  *   return html`<h1>Hello, World!</h1>`;
  * });
  * MyElement.define('my-element');
  * ```
  */
-export const customElement = <Props extends CustomElementProps>(
+export const component = <Props extends CustomElementProps>(
 	render: RenderFunction<Props>,
 	options?: Partial<RenderOptions>,
 ): ElementResult => {
@@ -111,7 +111,7 @@ export const customElement = <Props extends CustomElementProps>(
 	}
 	const observedAttributes = Array.from(observedAttributesSet);
 
-	class CustomElement extends HTMLElement {
+	class component extends HTMLElement {
 		#attributesAsPropertiesMap = new Map(attributesAsPropertiesMap);
 		#attrs: Record<string, Signal<string | null> | undefined> = {};
 		#props = {} as {
@@ -360,7 +360,7 @@ export const customElement = <Props extends CustomElementProps>(
 				console.warn(`Custom element "${tagName}" was already defined. Skipping...`);
 				return this;
 			}
-			registry.define(tagName, CustomElement, options);
+			registry.define(tagName, component, options);
 			_tagName = tagName;
 			return this;
 		},
@@ -372,7 +372,7 @@ export const customElement = <Props extends CustomElementProps>(
 			_registry = registry;
 			return this;
 		},
-		eject: () => CustomElement,
+		eject: () => component,
 	};
 	return elementResult;
 };

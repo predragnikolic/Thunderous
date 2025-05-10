@@ -1,7 +1,7 @@
-import { html, css, customElement } from 'thunderous';
+import { html, css, component } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const ContentGroup = customElement(({ adoptStyleSheet, connectedCallback, elementRef, refs }) => {
+export const ContentGroup = component(({ adoptStyleSheet, connectedCallback, elementRef, refs }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(styles);
 	connectedCallback(() => {

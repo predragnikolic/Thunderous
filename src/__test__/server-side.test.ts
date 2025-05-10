@@ -14,7 +14,7 @@ import { createRegistry } from '../registry';
 import { DEFAULT_RENDER_OPTIONS } from '../constants';
 import { type ServerRenderOptions } from '../types';
 import { NOOP } from '../utilities';
-import { customElement } from '../custom-element';
+import { component } from '../component';
 import { html } from '../render';
 
 const stripWhitespace = (template: string) => template.trim().replace(/\s\s+/g, ' ');
@@ -176,7 +176,7 @@ await test('serverDefine', async () => {
 				...DEFAULT_RENDER_OPTIONS,
 				attachShadow: false,
 			},
-			elementResult: customElement(() => html`<div></div>`),
+			elementResult: component(() => html`<div></div>`),
 		});
 
 		assert.strictEqual(fn.mock.calls.length, 1);
@@ -193,7 +193,7 @@ await test('serverDefine', async () => {
 			serverRender,
 			options: DEFAULT_RENDER_OPTIONS,
 			parentRegistry,
-			elementResult: customElement(() => html`<div></div>`),
+			elementResult: component(() => html`<div></div>`),
 		});
 
 		const expectedServerRenderOpts = new Map<string, ServerRenderOptions>([
@@ -216,7 +216,7 @@ await test('serverDefine', async () => {
 			serverRender: () => 'inner',
 			options: { ...DEFAULT_RENDER_OPTIONS, attachShadow: false },
 			parentRegistry: scopedRegistry,
-			elementResult: customElement(() => html`<div></div>`),
+			elementResult: component(() => html`<div></div>`),
 		});
 
 		serverDefine({
@@ -224,7 +224,7 @@ await test('serverDefine', async () => {
 			serverRender: () => '<my-element-11></my-element-11>',
 			options: { ...DEFAULT_RENDER_OPTIONS, attachShadow: false },
 			scopedRegistry,
-			elementResult: customElement(() => html`<div></div>`),
+			elementResult: component(() => html`<div></div>`),
 		});
 
 		serverDefineFns.clear();

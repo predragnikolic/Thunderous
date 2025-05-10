@@ -1,4 +1,4 @@
-const MyElement = customElement(() => {
+const MyElement = component(() => {
   const count = signal(0);
 
   const increment = () => count.set(count() + 1);

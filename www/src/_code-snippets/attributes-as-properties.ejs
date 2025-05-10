@@ -1,4 +1,4 @@
-const MyElement = customElement<{ count: number }>(({ props }) => {
+const MyElement = component<{ count: number }>(({ props }) => {
   const count = props.count.init(0);
 
   // count.set() will update both the DOM property, AND the HTML attribute.

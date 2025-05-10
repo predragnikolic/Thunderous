@@ -26,7 +26,7 @@ Thunderous makes it easy to define smaller components with less noise.
 
 <!-- prettier-ignore-start -->
 ```ts
-import { customElement, html, css, signal } from 'thunderous';
+import { component, html, css, signal } from 'thunderous';
 
 const myStyleSheet = css`
   :host {
@@ -35,7 +35,7 @@ const myStyleSheet = css`
   }
 `;
 
-const MyElement = customElement(({ refs, adoptStyleSheet }) => {
+const MyElement = component(({ refs, adoptStyleSheet }) => {
   const count = signal(0);
   const increment = () => count.set(count() + 1);
   adoptStyleSheet(myStyleSheet);

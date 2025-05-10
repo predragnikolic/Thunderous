@@ -1,6 +1,6 @@
-import { customElement, html, css, signal } from 'thunderous';
+import { component, html, css, signal } from 'thunderous';
 
-const MyElement = customElement(({ adoptStyleSheet }) => {
+const MyElement = component(({ adoptStyleSheet }) => {
   const count = signal(0);
   const increment = () => count.set(count() + 1);
   adoptStyleSheet(myStyleSheet);

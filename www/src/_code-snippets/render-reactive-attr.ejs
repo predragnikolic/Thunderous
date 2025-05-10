@@ -1,6 +1,6 @@
-import { customElement, html, computed, signal } from 'thunderous';
+import { component, html, computed, signal } from 'thunderous';
 
-const MyElement = customElement(() => {
+const MyElement = component(() => {
   const cond = signal(true);
 
   return html`
@@ -12,7 +12,7 @@ const MyElement = customElement(() => {
 
 // alternatively, for a cleaner template...
 
-const MyElement2 = customElement(() => {
+const MyElement2 = component(() => {
   const cond = signal(true);
   const activeClass = computed(() => cond() ? 'primary--active' : '');
 

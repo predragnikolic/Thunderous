@@ -1,4 +1,4 @@
-const MyElement = customElement(({ attrs }) => {
+const MyElement = component(({ attrs }) => {
   const heading = attrs['my-heading'];
 
   return html`<h2>${heading}</h2>`;

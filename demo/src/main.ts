@@ -2,7 +2,7 @@ import {
 	computed,
 	css,
 	html,
-	customElement,
+	component,
 	createRegistry,
 	onServerDefine,
 	insertTemplates,
@@ -48,7 +48,7 @@ onServerDefine((tagName, htmlString) => {
 
 const globalRegistry = createRegistry();
 
-const NestedElement = customElement<NestedElementProps>(
+const NestedElement = component<NestedElementProps>(
 	({ attrs: { text }, props: { count } }) => {
 		count.set(0);
 		return html`<strong>${text}</strong> <span>count: ${count}</span>`;
@@ -61,7 +61,7 @@ const NestedElement = customElement<NestedElementProps>(
 const registry = createRegistry({ scoped: true });
 registry.define('nested-element', NestedElement);
 
-const MyElement = customElement<MyElementProps>(
+const MyElement = component<MyElementProps>(
 	({ attrs: {heading}, props: {count}, internals, clientCallback, adoptStyleSheet }) => {
 		count.set(0);
 		effect(() => {

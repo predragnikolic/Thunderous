@@ -1,7 +1,7 @@
-import { css, customElement, html } from 'thunderous';
+import { css, component, html } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const Page = customElement(({ adoptStyleSheet, attrs }) => {
+export const Page = component(({ adoptStyleSheet, attrs }) => {
 	const _splash = attrs['splash'];
 	const splash = _splash() !== null;
 	adoptStyleSheet(theme);

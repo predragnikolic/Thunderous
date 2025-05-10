@@ -95,10 +95,10 @@ export type RegistryResult = {
 	__serverRenderOpts: Map<TagName, ServerRenderOptions>;
 	define: (
 		tagName: TagName,
-		CustomElement: CustomElementConstructor | ElementResult,
+		component: CustomElementConstructor | ElementResult,
 		options?: ElementDefinitionOptions,
 	) => RegistryResult;
-	getTagName: (CustomElement: CustomElementConstructor | ElementResult) => TagName | undefined;
+	getTagName: (component: CustomElementConstructor | ElementResult) => TagName | undefined;
 	getAllTagNames: () => TagName[];
 	eject: () => CustomElementRegistry;
 	scoped: boolean;

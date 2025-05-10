@@ -1,7 +1,7 @@
-import { css, customElement, html } from 'thunderous';
+import { css, component, html } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const PageHeader = customElement(({ adoptStyleSheet }) => {
+export const PageHeader = component(({ adoptStyleSheet }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(pageHeaderStyles);
 	return html`
@@ -66,7 +66,7 @@ const pageHeaderStyles = css`
 	}
 `;
 
-export const ContentHeader = customElement(({ adoptStyleSheet }) => {
+export const ContentHeader = component(({ adoptStyleSheet }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(contentHeaderStyles);
 	return html`

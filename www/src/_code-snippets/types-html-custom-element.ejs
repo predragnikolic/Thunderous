@@ -1,4 +1,4 @@
-import { HTMLCustomElement, customElement } from 'thunderous';
+import { HTMLCustomElement, component } from 'thunderous';
 
 // Define properties for your custom element.
 type MyElementProps = {
@@ -15,7 +15,7 @@ declare global {
   }
 }
 
-const MyElement = customElement<MyElementProps>(({ props }) => {
+const MyElement = component<MyElementProps>(({ props }) => {
   const foo = props.prop.init('');
   const bar = props.prop.init(0);
   return html`

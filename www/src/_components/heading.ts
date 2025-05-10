@@ -1,6 +1,6 @@
-import { css, customElement, html } from 'thunderous';
+import { css, component, html } from 'thunderous';
 
-export const Heading = customElement(({ adoptStyleSheet }) => {
+export const Heading = component(({ adoptStyleSheet }) => {
 	adoptStyleSheet(styles);
 	return html`<slot></slot>`;
 });

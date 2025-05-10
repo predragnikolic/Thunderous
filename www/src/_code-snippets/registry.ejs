@@ -1,9 +1,9 @@
-import { createRegistry, customElement, html } from 'thunderous';
+import { createRegistry, component, html } from 'thunderous';
 
 // create a global custom element registry
 const registry = createRegistry();
 
-const MyElement = customElement(() => {
+const MyElement = component(() => {
   return html`<div>My Element</div>`;
 });
 

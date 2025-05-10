@@ -1,6 +1,6 @@
-import { css, customElement, html } from 'thunderous';
+import { css, component, html } from 'thunderous';
 
-export const ErrorMessage = customElement(({ attrs, adoptStyleSheet }) => {
+export const ErrorMessage = component(({ attrs, adoptStyleSheet }) => {
 	const heading = attrs['heading'];
 	adoptStyleSheet(styles);
 	return html`

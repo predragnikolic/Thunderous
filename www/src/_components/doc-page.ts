@@ -1,7 +1,7 @@
-import { signal, css, customElement, computed, html } from 'thunderous';
+import { signal, css, component, computed, html } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const DocPage = customElement(({ adoptStyleSheet, connectedCallback }) => {
+export const DocPage = component(({ adoptStyleSheet, connectedCallback }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(styles);
 	const navOpen = signal(false);

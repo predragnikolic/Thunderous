@@ -1,7 +1,7 @@
-import { html, css, customElement } from 'thunderous';
+import { html, css, component } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const MarketingContent = customElement(
+export const MarketingContent = component(
 	({ adoptStyleSheet, connectedCallback, elementRef, refs, attrs }) => {
 		const _standalone = attrs['standalone'];
 		const standalone = _standalone() !== null;

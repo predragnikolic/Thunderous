@@ -1,7 +1,7 @@
-import { css, customElement, html } from 'thunderous';
+import { css, component, html } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const Link = customElement(({ attrs, adoptStyleSheet }) => {
+export const Link = component(({ attrs, adoptStyleSheet }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(linkStyles);
 	const href = attrs.href;
@@ -21,7 +21,7 @@ const linkStyles = css`
 	}
 `;
 
-export const InvisibleLink = customElement(({ attrs, adoptStyleSheet }) => {
+export const InvisibleLink = component(({ attrs, adoptStyleSheet }) => {
 	adoptStyleSheet(invisibleLinkStyles);
 	const href = attrs.href;
 	return html`<a href="${href}"><slot></slot></a>`;
@@ -41,7 +41,7 @@ const invisibleLinkStyles = css`
 	}
 `;
 
-export const LinkButton = customElement(({ attrs, adoptStyleSheet }) => {
+export const LinkButton = component(({ attrs, adoptStyleSheet }) => {
 	adoptStyleSheet(linkButtonStyles);
 	const href = attrs.href;
 	return html`<a href="${href}" part="a"><slot></slot></a>`;

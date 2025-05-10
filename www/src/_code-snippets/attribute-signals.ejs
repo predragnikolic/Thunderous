@@ -1,4 +1,4 @@
-const MyElement = customElement(({ attrs }) => {
+const MyElement = component(({ attrs }) => {
   const heading = attrs['my-heading'];
 
   // heading.set() will also update the `my-heading` attribute in the HTML.

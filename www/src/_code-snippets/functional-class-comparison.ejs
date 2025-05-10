@@ -1,8 +1,8 @@
-import { customElement, html, signal } from 'thunderous';
+import { component, html, signal } from 'thunderous';
 
 
 // Thunderous functional component:
-const FnElement = customElement(() => {
+const FnElement = component(() => {
   const count = signal(0);
   const increment = () => count.set(count() + 1);
   return html`

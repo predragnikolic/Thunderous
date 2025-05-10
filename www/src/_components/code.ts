@@ -1,9 +1,9 @@
-import { html, css, customElement, effect } from 'thunderous';
+import { html, css, component, effect } from 'thunderous';
 import { theme } from '../_styles/theme';
 import hljs from 'highlight.js';
 import { highlight } from '../_styles/highlight';
 
-export const Code = customElement(({ adoptStyleSheet }) => {
+export const Code = component(({ adoptStyleSheet }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(codeStyles);
 	return html`<code><slot></slot></code>`;
@@ -17,7 +17,7 @@ const codeStyles = css`
 	}
 `;
 
-export const CodeBlock = customElement(({ adoptStyleSheet, attrs, connectedCallback, elementRef, refs }) => {
+export const CodeBlock = component(({ adoptStyleSheet, attrs, connectedCallback, elementRef, refs }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(highlight);
 	adoptStyleSheet(codeBlockStyles);

@@ -1,7 +1,7 @@
-import { css, customElement, html } from 'thunderous';
+import { css, component, html } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const Footer = customElement(({ adoptStyleSheet }) => {
+export const Footer = component(({ adoptStyleSheet }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(styles);
 	return html`

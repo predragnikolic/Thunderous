@@ -1,6 +1,6 @@
-import { css, customElement, computed, html } from 'thunderous';
+import { css, component, computed, html } from 'thunderous';
 
-export const Icon = customElement(({ attrs, adoptStyleSheet }) => {
+export const Icon = component(({ attrs, adoptStyleSheet }) => {
 	const iconName = attrs['icon-name'];
 	adoptStyleSheet(styles);
 	const iconMap = {

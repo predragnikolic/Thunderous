@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'assert';
 import { createRegistry } from '../registry';
-import { customElement } from '../custom-element';
+import { component } from '../component';
 import { html } from '../render';
 import { getWarnMock } from './_test-utils';
 
@@ -18,14 +18,14 @@ await test('createRegistry', async () => {
 	});
 	await test('defines a custom element', () => {
 		const registry = createRegistry();
-		const MyElement = customElement(() => html`<div></div>`);
+		const MyElement = component(() => html`<div></div>`);
 		assert.doesNotThrow(() => registry.define('my-element', MyElement));
 	});
 	await test('warns about duplicate custom elements', (t) => {
 		const warnMock = getWarnMock(t);
 		const registry = createRegistry();
-		const MyElement = customElement(() => html`<div></div>`);
-		const MyElement2 = customElement(() => html`<div></div>`);
+		const MyElement = component(() => html`<div></div>`);
+		const MyElement2 = component(() => html`<div></div>`);
 		registry.define('my-element', MyElement);
 		registry.define('my-element', MyElement2);
 		assert.strictEqual(warnMock.callCount(), 1);
@@ -40,15 +40,15 @@ await test('createRegistry', async () => {
 	await test('gets the tag name of a custom element', () => {
 		const registry = createRegistry();
 		const tagName = 'my-element';
-		const MyElement = customElement(() => html`<div></div>`);
+		const MyElement = component(() => html`<div></div>`);
 		registry.define(tagName, MyElement);
 		const result = registry.getTagName(MyElement);
 		assert.strictEqual(result, tagName.toUpperCase());
 	});
 	await test('gets all tag names defined in the registry', () => {
 		const registry = createRegistry();
-		const MyElement = customElement(() => html`<div></div>`);
-		const MyElement2 = customElement(() => html`<div></div>`);
+		const MyElement = component(() => html`<div></div>`);
+		const MyElement2 = component(() => html`<div></div>`);
 		registry.define('my-element', MyElement);
 		registry.define('my-element-2', MyElement2);
 		const result = registry.getAllTagNames();
@@ -56,7 +56,7 @@ await test('createRegistry', async () => {
 	});
 	await test('throws an error if ejected on the server', () => {
 		const registry = createRegistry();
-		const MyElement = customElement(() => html`<div></div>`);
+		const MyElement = component(() => html`<div></div>`);
 		registry.define('my-element', MyElement);
 		assert.throws(() => registry.eject(), { message: 'Cannot eject a registry on the server.' });
 	});

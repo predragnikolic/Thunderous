@@ -1,4 +1,4 @@
-export { customElement } from './custom-element';
+export { component } from './component';
 export { createRegistry } from './registry';
 export { onServerDefine, insertTemplates, clientCallback } from './server-side';
 export { effect, signal, computed } from './signals';

@@ -1,8 +1,8 @@
-import { createRegistry, customElement, html } from 'thunderous';
+import { createRegistry, component, html } from 'thunderous';
 import { MyElement } from './my-element';
 import { registry } from './registry';
 
-const MyOtherElement = customElement(({ connectedCallback }) => {
+const MyOtherElement = component(({ connectedCallback }) => {
 
   connectedCallback(() => {
 

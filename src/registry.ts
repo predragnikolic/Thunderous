@@ -52,12 +52,12 @@ export const createRegistry = (args?: RegistryArgs): RegistryResult => {
 				}
 			}
 			if (!isServer) {
-				const CustomElement = isResult ? ElementResult.eject() : ElementResult;
-				if (customElementMap.has(CustomElement)) {
-					console.warn(`Custom element class "${CustomElement.constructor.name}" was already defined. Skipping...`);
+				const component = isResult ? ElementResult.eject() : ElementResult;
+				if (customElementMap.has(component)) {
+					console.warn(`Custom element class "${component.constructor.name}" was already defined. Skipping...`);
 					return this;
 				}
-				customElementMap.set(CustomElement, upperCaseTagName);
+				customElementMap.set(component, upperCaseTagName);
 			}
 			if (isResult) elementResultMap.set(ElementResult, upperCaseTagName);
 			customElementTags.add(upperCaseTagName);
@@ -69,8 +69,8 @@ export const createRegistry = (args?: RegistryArgs): RegistryResult => {
 			}
 
 			// define the custom element on the client
-			const CustomElement = isResult ? ElementResult.eject() : ElementResult;
-			nativeRegistry?.define(tagName, CustomElement, options);
+			const component = isResult ? ElementResult.eject() : ElementResult;
+			nativeRegistry?.define(tagName, component, options);
 			return this;
 		},
 		getTagName: (ElementResult) => {
@@ -81,8 +81,8 @@ export const createRegistry = (args?: RegistryArgs): RegistryResult => {
 				if (isResult) return elementResultMap.get(ElementResult);
 				return;
 			}
-			const CustomElement = isResult ? ElementResult.eject() : ElementResult;
-			return customElementMap.get(CustomElement);
+			const component = isResult ? ElementResult.eject() : ElementResult;
+			return customElementMap.get(component);
 		},
 		getAllTagNames: () => Array.from(customElementTags),
 		eject: () => {
