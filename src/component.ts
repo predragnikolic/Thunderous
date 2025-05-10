@@ -106,7 +106,7 @@ export const component = <Props extends CustomElementProps>(
 		});
 	}
 
-	class component extends HTMLElement {
+	class WebComponent extends HTMLElement {
 		propsMap = new Map(propsMap);
 		#props = {} as {
 			[K in keyof Props]: Signal<Props[K] | undefined>;
@@ -290,7 +290,7 @@ export const component = <Props extends CustomElementProps>(
 				console.warn(`Custom element "${tagName}" was already defined. Skipping...`);
 				return this;
 			}
-			registry.define(tagName, component, options);
+			registry.define(tagName, WebComponent, options);
 			_tagName = tagName;
 			return this;
 		},
@@ -302,7 +302,7 @@ export const component = <Props extends CustomElementProps>(
 			_registry = registry;
 			return this;
 		},
-		eject: () => component,
+		eject: () => WebComponent,
 	};
 	return elementResult;
 };
