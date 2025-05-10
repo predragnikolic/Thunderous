@@ -88,7 +88,6 @@ export const getServerRenderArgs = (tagName: string, registry?: RegistryResult):
 	},
 	attributeChangedCallback: NOOP,
 	connectedCallback: NOOP,
-	disconnectedCallback: NOOP,
 	adoptedCallback: NOOP,
 	formDisabledCallback: NOOP,
 	formResetCallback: NOOP,

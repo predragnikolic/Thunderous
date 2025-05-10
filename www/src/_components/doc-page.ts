@@ -1,7 +1,7 @@
 import { signal, css, customElement, computed, html } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const DocPage = customElement(({ adoptStyleSheet, connectedCallback, disconnectedCallback }) => {
+export const DocPage = customElement(({ adoptStyleSheet, connectedCallback }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(styles);
 	const navOpen = signal(false);
@@ -19,10 +19,9 @@ export const DocPage = customElement(({ adoptStyleSheet, connectedCallback, disc
 	connectedCallback(() => {
 		openIfDesktop();
 		window.addEventListener('resize', openIfDesktop);
+		return () => window.removeEventListener('resize', openIfDesktop);
 	});
-	disconnectedCallback(() => {
-		window.removeEventListener('resize', openIfDesktop);
-	});
+	
 	return html`
 		<th-page>
 			<div class="doc-page">

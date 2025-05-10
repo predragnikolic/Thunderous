@@ -33,7 +33,6 @@ export type RenderArgs<Props extends CustomElementProps> = {
 	internals: ElementInternals;
 	attributeChangedCallback: (fn: AttributeChangedCallback) => void;
 	connectedCallback: (fn: () => void | DisconnectedCallback) => void;
-	disconnectedCallback: (DisconnectedCallback) => void;
 	adoptedCallback: (fn: () => void) => void;
 	formDisabledCallback: (fn: () => void) => void;
 	formResetCallback: (fn: () => void) => void;

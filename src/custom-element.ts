@@ -154,7 +154,6 @@ export const customElement = <Props extends CustomElementProps>(
 				internals: this.#internals,
 				attributeChangedCallback: (fn) => this.#attributeChangedFns.add(fn),
 				connectedCallback: (fn) => this.#connectedFns.add(fn),
-				disconnectedCallback: (fn) => this.#disconnectedFns.add(fn),
 				adoptedCallback: (fn) => this.#adoptedCallbackFns.add(fn),
 				formAssociatedCallback: (fn) => this.#formAssociatedCallbackFns.add(fn),
 				formDisabledCallback: (fn) => this.#formDisabledCallbackFns.add(fn),
