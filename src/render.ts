@@ -198,18 +198,10 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 							if (value === null) hasNull = true;
 							newText += String(value);
 						}
-						if ((hasNull && newText === 'null') || attrName.startsWith('prop:')) {
+						if (hasNull && newText === 'null') {
 							child.removeAttribute(attrName);
 						} else {
 							child.setAttribute(attrName, newText);
-						}
-						if (attrName.startsWith('prop:')) {
-							child.removeAttribute(attrName);
-							const propName = attrName.replace('prop:', '');
-							if (!(propName in child)) logPropertyWarning(propName, child);
-							const newValue = hasNull && newText === 'null' ? null : newText;
-							// @ts-expect-error // the above warning should suffice for developers
-							child[propName] = signal !== undefined ? signal() : newValue;
 						}
 					});
 				}  else if (CALLBACK_BINDING_REGEX.test(attr.value)) {
@@ -225,22 +217,10 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 								child.__customCallbackFns.set(uniqueKey, callback);
 							}
 						}
-						if (uniqueKey !== '' && !attrName.startsWith('prop:')) {
+						if (uniqueKey !== '') {
 							child.setAttribute(attrName, `this.__customCallbackFns.get('${uniqueKey}')(event)`);
-						} else if (attrName.startsWith('prop:')) {
-							child.removeAttribute(attrName);
-							const propName = attrName.replace('prop:', '');
-							if (!(propName in child)) logPropertyWarning(propName, child);
-							// @ts-expect-error // the above warning should suffice for developers
-							child[propName] = child.__customCallbackFns.get(uniqueKey);
 						}
 					});
-				} else if (attrName.startsWith('prop:')) {
-					child.removeAttribute(attrName);
-					const propName = attrName.replace('prop:', '');
-					if (!(propName in child)) logPropertyWarning(propName, child);
-					// @ts-expect-error // the above warning should suffice for developers
-					child[propName] = attr.value;
 				}
 			}
 			evaluateBindings(child, fragment);

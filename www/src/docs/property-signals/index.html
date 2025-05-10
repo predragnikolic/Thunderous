@@ -25,12 +25,6 @@
 					even though they are not actually attributes. While this distinction may seem trivial for those working with
 					modern frameworks, it becomes much more relevant when defining custom elements that may be used in plain HTML.
 				</th-text>
-				<th-text>
-					Thunderous itself now supports passing properties via the HTML, but with a distinctive syntax to avoid
-					confusion. For example, <th-code>count="${0}"</th-code> will set the <th-code>count</th-code> attribute to the
-					string, <th-code>"0"</th-code>, but <th-code>prop:count="${0}"</th-code> will set the
-					<th-code>count</th-code> property to the number, <th-code>0</th-code>, and will not be reflected in the HTML.
-				</th-text>
 				<th-code-block lang="ts"><%= include('_code-snippets/property-binding.ejs') %></th-code-block>
 
 				<th-content-header>Properties as Signals</th-content-header>
