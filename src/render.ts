@@ -4,7 +4,6 @@ import type { ElementParent, Styles, SignalGetter, AnyFn } from './types';
 import { queryComment } from './utilities';
 
 const CALLBACK_BINDING_REGEX = /(\{\{callback:.+\}\})/;
-const LEGACY_CALLBACK_BINDING_REGEX = /(this.getRootNode\(\).host.__customCallbackFns.get\('.+'\)\(event\))/;
 const SIGNAL_BINDING_REGEX = /(\{\{signal:.+\}\})/;
 const FRAGMENT_ATTRIBUTE = '___thunderous-fragment';
 
@@ -213,13 +212,7 @@ const evaluateBindings = (element: ElementParent, fragment: DocumentFragment) =>
 							child[propName] = signal !== undefined ? signal() : newValue;
 						}
 					});
-				} else if (LEGACY_CALLBACK_BINDING_REGEX.test(attr.value)) {
-					const getRootNode = child.getRootNode.bind(child);
-					child.getRootNode = () => {
-						const rootNode = getRootNode();
-						return rootNode instanceof ShadowRoot ? rootNode : fragment;
-					};
-				} else if (CALLBACK_BINDING_REGEX.test(attr.value)) {
+				}  else if (CALLBACK_BINDING_REGEX.test(attr.value)) {
 					const textList = attr.value.split(CALLBACK_BINDING_REGEX);
 					effect(() => {
 						child.__customCallbackFns = child.__customCallbackFns ?? new Map();
