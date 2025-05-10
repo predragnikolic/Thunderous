@@ -13,6 +13,7 @@ import type {
 	RenderOptions,
 	ServerRenderFunction,
 	Signal,
+	DisconnectedCallback
 } from './types';
 
 /**
@@ -117,7 +118,7 @@ export const customElement = <Props extends CustomElementProps>(
 			[K in keyof Props]: Signal<Props[K] | undefined>;
 		};
 		#attributeChangedFns = new Set<AttributeChangedCallback>();
-		#connectedFns = new Set<() => void>();
+		#connectedFns = new Set<() => void | DisconnectedCallback>();
 		#disconnectedFns = new Set<() => void>();
 		#adoptedCallbackFns = new Set<() => void>();
 		#formAssociatedCallbackFns = new Set<() => void>();
@@ -304,7 +305,8 @@ export const customElement = <Props extends CustomElementProps>(
 				this.#observer.observe(this, { attributes: true });
 			}
 			for (const fn of this.#connectedFns) {
-				fn();
+				let disconnectedCallback = fn();
+				if (disconnectedCallback) this.#disconnectedFns.add(disconnectedCallback)
 			}
 		}
 		disconnectedCallback() {

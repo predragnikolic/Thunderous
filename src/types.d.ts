@@ -26,13 +26,14 @@ export type AttributeChangedCallback = (name: string, oldValue: string | null, n
 
 export type CustomElementProps = Record<PropertyKey, unknown>;
 
+export type DisconnectedCallback = () => void;
 export type RenderArgs<Props extends CustomElementProps> = {
 	elementRef: HTMLElement;
 	root: ShadowRoot | HTMLElement;
 	internals: ElementInternals;
 	attributeChangedCallback: (fn: AttributeChangedCallback) => void;
-	connectedCallback: (fn: () => void) => void;
-	disconnectedCallback: (fn: () => void) => void;
+	connectedCallback: (fn: () => void | DisconnectedCallback) => void;
+	disconnectedCallback: (DisconnectedCallback) => void;
 	adoptedCallback: (fn: () => void) => void;
 	formDisabledCallback: (fn: () => void) => void;
 	formResetCallback: (fn: () => void) => void;
