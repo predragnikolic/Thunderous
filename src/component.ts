@@ -3,7 +3,6 @@ import { isCSSStyleSheet, renderState } from './render';
 import { isServer, serverDefine } from './server-side';
 import { signal, effect } from './signals';
 import type {
-	AttributeChangedCallback,
 	AttrProp,
 	CustomElementProps,
 	ElementResult,
@@ -34,8 +33,7 @@ export const component = <Props extends CustomElementProps>(
 
 	const {
 		formAssociated,
-		observedAttributes: _observedAttributes,
-		attributesAsProperties,
+		props,
 		attachShadow,
 		shadowRootOptions: _shadowRootOptions,
 	} = _options;
@@ -96,11 +94,9 @@ export const component = <Props extends CustomElementProps>(
 			: shadowRootOptions.registry?.eject();
 
 	// must set observedAttributes prior to defining the class
-	const observedAttributesSet = new Set(_observedAttributes);
-	const attributesAsPropertiesMap = new Map<string, AttrProp>();
-	for (const [attrName, coerce] of attributesAsProperties) {
-		observedAttributesSet.add(attrName);
-		attributesAsPropertiesMap.set(attrName, {
+	const propsMap = new Map<string, AttrProp>();
+	for (const [attrName, coerce] of props) {
+		propsMap.set(attrName, {
 			// convert kebab-case attribute names to camelCase property names
 			prop: attrName
 				.replace(/^([A-Z]+)/, (_, letter: string) => letter.toLowerCase())
@@ -109,15 +105,12 @@ export const component = <Props extends CustomElementProps>(
 			value: null,
 		});
 	}
-	const observedAttributes = Array.from(observedAttributesSet);
 
 	class component extends HTMLElement {
-		#attributesAsPropertiesMap = new Map(attributesAsPropertiesMap);
-		#attrs: Record<string, Signal<string | null> | undefined> = {};
+		propsMap = new Map(propsMap);
 		#props = {} as {
 			[K in keyof Props]: Signal<Props[K] | undefined>;
 		};
-		#attributeChangedFns = new Set<AttributeChangedCallback>();
 		#connectedFns = new Set<() => void | DisconnectedCallback>();
 		#disconnectedFns = new Set<() => void>();
 		#adoptedCallbackFns = new Set<() => void>();
@@ -128,20 +121,16 @@ export const component = <Props extends CustomElementProps>(
 		#clientCallbackFns = new Set<() => void>();
 		#shadowRoot = attachShadow ? this.attachShadow(shadowRootOptions as ShadowRootInit) : null;
 		#internals = this.attachInternals();
-		#observer =
-			options?.observedAttributes !== undefined
-				? null
-				: new MutationObserver((mutations) => {
+		#observer = new MutationObserver((mutations) => {
 						for (const mutation of mutations) {
 							const attrName = mutation.attributeName;
 							if (mutation.type !== 'attributes' || attrName === null) continue;
-							if (!(attrName in this.#attrs)) this.#attrs[attrName] = signal<string | null>(null);
-							const sig = this.#attrs[attrName]!;
-							const oldValue = sig();
+							const prop = this.#props[attrName];
+							const attr = this.propsMap.get(attrName);
 							const newValue = this.getAttribute(attrName);
-							sig.set(newValue);
-							for (const fn of this.#attributeChangedFns) {
-								fn(attrName, oldValue, newValue);
+							if (attr) {
+								// @ts-expect-error this is fine
+								prop.set(newValue === null ? null : attr.coerce(newValue));
 							}
 						}
 					});
@@ -152,7 +141,6 @@ export const component = <Props extends CustomElementProps>(
 				elementRef: this,
 				root,
 				internals: this.#internals,
-				attributeChangedCallback: (fn) => this.#attributeChangedFns.add(fn),
 				connectedCallback: (fn) => this.#connectedFns.add(fn),
 				adoptedCallback: (fn) => this.#adoptedCallbackFns.add(fn),
 				formAssociatedCallback: (fn) => this.#formAssociatedCallbackFns.add(fn),
@@ -160,23 +148,6 @@ export const component = <Props extends CustomElementProps>(
 				formResetCallback: (fn) => this.#formResetCallbackFns.add(fn),
 				formStateRestoreCallback: (fn) => this.#formStateRestoreCallbackFns.add(fn),
 				clientCallback: (fn) => this.#clientCallbackFns.add(fn),
-				attrs: new Proxy(
-					{},
-					{
-						get: (_, prop: string) => {
-							if (!(prop in this.#attrs)) this.#attrs[prop] = signal<string | null>(null);
-							const sig = this.#attrs[prop]!;
-							effect(() => {
-								this.setAttribute(prop, sig() ?? '');
-							})
-							return sig;
-						},
-						set: () => {
-							console.error('Signals must be assigned via setters.');
-							return false;
-						},
-					},
-				),
 				props: new Proxy({} as RenderArgs<Props>['props'], {
 					get: (_, prop: Extract<keyof Props, string>) => {
 						if (!(prop in this.#props)) this.#props[prop] = signal<Props[typeof prop] | undefined>();
@@ -184,7 +155,13 @@ export const component = <Props extends CustomElementProps>(
 						Object.defineProperty(this, prop, {
 							get: sig,
 							set: (newValue: Props[typeof prop]) => {
+								let oldValue = sig()
 								sig.set(newValue);
+
+								const attr = this.propsMap.get(prop);
+								if (attr && oldValue != newValue) {
+									this.setAttribute(attr.prop, String(newValue))
+								}
 							},
 						});
 
@@ -244,9 +221,6 @@ export const component = <Props extends CustomElementProps>(
 		static get formAssociated() {
 			return formAssociated;
 		}
-		static get observedAttributes() {
-			return observedAttributes;
-		}
 		constructor() {
 			try {
 				super();
@@ -260,37 +234,6 @@ export const component = <Props extends CustomElementProps>(
 			}
 			if (!Object.prototype.hasOwnProperty.call(this, '__customCallbackFns')) {
 				this.__customCallbackFns = new Map<string, () => void>();
-			}
-			for (const [attrName, attr] of this.#attributesAsPropertiesMap) {
-				this.#attrs[attrName] = signal<string | null>(null);
-				Object.defineProperty(this, attr.prop, {
-					get: () => {
-						if (!(attrName in this.#attrs)) this.#attrs[attrName] = signal<string | null>(null);
-						const sig = this.#attrs[attrName]!;
-						const raw = sig();
-						const rawOnly = raw !== null && attr.value === null;
-						const value = rawOnly ? attr.coerce(raw) : attr.value; // avoid coercion when possible
-						return value === null ? null : value;
-					},
-					set: (newValue) => {
-						const oldValue = attr.value;
-						attr.value = newValue;
-						if (!(attrName in this.#attrs)) this.#attrs[attrName] = signal<string | null>(null);
-						const attrSignal = this.#attrs[attrName]!;
-						const propSignal = this.#props[attrName] as Signal;
-						const attrValue = newValue === null ? null : String(newValue);
-						if (String(oldValue) === attrValue) return;
-						attrSignal.set(attrValue);
-						propSignal.set(newValue);
-						if (attrValue === null) this.removeAttribute(attrName);
-						else this.setAttribute(attrName, attrValue);
-					},
-					configurable: true,
-					enumerable: true,
-				});
-			}
-			for (const attr of this.attributes) {
-				this.#attrs[attr.name] = signal<string | null>(attr.value);
 			}
 			this.#render();
 		}
@@ -309,19 +252,6 @@ export const component = <Props extends CustomElementProps>(
 			}
 			for (const fn of this.#disconnectedFns) {
 				fn();
-			}
-		}
-		attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
-			// @ts-expect-error 
-			const {set: attrSetter} = this.#attrs[name] ?? [];
-			attrSetter?.(newValue);
-			const prop = this.#attributesAsPropertiesMap.get(name);
-			if (prop !== undefined) {
-				// @ts-expect-error // TODO: look into this
-				this[prop.prop] = newValue === null ? null : prop.coerce(newValue);
-			}
-			for (const fn of this.#attributeChangedFns) {
-				fn(name, oldValue, newValue);
 			}
 		}
 		adoptedCallback() {

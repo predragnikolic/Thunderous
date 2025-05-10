@@ -17,11 +17,11 @@ const codeStyles = css`
 	}
 `;
 
-export const CodeBlock = component(({ adoptStyleSheet, attrs, connectedCallback, elementRef, refs }) => {
+export const CodeBlock = component(({ adoptStyleSheet, props, connectedCallback, elementRef, refs }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(highlight);
 	adoptStyleSheet(codeBlockStyles);
-	const lang = attrs.lang;
+	const lang = props.lang;
 	connectedCallback(() => {
 		const content = elementRef.innerHTML;
 		const code = refs.code;
@@ -42,6 +42,8 @@ export const CodeBlock = component(({ adoptStyleSheet, attrs, connectedCallback,
 		</pre>
 		<slot style="display: none"></slot>
 	`;
+},{
+  props: ['lang', String]
 });
 
 const codeBlockStyles = css`

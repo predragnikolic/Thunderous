@@ -94,7 +94,6 @@ export const getServerRenderArgs = (tagName: string, registry?: RegistryResult):
 	formStateRestoreCallback: NOOP,
 	formAssociatedCallback: NOOP,
 	clientCallback: NOOP,
-	attrs: new Proxy({}, { get: (_, attr) => signal(`{{attr:${String(attr)}}}`) }),
 	props: new Proxy({}, { get: () => signal(null) }),
 	refs: {},
 	// @ts-expect-error // this will be a string for SSR, but this is true for internal cases only.

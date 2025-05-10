@@ -1,7 +1,7 @@
 import { css, component, html } from 'thunderous';
 
-export const ErrorMessage = component(({ attrs, adoptStyleSheet }) => {
-	const heading = attrs['heading'];
+export const ErrorMessage = component(({ props, adoptStyleSheet }) => {
+	const heading = props['heading'];
 	adoptStyleSheet(styles);
 	return html`
 		<div>
@@ -9,6 +9,8 @@ export const ErrorMessage = component(({ attrs, adoptStyleSheet }) => {
 			<slot></slot>
 		</div>
 	`;
+}, {
+  props: ['heading', String]
 });
 
 const styles = css`

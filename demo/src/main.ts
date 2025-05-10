@@ -22,10 +22,6 @@ type MyElementProps = {
 	count: number;
 };
 
-type NestedElementProps = {
-	count: number;
-};
-
 const mockHTML = /* html */ `
 <!DOCTYPE html>
 <html lang="en">
@@ -48,12 +44,19 @@ onServerDefine((tagName, htmlString) => {
 
 const globalRegistry = createRegistry();
 
-const NestedElement = component<NestedElementProps>(
-	({ attrs: { text }, props: { count } }) => {
+const NestedElement = component<{
+	count: number;
+	text: string;
+}>(
+	({ props: { count, text } }) => {
 		count.set(0);
 		return html`<strong>${text}</strong> <span>count: ${count}</span>`;
 	},
 	{
+		props: [
+			['text', String],
+			['count', Number]
+		],
 		shadowRootOptions: { mode: 'open' },
 	},
 );
@@ -62,7 +65,7 @@ const registry = createRegistry({ scoped: true });
 registry.define('nested-element', NestedElement);
 
 const MyElement = component<MyElementProps>(
-	({ attrs: {heading}, props: {count}, internals, clientCallback, adoptStyleSheet }) => {
+	({ props: {count, heading}, internals, clientCallback, adoptStyleSheet }) => {
 		count.set(0);
 		effect(() => {
 			console.log('count changed:', count());
@@ -135,7 +138,7 @@ const MyElement = component<MyElementProps>(
 				<slot></slot>
 			</div>
 			<span>this is a scoped element:</span>
-			<nested-element text="test" prop:count="${count}"></nested-element>
+			<nested-element text="test" count="${count}"></nested-element>
 			<h2>nested templates and loops:</h2>
 			<ul>
 				${html`<li onclick="${addListItem}">item</li>`}
@@ -149,8 +152,10 @@ const MyElement = component<MyElementProps>(
 		`;
 	},
 	{
+		props: [
+			['heading', String],
+		],
 		formAssociated: true,
-		observedAttributes: ['heading'],
 		shadowRootOptions: { registry },
 	},
 ).register(globalRegistry);

@@ -22,8 +22,6 @@ export type ElementResult = {
 	eject: () => CustomElementConstructor;
 };
 
-export type AttributeChangedCallback = (name: string, oldValue: string | null, newValue: string | null) => void;
-
 export type CustomElementProps = Record<PropertyKey, unknown>;
 
 export type DisconnectedCallback = () => void;
@@ -31,7 +29,6 @@ export type RenderArgs<Props extends CustomElementProps> = {
 	elementRef: HTMLElement;
 	root: ShadowRoot | HTMLElement;
 	internals: ElementInternals;
-	attributeChangedCallback: (fn: AttributeChangedCallback) => void;
 	connectedCallback: (fn: () => void | DisconnectedCallback) => void;
 	adoptedCallback: (fn: () => void) => void;
 	formDisabledCallback: (fn: () => void) => void;
@@ -39,7 +36,6 @@ export type RenderArgs<Props extends CustomElementProps> = {
 	formStateRestoreCallback: (fn: () => void) => void;
 	formAssociatedCallback: (fn: () => void) => void;
 	clientCallback: (fn: () => void) => void;
-	attrs: Record<string, Signal<string | null>>;
 	props: {
 		[K in keyof Props]: Signal<Props[K]>;
 	};
@@ -51,8 +47,7 @@ export type Coerce<T = unknown> = (value: string) => T;
 
 export type RenderOptions = {
 	formAssociated: boolean;
-	observedAttributes: string[];
-	attributesAsProperties: [string, Coerce][];
+	props: [string, Coerce][];
 	attachShadow: boolean;
 	shadowRootOptions: Partial<ShadowRootInit> & {
 		customElements?: CustomElementRegistry; // necessary with the polyfill

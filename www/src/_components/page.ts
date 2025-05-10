@@ -1,8 +1,8 @@
 import { css, component, html } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const Page = component(({ adoptStyleSheet, attrs }) => {
-	const _splash = attrs['splash'];
+export const Page = component(({ adoptStyleSheet, props }) => {
+	const _splash = props['splash'];
 	const splash = _splash() !== null;
 	adoptStyleSheet(theme);
 	adoptStyleSheet(styles);
@@ -13,6 +13,8 @@ export const Page = component(({ adoptStyleSheet, attrs }) => {
 			<div><slot name="footer"></slot></div>
 		</div>
 	`;
+},{
+  props: ['splash', String]
 });
 
 const styles = css`

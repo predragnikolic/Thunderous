@@ -1,11 +1,13 @@
 import { css, component, html } from 'thunderous';
 import { theme } from '../_styles/theme';
 
-export const Link = component(({ attrs, adoptStyleSheet }) => {
+export const Link = component(({ props, adoptStyleSheet }) => {
 	adoptStyleSheet(theme);
 	adoptStyleSheet(linkStyles);
-	const href = attrs.href;
+	const href = props.href;
 	return html`<a href="${href}" part="a"><slot></slot></a>`;
+}, {
+  props: ['href', String]
 });
 
 const linkStyles = css`
@@ -21,10 +23,14 @@ const linkStyles = css`
 	}
 `;
 
-export const InvisibleLink = component(({ attrs, adoptStyleSheet }) => {
+export const InvisibleLink = component(({ props, adoptStyleSheet }) => {
 	adoptStyleSheet(invisibleLinkStyles);
-	const href = attrs.href;
+	const href = props.href;
 	return html`<a href="${href}"><slot></slot></a>`;
+}, {
+	props: [
+		['href', String]
+	]
 });
 
 const invisibleLinkStyles = css`
@@ -41,10 +47,14 @@ const invisibleLinkStyles = css`
 	}
 `;
 
-export const LinkButton = component(({ attrs, adoptStyleSheet }) => {
+export const LinkButton = component(({ props, adoptStyleSheet }) => {
 	adoptStyleSheet(linkButtonStyles);
-	const href = attrs.href;
+	const href = props.href;
 	return html`<a href="${href}" part="a"><slot></slot></a>`;
+},{
+	props: [
+		['href', String]
+	]
 });
 
 const linkButtonStyles = css`

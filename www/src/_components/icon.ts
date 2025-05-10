@@ -1,7 +1,7 @@
 import { css, component, computed, html } from 'thunderous';
 
-export const Icon = component(({ attrs, adoptStyleSheet }) => {
-	const iconName = attrs['icon-name'];
+export const Icon = component(({ props, adoptStyleSheet }) => {
+	const iconName = props['icon-name'];
 	adoptStyleSheet(styles);
 	const iconMap = {
 		github: html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512">
@@ -14,6 +14,8 @@ export const Icon = component(({ attrs, adoptStyleSheet }) => {
 	};
 	const icon = computed(() => iconMap[iconName() ?? 'none'] ?? iconMap.none);
 	return html`${icon}`;
+},{
+  props: ['icon-name', String]
 });
 
 const styles = css`

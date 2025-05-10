@@ -2,8 +2,8 @@ import { html, css, component } from 'thunderous';
 import { theme } from '../_styles/theme';
 
 export const MarketingContent = component(
-	({ adoptStyleSheet, connectedCallback, elementRef, refs, attrs }) => {
-		const _standalone = attrs['standalone'];
+	({ adoptStyleSheet, connectedCallback, elementRef, refs, props }) => {
+		const _standalone = props['standalone'];
 		const standalone = _standalone() !== null;
 		adoptStyleSheet(theme);
 		adoptStyleSheet(styles);
@@ -19,6 +19,9 @@ export const MarketingContent = component(
 			</div>
 		`;
 	},
+	{
+	  props: ['standalone', String]
+	}
 );
 
 const styles = css`

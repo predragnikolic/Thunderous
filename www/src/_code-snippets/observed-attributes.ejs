@@ -1,5 +1,7 @@
-const MyElement = component(({ attrs }) => {
-  const heading = attrs['my-heading'];
+const MyElement = component(({ props }) => {
+  const heading = props['my-heading'];
 
   return html`<h2>${heading}</h2>`;
-}, { observedAttributes: ['my-heading'] });
+}, {
+  props: ['my-heading', String]
+ });

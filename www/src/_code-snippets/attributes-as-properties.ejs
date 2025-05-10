@@ -4,4 +4,4 @@ const MyElement = component<{ count: number }>(({ props }) => {
   // count.set() will update both the DOM property, AND the HTML attribute.
 
   return html`<output>${count}</output>`;
-}, { attributesAsProperties: [['count', Number]] });
+}, { props: [['count', Number]] });

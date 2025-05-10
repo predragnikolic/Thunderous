@@ -3,7 +3,7 @@ import type { RenderOptions } from './types';
 export const DEFAULT_RENDER_OPTIONS: RenderOptions = {
 	formAssociated: false,
 	observedAttributes: [],
-	attributesAsProperties: [],
+	props: [],
 	attachShadow: true,
 	shadowRootOptions: {
 		mode: 'closed',
